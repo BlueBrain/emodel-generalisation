@@ -1,0 +1,24 @@
+# Changes here will be overwritten by Copier
+
+_commit: 0.1.44
+_src_path: git@bbpgitlab.epfl.ch:neuromath/python-template.git
+author_name: Blue Brain Project, EPFL
+copyright_license: GNU General Public License v3.0
+copyright_year: '2023'
+distribution_name: emodel-generalisation
+download_url: https://github.com/BlueBrain/emodel-generalisation
+init_git: false
+maintainer: Alexis Arnaudon
+package_name: emodel_generalisation
+project_description: Generalisation of neuronal electrical models with MCMC
+project_name: emodel-generalisation
+project_url: https://emodel-generalisation.readthedocs.io
+repository_name: emodel-generalisation
+repository_namespace: BlueBrain
+repository_provider: github
+support_py37: false
+tracker_url: https://github.com/BlueBrain/emodel-generalisation/issues
+use_pyproject_toml: false
+version: 0.1.0.dev0
+
+# End of Copier answers

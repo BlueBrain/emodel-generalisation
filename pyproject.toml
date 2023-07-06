@@ -1,0 +1,35 @@
+[build-system]
+requires = [
+    "setuptools>=45",
+    "setuptools_scm[toml]>=6.2",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+[tool.black]
+line-length = 100
+target-version = [
+    "py38",
+    "py39",
+    "py310",
+    "py311",
+]
+
+[tool.pydocstyle]
+# ignore the following:
+#   - D107: Missing docstring in __init__
+add-ignore = [
+    "D107",
+]
+convention = "google"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+force_single_line = true
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
