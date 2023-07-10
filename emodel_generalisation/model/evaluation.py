@@ -1,32 +1,30 @@
 """Evaluation module (adapted from bluepyemodel)."""
-from copy import deepcopy
-from pathlib import Path
-import multiprocessing
+import importlib
 import json
+import logging
+import multiprocessing
 import pickle
+from copy import deepcopy
 from functools import partial
 from hashlib import sha256
+from pathlib import Path
 
-import importlib
-import logging
 import numpy as np
-
+from bluepyopt import ephys
 from bluepyopt.ephys.evaluators import CellEvaluator
 from bluepyopt.ephys.locations import NrnSeclistCompLocation
 from bluepyopt.ephys.locations import NrnSomaDistanceCompLocation
 from bluepyopt.ephys.locations import NrnTrunkSomaDistanceCompLocation
-from bluepyopt import ephys
-from bluepyopt.ephys.objectives import SingletonObjective
-from bluepyopt.ephys.simulators import NrnSimulator
-from bluepyopt.ephys.objectivescalculators import ObjectivesCalculator
 from bluepyopt.ephys.morphologies import NrnFileMorphology
+from bluepyopt.ephys.objectives import SingletonObjective
+from bluepyopt.ephys.objectivescalculators import ObjectivesCalculator
+from bluepyopt.ephys.simulators import NrnSimulator
 
+from emodel_generalisation.model import bpopt
+from emodel_generalisation.model import modifiers
+from emodel_generalisation.model.ecodes import eCodes
 from emodel_generalisation.parallel import evaluate
 from emodel_generalisation.parallel.parallel import NestedPool
-
-from emodel_generalisation.model import modifiers
-from emodel_generalisation.model import bpopt
-from emodel_generalisation.model.ecodes import eCodes
 
 # pylint: disable=too-many-lines
 
@@ -1711,7 +1709,7 @@ def _single_feature_evaluation(
     if morphology_path in combo:
         access_point.morph_path = combo[morphology_path]
 
-    access_point.settings = access_point.get_settings(combo['emodel'])
+    access_point.settings = access_point.get_settings(combo["emodel"])
 
     if "morph_modifiers" not in access_point.settings:
         access_point.settings["morph_modifiers"] = None

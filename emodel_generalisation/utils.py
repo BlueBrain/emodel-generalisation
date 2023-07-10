@@ -6,10 +6,10 @@ from functools import partial
 from hashlib import sha256
 from itertools import cycle
 from pathlib import Path
-import pandas as pd
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from bluepyopt.ephys.responses import TimeVoltageResponse
 from matplotlib.backends.backend_pdf import PdfPages
 from scipy.cluster.hierarchy import dendrogram
@@ -130,7 +130,7 @@ def get_combo_hash(combo):
 
 
 def plot_traces(trace_df, trace_path="traces", pdf_filename="traces.pdf"):
-    """Plot traces from df, with highlighs on rows with trace_highlight = True.
+    """Plot traces from df, with highlights on rows with trace_highlight = True.
 
     Args:
         trace_df (DataFrame): contains list of combos with traces to plot

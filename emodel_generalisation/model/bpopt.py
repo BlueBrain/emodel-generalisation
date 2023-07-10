@@ -1,7 +1,7 @@
 """Module with overloaded things from bluepyopt."""
 import logging
-import numpy as np
 
+import numpy as np
 from bluepyopt import ephys
 from bluepyopt.ephys.efeatures import eFELFeature
 

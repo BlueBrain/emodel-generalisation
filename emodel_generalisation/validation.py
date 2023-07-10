@@ -7,12 +7,12 @@ import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
 
-from emodel_generalisation.utils import get_scores
 from emodel_generalisation.exemplars import get_bins
 from emodel_generalisation.exemplars import get_surface_profile
 
 # from emodel_generalisation.extra.features import get_features
 from emodel_generalisation.utils import FEATURE_FILTER
+from emodel_generalisation.utils import get_scores
 
 
 def validate_morphologies(df, selected, folder, select_folder, exemplar_data, mtype):

@@ -1,9 +1,9 @@
 """Custom local access point."""
-from itertools import chain
 import glob
-from pathlib import Path
 import json
 import logging
+from itertools import chain
+from pathlib import Path
 
 from emodel_generalisation.model.evaluation import LEGACY_PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import PRE_PROTOCOLS
@@ -520,7 +520,7 @@ class NeuronModelConfiguration:
                     "Parameter %s is already at location %s or 'all'. %s",
                     parameter_name,
                     loc,
-                    "Only first occurence will be used.",
+                    "Only first occurrence will be used.",
                 )
             else:
                 self.parameters.append(tmp_param)
@@ -653,7 +653,7 @@ class NeuronModelConfiguration:
         section_index=None,
     ):
         """Select the morphology on which the neuron model will be based. Its name has to be part
-        of the availabel morphologies.
+        of the available morphologies.
 
         Args:
             morphology_name (str): name of the morphology. Optional if morphology_path is informed.

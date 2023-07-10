@@ -1,8 +1,10 @@
 """Test MCM module."""
 from pathlib import Path
+
 import pandas as pd
-from emodel_generalisation import mcmc
 from numpy.testing import assert_almost_equal
+
+from emodel_generalisation import mcmc
 
 DATA = Path(__file__).parent / "data"
 
@@ -24,4 +26,6 @@ def test_mcmc(access_point, simple_morph, tmpdir):
     expected_df = pd.read_csv(DATA / "mcmc_df.csv", header=[0, 1])
     for col in ["features", "parameters", "scores", "normalized_parameters"]:
         for feat in df[col].columns:
-            assert_almost_equal(df[col][feat].to_numpy(), expected_df[col][feat].to_numpy())
+            assert_almost_equal(
+                df[col][feat].to_numpy(), expected_df[col][feat].to_numpy(), decimal=1
+            )

@@ -1,9 +1,10 @@
 """Ecode module."""
 import logging
+
 import numpy as np
-from bluepyopt.ephys.stimuli import Stimulus
 from bluepyopt.ephys.locations import NrnSomaDistanceCompLocation
 from bluepyopt.ephys.locations import NrnTrunkSomaDistanceCompLocation
+from bluepyopt.ephys.stimuli import Stimulus
 
 logger = logging.getLogger(__name__)
 
@@ -409,7 +410,7 @@ class Synaptic(DendriticStep):
             step_duration (float): duration (ms)
             location (Location): stimulus Location
             syn_delay (float): start time of synaptic input
-            syn_amp (flaot): maximal amplitude of the synaptic input
+            syn_amp (float): maximal amplitude of the synaptic input
             syn_rise (float): rise time constant
             syn_decay (float): decay time constant
         """

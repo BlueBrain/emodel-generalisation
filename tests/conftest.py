@@ -1,6 +1,7 @@
 from pathlib import Path
-import pytest
+
 import pandas as pd
+import pytest
 
 from emodel_generalisation.model.access_point import AccessPoint
 from emodel_generalisation.parallel import init_parallel_factory

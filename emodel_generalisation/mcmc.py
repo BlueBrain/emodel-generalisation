@@ -14,15 +14,17 @@ import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 from mpl_toolkits import axisartist
 from scipy.spatial import distance_matrix
-from scipy.stats import multivariate_normal, pearsonr
+from scipy.stats import multivariate_normal
+from scipy.stats import pearsonr
 from sklearn.metrics.pairwise import pairwise_distances
 from tqdm import tqdm
 
-from emodel_generalisation import ALL_LABELS, PARAM_LABELS
+from emodel_generalisation import ALL_LABELS
+from emodel_generalisation import PARAM_LABELS
 from emodel_generalisation.model.access_point import AccessPoint
-from emodel_generalisation.model.evaluation import \
-    get_evaluator_from_access_point
-from emodel_generalisation.parallel import evaluate, init_parallel_factory
+from emodel_generalisation.model.evaluation import get_evaluator_from_access_point
+from emodel_generalisation.parallel import evaluate
+from emodel_generalisation.parallel import init_parallel_factory
 from emodel_generalisation.utils import cluster_matrix
 
 # pylint: disable=too-many-lines,too-many-locals

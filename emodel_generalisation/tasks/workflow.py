@@ -1,47 +1,49 @@
 """Main workflow tasks."""
-import os
-import json
-import shutil
 import itertools
+import json
+import os
+import shutil
 from functools import partial
 from pathlib import Path
-from xgboost import XGBClassifier, XGBRegressor
-from tqdm import tqdm
-from sklearn.metrics import accuracy_score, mean_absolute_error
-from sklearn.model_selection import RepeatedKFold, RepeatedStratifiedKFold
-import shap
 
 import luigi
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import pearsonr
 import pandas as pd
 import seaborn as sns
+import shap
 import yaml
 from emodeldb.config_tools import pull_config
 from luigi_tools.target import OutputLocalTarget
 from luigi_tools.task import WorkflowTask
 from luigi_tools.task import WorkflowWrapperTask
+from scipy.stats import pearsonr
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import RepeatedKFold
+from sklearn.model_selection import RepeatedStratifiedKFold
+from tqdm import tqdm
+from xgboost import XGBClassifier
+from xgboost import XGBRegressor
 
 from emodel_generalisation import ALL_LABELS
-from emodel_generalisation.utils import FEATURE_FILTER, get_score_df
+from emodel_generalisation.adaptation import adapt_soma_ais
+from emodel_generalisation.adaptation import build_all_resistance_models
 from emodel_generalisation.adaptation import find_rho_factors
+from emodel_generalisation.adaptation import make_evaluation_df
+from emodel_generalisation.exemplars import generate_exemplars
+from emodel_generalisation.mcmc import filter_features
+from emodel_generalisation.mcmc import load_chains
+from emodel_generalisation.mcmc import plot_autocorrelation
+from emodel_generalisation.mcmc import plot_corner
+from emodel_generalisation.mcmc import plot_feature_distributions
+from emodel_generalisation.mcmc import plot_full_cost_convergence
+from emodel_generalisation.mcmc import plot_reduced_feature_distributions
+from emodel_generalisation.mcmc import run_several_chains
+from emodel_generalisation.mcmc import save_selected_emodels
 from emodel_generalisation.model.evaluation import evaluate_rho
 from emodel_generalisation.model.evaluation import evaluate_rho_axon
 from emodel_generalisation.model.evaluation import feature_evaluation
-from emodel_generalisation.exemplars import generate_exemplars
-from emodel_generalisation.mcmc import plot_autocorrelation
-from emodel_generalisation.mcmc import plot_feature_distributions
-from emodel_generalisation.mcmc import plot_reduced_feature_distributions
-from emodel_generalisation.mcmc import plot_corner
-from emodel_generalisation.mcmc import filter_features
-from emodel_generalisation.mcmc import load_chains
-from emodel_generalisation.mcmc import plot_full_cost_convergence
-from emodel_generalisation.mcmc import run_several_chains
-from emodel_generalisation.mcmc import save_selected_emodels
-from emodel_generalisation.adaptation import adapt_soma_ais
-from emodel_generalisation.adaptation import make_evaluation_df
-from emodel_generalisation.adaptation import build_all_resistance_models
 from emodel_generalisation.model.modifiers import synth_axon
 from emodel_generalisation.model.modifiers import synth_soma
 from emodel_generalisation.morph_utils import create_combos_df
@@ -50,6 +52,8 @@ from emodel_generalisation.select import select_valid
 from emodel_generalisation.tasks.utils import EmodelAwareTask
 from emodel_generalisation.tasks.utils import EmodelLocalTarget
 from emodel_generalisation.tasks.utils import ParallelTask
+from emodel_generalisation.utils import FEATURE_FILTER
+from emodel_generalisation.utils import get_score_df
 from emodel_generalisation.utils import plot_traces
 from emodel_generalisation.validation import compare_adaptation
 from emodel_generalisation.validation import plot_adaptation_summaries
@@ -679,14 +683,14 @@ def _get_shap_feature_importance(shap_values):
     """From a list of shap values per folds, compute the global shap feature importance."""
     # average across folds
     mean_shap_values = np.mean(shap_values, axis=0)
-    # average accros labels
+    # average across labels
     if len(np.shape(mean_shap_values)) > 2:
         global_mean_shap_values = np.mean(mean_shap_values, axis=0)
         mean_shap_values = list(mean_shap_values)
     else:
         global_mean_shap_values = mean_shap_values
 
-    # average accros graphs
+    # average across graphs
     shap_feature_importance = np.mean(abs(global_mean_shap_values), axis=0)
     return mean_shap_values, shap_feature_importance
 

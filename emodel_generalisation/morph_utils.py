@@ -4,10 +4,9 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import neurom as nm
-import pandas as pd
 import numpy as np
+import pandas as pd
 import yaml
-
 from diameter_synthesis import build_diameters
 from diameter_synthesis import build_models
 from diameter_synthesis.main import plot_models
