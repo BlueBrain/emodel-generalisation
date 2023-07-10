@@ -5,7 +5,6 @@ from setuptools import find_namespace_packages
 from setuptools import setup
 
 reqs = [
-    "click>=7.0",
     "jsonschema>=3",
     "matplotlib>=2.2.0",
     "morphio>=2.3.4",
@@ -13,15 +12,13 @@ reqs = [
     "numpy>=1.15.0",
     "pandas>=0.24.0",
     "scipy>=0.13.3",
-    "seaborn>=0.12",
-    "bluepyopt>=1.13",
-    "voxcell>=3.1",
-    "joblib>=1.2",
-    "luigi-tools>=0.3",
-    "diameter_synthesis>=0.5",
-    "scikit-learn>=1.2",
-    "shap>=0.41",
-    "xgboost>=1.7",
+    "seaborn>=0.12.2",
+    "bluepyopt>=1.13.196",
+    "luigi-tools>=0.3.3",
+    "diameter_synthesis>=0.5.4",
+    "scikit-learn>=1.2.2",
+    "shap>=0.41.0",
+    "xgboost>=1.7.5",
     "pyyaml>=6",
     "datareuse>=0.0.2",
     "ipyparallel>=6.3,<7",
@@ -29,7 +26,6 @@ reqs = [
     "dask-mpi>=2021.11",
     "distributed>=2021.11",
     "sqlalchemy>=1.4.24",
-    "sqlalchemy<2; python_version<'3.8'",
     "sqlalchemy-utils>=0.37.2",
 ]
 
