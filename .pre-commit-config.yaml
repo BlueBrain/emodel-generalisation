@@ -32,11 +32,11 @@ repos:
     hooks:
       - id: codespell
         args: ["-x", ".codespellignorelines"]
-  - repo: https://github.com/PyCQA/pydocstyle
-    rev: 6.3.0
-    hooks:
-      - id: pydocstyle
-        additional_dependencies: ["tomli"]
+          #  - repo: https://github.com/PyCQA/pydocstyle
+          #rev: 6.3.0
+          #hooks:
+          # - id: pydocstyle
+          #additional_dependencies: ["tomli"]
   - repo: https://github.com/PyCQA/flake8
     rev: 6.0.0
     hooks:

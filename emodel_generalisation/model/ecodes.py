@@ -258,7 +258,7 @@ class Comb(BPEM_stimulus):
          <--  delay  --><-duration->           <-duration->         :        .   .   .     totduration
                         <--   inter_delay  --><--  inter_delay   -->
 
-    """
+    """  # noqa
 
     name = "Comb"
 

@@ -13,7 +13,11 @@ import pandas as pd
 import seaborn as sns
 import shap
 import yaml
-from emodeldb.config_tools import pull_config
+
+try:
+    from emodeldb.config_tools import pull_config  # pylint: disable=import-error
+except ImportError:
+    pass
 from luigi_tools.target import OutputLocalTarget
 from luigi_tools.task import WorkflowTask
 from luigi_tools.task import WorkflowWrapperTask

@@ -14,6 +14,7 @@ reqs = [
     "seaborn>=0.12.2",
     "bluepyopt>=1.13.196",
     "neuron>=8.2.2",
+    "morph-tool>=2.9.1",
     "luigi-tools>=0.3.3",
     "diameter_synthesis>=0.5.4",
     "scikit-learn>=1.2.2",

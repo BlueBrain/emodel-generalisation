@@ -119,9 +119,9 @@ FEATURE_LABELS_LONG = {
     "Step_150.soma.v.inv_fourth_ISI": "Step 150% of rheobase: Inverse of 4th ISI",
     "Step_150.soma.v.inv_second_ISI": "Step 150% of rheobase: Inverse of 2nd ISI",
     "Step_150.soma.v.inv_third_ISI": "Step 150% of rheobase: Inverse of 3rd ISI",
-    "Step_150.soma.v.inv_time_to_first_spike": "Step 150% of rheobase: Inverse of 1st AP time from stim start",
+    "Step_150.soma.v.inv_time_to_first_spike": "Step 150% of rheobase: Inverse of 1st AP time from stim start",  # noqa
     "Step_150.soma.v.mean_frequency": "Step 150% of rheobase: Mean firing frequency",
-    "Step_150.soma.v.time_to_last_spike": "Step 150% of rheobase: Inverse of last AP time from stim start",
+    "Step_150.soma.v.time_to_last_spike": "Step 150% of rheobase: Inverse of last AP time from stim start",  # noqa
     "Step_150.soma.v.voltage_after_stim": "Step 150% of rheobase: Voltage value after stim",
     "Step_150.soma.v.voltage_base": "Step 150% of rheobase: RMP",
     "Step_200.soma.v.AHP_depth": "Step 200% of rheobase: Mean AHP depth relative to RMP",
@@ -132,9 +132,9 @@ FEATURE_LABELS_LONG = {
     "Step_200.soma.v.inv_fourth_ISI": "Step 200% of rheobase: Inverse of 4th ISI",
     "Step_200.soma.v.inv_second_ISI": "Step 200% of rheobase: Inverse of 2nd ISI",
     "Step_200.soma.v.inv_third_ISI": "Step 200% of rheobase: Inverse of 3rd ISI",
-    "Step_200.soma.v.inv_time_to_first_spike": "Step 200% of rheobase: Inverse of 1st AP time from stim start",
+    "Step_200.soma.v.inv_time_to_first_spike": "Step 200% of rheobase: Inverse of 1st AP time from stim start",  # noqa
     "Step_200.soma.v.mean_frequency": "Step 200% of rheobase: Mean firing frequency",
-    "Step_200.soma.v.time_to_last_spike": "Step 200% of rheobase: Inverse of last AP time from stim start",
+    "Step_200.soma.v.time_to_last_spike": "Step 200% of rheobase: Inverse of last AP time from stim start",  # noqa
     "Step_200.soma.v.voltage_after_stim": "Step 200% of rheobase: Voltage value after stim",
     "Step_200.soma.v.voltage_base": "Step 200% of rheobase: RMP",
     "Step_280.soma.v.AHP_depth": "Step 280% of rheobase: Mean AHP depth relative to RMP",
@@ -145,17 +145,17 @@ FEATURE_LABELS_LONG = {
     "Step_280.soma.v.inv_fourth_ISI": "Step 280% of rheobase: Inverse of 4th ISI",
     "Step_280.soma.v.inv_second_ISI": "Step 280% of rheobase: Inverse of 2nd ISI",
     "Step_280.soma.v.inv_third_ISI": "Step 280% of rheobase: Inverse of 3rd ISI",
-    "Step_280.soma.v.inv_time_to_first_spike": "Step 280% of rheobase: Inverse of 1st AP time from stim start",
+    "Step_280.soma.v.inv_time_to_first_spike": "Step 280% of rheobase: Inverse of 1st AP time from stim start",  # noqa
     "Step_280.soma.v.mean_frequency": "Step 280% of rheobase: Mean firing frequency",
-    "Step_280.soma.v.time_to_last_spike": "Step 280% of rheobase: Inverse of last AP time from stim start",
+    "Step_280.soma.v.time_to_last_spike": "Step 280% of rheobase: Inverse of last AP time from stim start",  # noqa
     "Step_280.soma.v.voltage_after_stim": "Step 280% of rheobase: Voltage value after stim",
     "Step_280.soma.v.voltage_base": "Step 280% of rheobase: RMP",
     "bAP.ca_ais.cai.maximum_voltage_from_voltagebase": "bAP: Max [Ca] in AIS",
-    "bAP.ca_prox_apic.cai.maximum_voltage_from_voltagebase": "bAP: Max [Ca] in apical dendrite (50 µm from the soma)",
-    "bAP.ca_prox_basal.cai.maximum_voltage_from_voltagebase": "bAP: Max [Ca] in basal dendrite (50 µm from the soma)",
+    "bAP.ca_prox_apic.cai.maximum_voltage_from_voltagebase": "bAP: Max [Ca] in apical dendrite (50 µm from the soma)",  # noqa
+    "bAP.ca_prox_basal.cai.maximum_voltage_from_voltagebase": "bAP: Max [Ca] in basal dendrite (50 µm from the soma)",  # noqa
     "bAP.ca_soma.cai.maximum_voltage_from_voltagebase": "bAP: Max [Ca] in soma",
-    "bAP.dend1.v.maximum_voltage_from_voltagebase": "bAP: AP amplitude in apical dendrite (208 µm from the soma)",
-    "bAP.dend2.v.maximum_voltage_from_voltagebase": "bAP: AP amplitude in apical dendrite (402 µm from the soma)",
+    "bAP.dend1.v.maximum_voltage_from_voltagebase": "bAP: AP amplitude in apical dendrite (208 µm from the soma)",  # noqa
+    "bAP.dend2.v.maximum_voltage_from_voltagebase": "bAP: AP amplitude in apical dendrite (402 µm from the soma)",  # noqa
     "bAP.soma.v.Spikecount": "bAP: Spike count",
 }
 ALL_LABELS = PARAM_LABELS.copy()

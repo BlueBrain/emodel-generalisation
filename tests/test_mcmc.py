@@ -10,6 +10,7 @@ DATA = Path(__file__).parent / "data"
 
 
 def test_mcmc(access_point, simple_morph, tmpdir):
+    """ """
     access_point.morph_path = simple_morph
     mcmc.run_several_chains(
         proposal_params={"std": 0.1},

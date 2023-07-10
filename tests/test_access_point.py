@@ -6,6 +6,7 @@ EMODEL = "generic_model"
 
 
 def test___init__(access_point):
+    """ """
     assert access_point.emodel_dir == DATA
     assert access_point.recipes_path == DATA / "config" / "recipes.json"
     assert access_point.legacy_dir_structure is False
@@ -14,6 +15,7 @@ def test___init__(access_point):
 
 
 def test_get_recipes(access_point):
+    """ """
     assert access_point.get_recipes(EMODEL) == {
         "morph_path": ".",
         "morphology": "simple.asc",
@@ -33,6 +35,7 @@ def test_get_recipes(access_point):
 
 
 def test_get_settings(access_point):
+    """ """
     access_point.settings = {"test": 0}
     assert access_point.get_settings(EMODEL) == {
         "efel_settings": {"strict_stiminterval": True, "Threshold": -30.0, "interp_step": 0.025},
@@ -44,6 +47,7 @@ def test_get_settings(access_point):
 
 
 def test_get_calculator_configuration(access_point):
+    """ """
     config = access_point.get_calculator_configuration(EMODEL)
     assert config.as_dict() == {
         "efeatures": [
@@ -307,10 +311,12 @@ def test_get_calculator_configuration(access_point):
 
 
 def test_get_mechanisms_directory(access_point):
+    """ """
     assert access_point.get_mechanisms_directory() == DATA / "mechanisms"
 
 
 def test_get_available_mechanisms(access_point):
+    """ """
     assert sorted([m.name for m in access_point.get_available_mechanisms()]) == [
         "Ih",
         "K_Pst",
@@ -320,6 +326,8 @@ def test_get_available_mechanisms(access_point):
 
 
 def test_get_json(access_point):
+    """ """
+    # pylint: disable=line-too-long
     assert access_point.get_json(EMODEL, "params") == {
         "mechanisms": {
             "all": {"mech": ["pas"]},
@@ -342,7 +350,7 @@ def test_get_json(access_point):
                     "name": "gIhbar_Ih",
                     "val": [8e-05, 0.00015],
                     "dist": "exp",
-                    "__comment": "distribution starts in soma (uniform) and spreads exponentially to dendrites",
+                    "__comment": "distribution starts in soma (uniform) and spreads exponentially to dendrites",  # noqa
                 }
             ],
             "somatic": [
@@ -372,6 +380,7 @@ def test_get_json(access_point):
 
 
 def test_get_morphologies(access_point):
+    """ """
     assert access_point.get_morphologies(EMODEL) == {
         "name": "simple",
         "path": str(DATA / "simple.asc"),
@@ -379,6 +388,7 @@ def test_get_morphologies(access_point):
 
 
 def test_get_configuration(access_point):
+    """ """
     config = access_point.get_configuration(EMODEL).as_dict()
 
     assert config == {

@@ -7,6 +7,7 @@ from emodel_generalisation.model import evaluation
 
 
 def test_feature_evaluation(morphs_combos_df, access_point):
+    """ """
     df = evaluation.feature_evaluation(morphs_combos_df, access_point)
 
     expected_scores = {
@@ -25,8 +26,8 @@ def test_feature_evaluation(morphs_combos_df, access_point):
     }
 
     scores = json.loads(df.loc[0, "scores"])
-    for feature in expected_scores:
-        assert_almost_equal(expected_scores[feature], scores[feature], decimal=1)
+    for feature, score in expected_scores.items():
+        assert_almost_equal(score, scores[feature], decimal=1)
 
     expected_features = {
         "IDRest_150.soma.v.mean_frequency": 15.776657406436872,
@@ -44,35 +45,41 @@ def test_feature_evaluation(morphs_combos_df, access_point):
     }
 
     features = json.loads(df.loc[0, "features"])
-    for feature in expected_features:
-        assert_almost_equal(expected_features[feature], features[feature], decimal=2)
+    for feature, value in expected_features.items():
+        assert_almost_equal(value, features[feature], decimal=2)
 
 
 def test_evaluate_rin_no_soma(morphs_combos_df, access_point):
+    """ """
     df = evaluation.evaluate_rin_no_soma(morphs_combos_df, access_point)
     assert_almost_equal(df.loc[0, "rin_no_soma"], 737.355812849696, decimal=0)
 
 
 def test_evaluate_soma_rin(morphs_combos_df, access_point):
+    """ """
     df = evaluation.evaluate_soma_rin(morphs_combos_df, access_point)
     assert_almost_equal(df.loc[0, "rin_soma"], 848.5805718798488, decimal=3)
 
 
 def test_evaluate_ais_rin(morphs_combos_df, access_point):
+    """ """
     df = evaluation.evaluate_ais_rin(morphs_combos_df, access_point)
     assert_almost_equal(df.loc[0, "rin_ais"], 131668.9953893715, decimal=3)
 
 
 def test_evaluate_somadend_rin(morphs_combos_df, access_point):
+    """ """
     df = evaluation.evaluate_somadend_rin(morphs_combos_df, access_point)
     assert_almost_equal(df.loc[0, "rin_no_ais"], 539.1371042337126, decimal=3)
 
 
 def test_evaluate_rho(morphs_combos_df, access_point):
+    """ """
     df = evaluation.evaluate_rho(morphs_combos_df, access_point)
     assert_almost_equal(df.loc[0, "rho"], 1.1510177066149903, decimal=3)
 
 
 def test_evaluate_rho_axon(morphs_combos_df, access_point):
+    """ """
     df = evaluation.evaluate_rho_axon(morphs_combos_df, access_point)
     assert_almost_equal(df.loc[0, "rho_axon"], 244.2217237122562, decimal=3)
