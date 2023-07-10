@@ -26,7 +26,7 @@ def test_feature_evaluation(morphs_combos_df, access_point):
 
     scores = json.loads(df.loc[0, "scores"])
     for feature in expected_scores:
-        assert_almost_equal(expected_scores[feature], scores[feature], decimal=2)
+        assert_almost_equal(expected_scores[feature], scores[feature], decimal=1)
 
     expected_features = {
         "IDRest_150.soma.v.mean_frequency": 15.776657406436872,

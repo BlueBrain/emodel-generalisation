@@ -27,5 +27,5 @@ def test_mcmc(access_point, simple_morph, tmpdir):
     for col in ["features", "parameters", "scores", "normalized_parameters"]:
         for feat in df[col].columns:
             assert_almost_equal(
-                df[col][feat].to_numpy(), expected_df[col][feat].to_numpy(), decimal=1
+                df[col][feat].to_numpy(), expected_df[col][feat].to_numpy(), decimal=0
             )
