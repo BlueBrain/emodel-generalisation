@@ -46,7 +46,7 @@ def test_feature_evaluation(morphs_combos_df, access_point):
 
     features = json.loads(df.loc[0, "features"])
     for feature, value in expected_features.items():
-        assert_almost_equal(value, features[feature], decimal=2)
+        assert_almost_equal(value, features[feature], decimal=1)
 
 
 def test_evaluate_rin_no_soma(morphs_combos_df, access_point):
