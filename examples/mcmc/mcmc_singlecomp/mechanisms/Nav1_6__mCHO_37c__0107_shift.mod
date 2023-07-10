@@ -117,7 +117,7 @@ INITIAL {
     rates()
     m = m_inf
     h = h_inf
-    
+
     vcut_mAlpha = log(rate_max / P01) / P02
     vcut_hAlpha = log(rate_max / P05) / P06
     vcut_mBeta = -log(rate_max / P03) / P04

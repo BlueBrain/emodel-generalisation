@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
     parallel_factory = init_parallel_factory("multiprocessing")
-    #parallel_factory = init_parallel_factory("dask_dataframe")
+    # parallel_factory = init_parallel_factory("dask_dataframe")
 
     run_several_chains(
         proposal_params={"std": 0.04},  # increase std to propose larger jumps

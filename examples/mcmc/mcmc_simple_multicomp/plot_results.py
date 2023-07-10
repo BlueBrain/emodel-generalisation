@@ -1,9 +1,11 @@
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 
-from emodel_generalisation.mcmc import load_chains, plot_cost, plot_cost_convergence
+from emodel_generalisation.mcmc import load_chains
 from emodel_generalisation.mcmc import plot_corner
-
+from emodel_generalisation.mcmc import plot_cost
+from emodel_generalisation.mcmc import plot_cost_convergence
 
 if __name__ == "__main__":
     df = load_chains("run_df.csv")

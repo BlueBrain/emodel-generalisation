@@ -1,10 +1,6 @@
 """Test MCM module."""
-from pathlib import Path
-import pandas as pd
 from emodel_generalisation import mcmc
-
 from emodel_generalisation.model.access_point import AccessPoint
-
 
 if __name__ == "__main__":
     access_point = AccessPoint(

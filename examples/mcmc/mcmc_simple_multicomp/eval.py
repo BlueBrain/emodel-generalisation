@@ -1,13 +1,14 @@
-import matplotlib.pyplot as plt
-
-from emodel_generalisation.utils import plot_traces
 import json
+
+import matplotlib.pyplot as plt
 import pandas as pd
 from datareuse import Reuse
+
+from emodel_generalisation.mcmc import load_chains
 from emodel_generalisation.mcmc import save_selected_emodels
 from emodel_generalisation.model.access_point import AccessPoint
 from emodel_generalisation.model.evaluation import feature_evaluation
-from emodel_generalisation.mcmc import load_chains
+from emodel_generalisation.utils import plot_traces
 
 if __name__ == "__main__":
     mcmc_df = load_chains("run_df.csv")

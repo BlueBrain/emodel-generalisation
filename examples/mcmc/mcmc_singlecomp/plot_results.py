@@ -1,9 +1,11 @@
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 
-from emodel_generalisation.mcmc import load_chains, plot_cost, plot_cost_convergence
 from emodel_generalisation.information import plot_corner
-
+from emodel_generalisation.mcmc import load_chains
+from emodel_generalisation.mcmc import plot_cost
+from emodel_generalisation.mcmc import plot_cost_convergence
 
 if __name__ == "__main__":
     df = load_chains("run_df.csv")
@@ -25,7 +27,7 @@ if __name__ == "__main__":
 
     _df = df[df.cost < split].reset_index(drop=True)
     best_id = df.cost.idxmin()
-    print(df.loc[best_id, 'cost'])
+    print(df.loc[best_id, "cost"])
 
     plt.figure(figsize=(5, 3))
     plt.axvline(30, c="k", label="best")
@@ -43,7 +45,6 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig("mean_freq_200.png")
 
-
     plt.figure(figsize=(5, 3))
     plt.axvline(45, c="k", label="best")
     plt.axvline(46, c="k", ls="--", label="1sd")
@@ -54,12 +55,11 @@ if __name__ == "__main__":
         df.loc[best_id, "features"]["IDRest_300.soma.v.mean_frequency"], c="r", label="best model"
     )
     plt.hist(df["features"]["IDRest_300.soma.v.mean_frequency"], bins=100, label="MCMC")
-    #plt.legend(loc="best")
+    # plt.legend(loc="best")
     plt.xlabel("mean frequency IDRest 300")
     plt.ylabel("number of models")
     plt.tight_layout()
     plt.savefig("mean_freq_300.png")
-
 
     plot_corner(_df, feature=None, filename="corner.pdf", highlights=[[best_id], ["r"]])
 
