@@ -1,0 +1,18 @@
+{
+    "generic_model": {
+        "morph_path": ".",
+        "morphology": "simple.asc",
+        "params": "config/parameters.json",
+        "features": "config/features.json",
+        "morph_modifiers": [],
+        "pipeline_settings": {
+            "efel_settings":{
+                "strict_stiminterval": true,
+                "Threshold": -30.0,
+                "interp_step": 0.025
+            },
+            "name_rmp_protocol": "IV_0",
+            "name_Rin_protocol": "IV_-20"
+        }
+    }
+}

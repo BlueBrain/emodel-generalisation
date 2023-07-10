@@ -1,1 +1,1 @@
-"""Tests suite for the emodel-generalisation package."""
+"""Tests for the emodel-generalisation package."""

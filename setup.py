@@ -4,19 +4,45 @@ from pathlib import Path
 from setuptools import find_namespace_packages
 from setuptools import setup
 
-reqs = ["click>=7"]
+reqs = [
+    "click>=7.0",
+    "jsonschema>=3",
+    "matplotlib>=2.2.0",
+    "morphio>=2.3.4",
+    "neurom>=2.1.0",
+    "numpy>=1.15.0",
+    "pandas>=0.24.0",
+    "scipy>=0.13.3",
+    "seaborn",
+    "bluepyopt",
+    "voxcell",
+    "joblib",
+    "luigi-tools",
+    "diameter_synthesis",
+    "scikit-learn",
+    "bglibpy",
+    "shap",
+    "xgboost",
+    "pyyaml",
+    "emodeldb",
+    "datareuse",
+    "ipyparallel>=6.3,<7",
+    "dask[dataframe, distributed]>=2021.11",
+    "dask-mpi>=2021.11",
+    "distributed>=2021.11",
+    "sqlalchemy>=1.4.24",
+    "sqlalchemy<2; python_version<'3.8'",
+    "sqlalchemy-utils>=0.37.2",
+]
 
 doc_reqs = [
     "m2r2",
     "sphinx",
     "sphinx-bluebrain-theme",
-    "sphinx-click",
 ]
 
 test_reqs = [
-    "mock>=3",
     "pytest>=6",
-    "pytest-click>=1",
     "pytest-console-scripts>=1.3",
     "pytest-cov>=3",
     "pytest-html>=2",
