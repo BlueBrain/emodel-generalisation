@@ -5,15 +5,15 @@ from setuptools import find_namespace_packages
 from setuptools import setup
 
 reqs = [
-    "jsonschema>=3",
-    "matplotlib>=2.2.0",
+    "matplotlib>=3.6.3",
     "morphio>=3.3.4",
     "neurom>=3.2.2",
-    "numpy>=1.15.0",
+    "numpy>=1.23.5",
     "pandas>=2.0.3",
-    "scipy>=0.13.3",
+    "scipy>=1.10.1",
     "seaborn>=0.12.2",
     "bluepyopt>=1.13.196",
+    "neuron>=8.2.2",
     "luigi-tools>=0.3.3",
     "diameter_synthesis>=0.5.4",
     "scikit-learn>=1.2.2",
@@ -22,9 +22,8 @@ reqs = [
     "pyyaml>=6",
     "datareuse>=0.0.2",
     "ipyparallel>=6.3,<7",
-    "dask[dataframe, distributed]>=2021.11",
-    "dask-mpi>=2021.11",
-    "distributed>=2021.11",
+    "dask[dataframe, distributed]>=2023.3.2",
+    "dask-mpi>=2022.4",
     "sqlalchemy>=1.4.24",
     "sqlalchemy-utils>=0.37.2",
 ]
@@ -36,7 +35,7 @@ doc_reqs = [
 ]
 
 test_reqs = [
-    "pytest>=6",
+    "pytest>=7",
     "pytest-console-scripts>=1.3",
     "pytest-cov>=3",
     "pytest-html>=2",
