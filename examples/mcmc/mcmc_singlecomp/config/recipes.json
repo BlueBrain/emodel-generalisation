@@ -1,0 +1,9 @@
+{
+    "all_generic": {
+        "morph_path": "",
+        "morphology": "simple.swc",
+        "params": "config/parameters.json",
+        "features": "config/features.json",
+        "morph_modifiers": []
+    }
+}
