@@ -1,4 +1,4 @@
-"""AIS/soma adaptation module."""
+"""Module to adapt AIS/soma scale by matching rho factors."""
 
 # Copyright (c) 2022 EPFL-BBP, All rights reserved.
 #

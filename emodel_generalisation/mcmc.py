@@ -1,4 +1,4 @@
-"""Module to simulate MCMC in emodel parameter space."""
+"""Module to sample electrical model parameter space with MCMC."""
 
 # Copyright (c) 2022 EPFL-BBP, All rights reserved.
 #

@@ -1,4 +1,4 @@
-"""Select module."""
+"""Module to select valid pairs of morphologies and electrical models."""
 
 # Copyright (c) 2022 EPFL-BBP, All rights reserved.
 #

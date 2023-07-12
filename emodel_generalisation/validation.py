@@ -1,4 +1,4 @@
-""""Module for Validation of emodel."""
+""""Module for Validation of electrical models."""
 
 # Copyright (c) 2022 EPFL-BBP, All rights reserved.
 #

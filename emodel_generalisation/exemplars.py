@@ -1,4 +1,4 @@
-""""Generate exemplars."""
+""""Module to create exemplar morphologies from a morphological population."""
 
 # Copyright (c) 2022 EPFL-BBP, All rights reserved.
 #

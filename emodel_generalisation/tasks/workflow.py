@@ -1,4 +1,9 @@
-"""Main workflow tasks."""
+"""Main workflow to generalise electrical models using MCMC.
+
+See example/workflow for an example on how to run it.
+
+TODO: improve docstrings.
+"""
 
 # Copyright (c) 2022 EPFL-BBP, All rights reserved.
 #
@@ -87,7 +92,7 @@ from emodel_generalisation.validation import validate_morphologies
 
 
 class GetEmodelConfig(WorkflowTask):
-    """Get config folder with emodel setting via emodeldb or locally.
+    """Get config folder with emodel setting via emodeldb (not OS) or locally.
 
     If mode =='local', use 'config_path' for the config folder, and 'mechanisms_path' for the
     mechanisms folder to compile, and 'generalisation_rule' with filters for morphologies
