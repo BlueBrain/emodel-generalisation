@@ -18,10 +18,10 @@ pip install emodel-generalisation
 ## Examples
 
 We provide several examples of the main functionalities of ```emodel-generaliastion``` software:
-* run MCMC on a simple single compartment model [here](examples/mcmc/mcmc_singlecomp)
-* run MCMC on a simple multi-compartment model [here](examples/mcmc/mcmc_simple_multicomp)
-* run the entire generalisation worklow on a simplified version of the L5PC model of the pre-print [[1]](#1) [here](examples/workflow)
-* provide all the scripts necessary to reproduce the figures of [[1]](#1). For the scripts to run, one has to download the associated dataset on dataverse  with the script ```get_data.sh``` [here](examples/paper_figures)
+* run MCMC on a simple single compartment model in [hexamples/mcmc/mcmc_singlecomp](examples/mcmc/mcmc_singlecomp)
+* run MCMC on a simple multi-compartment model in [examples/mcmc/mcmc_simple_multicomp](examples/mcmc/mcmc_simple_multicomp)
+* run the entire generalisation worklow on a simplified version of the L5PC model of the pre-print [[1]](#1) in [examples/workflow](examples/workflow)
+* provide all the scripts necessary to reproduce the figures of [[1]](#1). For the scripts to run, one has to download the associated dataset on dataverse  with the script ```get_data.sh``` in [examples/paper_figures](examples/paper_figures)
 
 
 ## Citation
