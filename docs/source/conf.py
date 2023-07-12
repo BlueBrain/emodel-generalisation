@@ -34,7 +34,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
-    "sphinx_click",
     "m2r2",
 ]
 

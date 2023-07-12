@@ -1,5 +1,5 @@
 default_language_version:
-  python: python3.8
+  python: python3
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -32,11 +32,11 @@ repos:
     hooks:
       - id: codespell
         args: ["-x", ".codespellignorelines"]
-  - repo: https://github.com/PyCQA/pydocstyle
-    rev: 6.3.0
-    hooks:
-      - id: pydocstyle
-        additional_dependencies: ["tomli"]
+          #  - repo: https://github.com/PyCQA/pydocstyle
+          #rev: 6.3.0
+          #hooks:
+          # - id: pydocstyle
+          #additional_dependencies: ["tomli"]
   - repo: https://github.com/PyCQA/flake8
     rev: 6.0.0
     hooks:

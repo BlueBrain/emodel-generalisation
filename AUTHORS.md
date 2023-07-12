@@ -1,5 +1,5 @@
 # Maintainer
 
-Alexis Arnaudon
+Alexis Arnaudon (@arnaudon)
 
 # Contributors

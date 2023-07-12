@@ -1,0 +1,40 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Computational synthesis of cortical dendritic
+  morphologies.
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - family-names: Arnaudon
+    given-names: Alexis
+    orcid: 'https://orcid.org/0000-0001-9486-1458'
+  - family-names: Reva
+    given-names: Maria
+  - family-names: Zbili
+    given-names: Michael
+  - family-names: Markram
+    given-names: Henry
+    orcid: 'https://orcid.org/0000-0001-6164-2590'
+  - family-names: Van Geit
+    given-names: Werner
+    orcid: 'https://orcid.org/0000-0002-2915-720X'
+  - family-names: Kanari
+    given-names: Lida
+    orcid: 'https://orcid.org/0000-0002-9539-5070'
+identifiers:
+  - type: doi
+    value: 10.1101/2023.04.06.535923
+    description: The DOI of the related article.
+repository-code: 'https://github.com/BlueBrain/emodel-generalisation'
+abstract: >-
+    Variability is a universal feature among biological units such as neuronal cells as they enable a robust encoding of a high volume of information in neuronal circuits and prevent hyper synchronizations such as epileptic seizures. While most computational studies on electrophysiological variability in neuronal circuits were done with simplified neuron models, we instead focus on the variability of detailed biophysical models of neurons. With measures of experimental variability, we leverage a Markov chain Monte Carlo method to generate populations of electrical models able to reproduce the variability from sets of experimental recordings. By matching input resistances of soma and axon initial segments with the one of dendrites, we produce a compatible set of morphologies and electrical models that faithfully represent a given morpho-electrical type. We demonstrate our approach on layer 5 pyramidal cells with continuous adapting firing type and show that morphological variability is insufficient to reproduce electrical variability. Overall, this approach provides a strong statistical basis to create detailed models of neurons with controlled variability.
+keywords:
+  - Biophysical neuronal models
+  - Morpho-electrical variability
+  - Markov Chain Monte-Carlo
+license: CC-BY-4.0

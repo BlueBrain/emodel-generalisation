@@ -1,0 +1,174 @@
+{
+   "protocols": [
+    {
+      "name": "IDRest_200",
+      "stimuli": [
+        {
+          "delay": 200,
+          "thresh_perc": 200.0,
+          "duration": 1000,
+          "totduration": 1500,
+          "holding_current": -0.3
+        }
+      ],
+      "recordings_from_config": [
+        {
+          "type": "CompRecording",
+          "name": "IDRest_200.soma.v",
+          "location": "soma",
+          "variable": "v"
+        }
+      ],
+      "validation": false,
+      "protocol_type": "ThresholdBasedProtocol",
+      "stochasticity": false
+    },
+    {
+      "name": "IDRest_300",
+      "stimuli": [
+        {
+          "delay": 200,
+          "thresh_perc": 300.0,
+          "duration": 1000,
+          "totduration": 1500,
+          "holding_current": -0.3
+        }
+      ],
+      "recordings_from_config": [
+        {
+          "type": "CompRecording",
+          "name": "IDRest_300.soma.v",
+          "location": "soma",
+          "variable": "v"
+        }
+      ],
+      "validation": false,
+      "protocol_type": "ThresholdBasedProtocol",
+      "stochasticity": false
+    }
+  ],
+  "efeatures": [
+    {
+      "efel_feature_name": "mean_frequency",
+      "protocol_name": "IDRest_200",
+      "recording_name": "soma.v",
+      "threshold_efeature_std": null,
+      "default_std_value": 1,
+      "mean": 30,
+      "original_std": 1.0,
+      "sample_size": 1,
+      "efeature_name": "mean_frequency",
+      "efel_settings": {
+        "strict_stiminterval": true,
+        "Threshold": 0.0,
+        "interp_step": 0.025,
+        "stim_start": 200,
+        "stim_end": 1200
+      }
+    },
+    {
+      "efel_feature_name": "mean_frequency",
+      "protocol_name": "IDRest_300",
+      "recording_name": "soma.v",
+      "threshold_efeature_std": null,
+      "default_std_value": 1,
+      "mean": 45,
+      "original_std": 1.0,
+      "sample_size": 1,
+      "efeature_name": "mean_frequency",
+      "efel_settings": {
+        "strict_stiminterval": true,
+        "Threshold": 0.0,
+        "interp_step": 0.025,
+        "stim_start": 200,
+        "stim_end": 1200
+      }
+    },
+    {
+      "efel_feature_name": "steady_state_voltage_stimend",
+      "protocol_name": "RMPProtocol",
+      "recording_name": "soma.v",
+      "threshold_efeature_std": null,
+      "default_std_value": 0.001,
+      "mean": -84,
+      "original_std": 2.0,
+      "efeature_name": "voltage_base",
+      "efel_settings": {
+        "strict_stiminterval": true,
+        "Threshold": -30.0,
+        "interp_step": 0.025
+      }
+    },
+    {
+      "efel_feature_name": "Spikecount",
+      "protocol_name": "RMPProtocol",
+      "recording_name": "soma.v",
+      "threshold_efeature_std": null,
+      "default_std_value": 0.001,
+      "mean": 0,
+      "original_std": 0.001,
+      "efeature_name": "Spikecount",
+      "efel_settings": {
+        "strict_stiminterval": true,
+        "Threshold": -30.0,
+        "interp_step": 0.025
+      }
+    },
+    {
+      "efel_feature_name": "bpo_holding_current",
+      "protocol_name": "SearchHoldingCurrent",
+      "recording_name": "soma.v",
+      "threshold_efeature_std": null,
+      "default_std_value": 0.001,
+      "mean": 0.0,
+      "original_std": 0.02,
+      "efeature_name": null,
+      "efel_settings": {
+        "strict_stiminterval": true
+      }
+    },
+    {
+      "efel_feature_name": "steady_state_voltage_stimend",
+      "protocol_name": "SearchHoldingCurrent",
+      "recording_name": "soma.v",
+      "threshold_efeature_std": null,
+      "default_std_value": 0.001,
+      "mean": -83,
+      "original_std": 10.0,
+      "efeature_name": "voltage_base",
+      "efel_settings": {
+        "strict_stiminterval": true,
+        "Threshold": -30.0,
+        "interp_step": 0.025
+      }
+    },
+    {
+      "efel_feature_name": "ohmic_input_resistance_vb_ssse",
+      "protocol_name": "RinProtocol",
+      "recording_name": "soma.v",
+      "threshold_efeature_std": null,
+      "default_std_value": 0.001,
+      "mean": 300.0,
+      "original_std": 200.0,
+      "efeature_name": "ohmic_input_resistance_vb_ssse",
+      "efel_settings": {
+        "strict_stiminterval": true,
+        "Threshold": -30.0,
+        "interp_step": 0.025
+      }
+    },
+    {
+      "efel_feature_name": "bpo_threshold_current",
+      "protocol_name": "SearchThresholdCurrent",
+      "recording_name": "soma.v",
+      "threshold_efeature_std": null,
+      "default_std_value": 0.001,
+      "mean": 0.015,
+      "original_std": 0.02,
+      "efeature_name": null,
+      "efel_settings": {
+        "strict_stiminterval": true
+      }
+    }
+  ]
+}

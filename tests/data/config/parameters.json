@@ -1,0 +1,56 @@
+{
+  "mechanisms": {
+    "all":
+        {"mech":["pas"]},
+    "somatic":
+        {"mech": ["SKv3_1", "K_Pst", "NaTg"]},
+    "somadend":
+            {"mech":["Ih"]},
+    "axonal":
+        {"mech": ["SKv3_1", "K_Pst", "NaTg"]
+    }
+  },
+  "distributions": {
+     "exp":
+        {"fun": "(-0.8696 + 2.087*math.exp(({distance})*0.0031))*{value}",
+            "__comment": "distribution based on Kole et al. 2006"}
+  },
+  "parameters": {
+    "global": [
+        {"name": "v_init", "val": -80},
+        {"name":"celsius", "val": 34}
+    ],
+    "myelinated": [
+            {"name":"cm", "val": 0.02}
+    ],
+    "all": [
+	    {"name": "g_pas", "val": [0, 0.00001]}
+    ],
+    "somadend": [
+            {"name":"gIhbar_Ih", "val": [0.00008, 0.00015], "dist":"exp",
+                "__comment": "distribution starts in soma (uniform) and spreads exponentially to dendrites"}
+        ],
+    "somatic": [
+	    {"name": "cm", "val": 1.0},
+	    {"name": "ena", "val": 50},
+	    {"name": "ek", "val": -90},
+	    {"name": "e_pas", "val": -90},
+	    {"name": "gSKv3_1bar_SKv3_1", "val": [0, 0.2]},
+	    {"name": "gK_Pstbar_K_Pst", "val": [0, 1.0]},
+	    {"name": "gNaTgbar_NaTg", "val": [0, 0.01]},
+        {"name":"vshiftm_NaTg", "val": 13},
+        {"name":"vshifth_NaTg", "val": 15}
+    ],
+    "axonal": [
+	    {"name": "cm", "val": 1.0},
+	    {"name": "ena", "val": 50},
+	    {"name": "ek", "val": -90},
+	    {"name": "e_pas", "val": -90},
+	    {"name": "gSKv3_1bar_SKv3_1", "val": [1.0, 2.0]},
+	    {"name": "gK_Pstbar_K_Pst", "val": [0, 2.0]},
+	    {"name": "gNaTgbar_NaTg", "val": [0.45, 0.9]},
+        {"name":"slopem_NaTg", "val": 9},
+        {"name":"vshifth_NaTg", "val": 10}
+    ]
+  }
+}

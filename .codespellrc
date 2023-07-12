@@ -1,2 +1,3 @@
 [codespell]
 skip = .git/*
+ignore-words-list=hist,efel,ccompiler,orginal,ser

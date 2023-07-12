@@ -1,0 +1,30 @@
+{
+    "generic_model": {
+        "params": {
+            "g_pas.all": 3.107209e-06,
+            "gIhbar_Ih.somadend": 0.000104218636,
+            "gSKv3_1bar_SKv3_1.somatic": 0.065865674526,
+            "gK_Pstbar_K_Pst.somatic": 0.713872757146,
+            "gNaTgbar_NaTg.somatic": 0.005757930252,
+            "gSKv3_1bar_SKv3_1.axonal": 1.089096825058,
+            "gK_Pstbar_K_Pst.axonal": 0.022657784878,
+            "gNaTgbar_NaTg.axonal": 0.551821867643
+        },
+        "score": 0.184375,
+        "fitness": {
+            "IDRest_150.soma.v.mean_frequency": 0.0290896646047249,
+            "IDRest_150.soma.v.AP_amplitude": 0.0967630563434046,
+            "IDRest_200.soma.v.mean_frequency": 0.1266512324776396,
+            "IDRest_200.soma.v.AP_amplitude": 0.1512302068204698,
+            "IDRest_280.soma.v.mean_frequency": 0.1415771221476376,
+            "IDRest_280.soma.v.AP_amplitude": 0.1714640372896462,
+            "RMPProtocol.soma.v.voltage_base": 0.1353568609039087,
+            "RMPProtocol.soma.v.Spikecount": 0.0,
+            "SearchHoldingCurrent.soma.v.bpo_holding_current": 0.184375,
+            "SearchHoldingCurrent.soma.v.voltage_base": 0.1207106981742214,
+            "RinProtocol.soma.v.ohmic_input_resistance_vb_ssse": 0.1613792285364684,
+            "SearchThresholdCurrent.soma.v.bpo_threshold_current": 0.0096081915907759
+        },
+        "emodel": "generic_model_0"
+    }
+}

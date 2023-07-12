@@ -1,0 +1,9 @@
+,Step 200% of rheobase: Mean AP amplitude,Step 200% of rheobase: Mean AHP depth relative to RMP,Step 200% of rheobase: Mean firing frequency,Step 200% of rheobase: Inverse of 1st AP time from stim start,Holding current for -80 mV RMP,Rheobase
+all: ḡpas,,,,0.7635757760211497,0.576418734559329,0.6521995562799991
+"soma, dendrites: ḡIh",,,,0.49574740472033696,-0.8786299933811214,0.3631515662267817
+axon: ḡNaT,,-0.4638171029676146,,,,-0.3221028917470011
+axon: ḡCa_LVA,,0.21617422315512733,,,,
+axon: Ca2+ decay time constant,,,-0.6457752271000055,,,
+soma: ḡNaT,0.6795078274698277,0.21743120727722323,,,,0.2100458652548428
+soma: ḡKP,,-0.27706778256307024,,,,
+soma: ḡKv3.1,,0.3372192251331099,,,,

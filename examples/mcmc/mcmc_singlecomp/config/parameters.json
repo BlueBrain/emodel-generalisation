@@ -1,0 +1,28 @@
+{
+  "mechanisms": {
+    "somatic": {
+      "mech": [
+	      "pas",
+	      "SKv3_1",
+	      "K_Pst",
+	      "NaTg2",
+	      "Ih"
+      ]
+    }
+  },
+  "distributions": {},
+  "parameters": {
+    "global": [{"name": "v_init", "val": -80}],
+    "somatic": [
+	    {"name": "cm", "val": 1.0},
+	    {"name": "ena", "val": 50},
+	    {"name": "ek", "val": -90},
+	    {"name": "e_pas", "val": -80},
+	    {"name": "g_pas", "val": [0, 0.013]},
+	    {"name": "gIhbar_Ih", "val": [0, 0.012]},
+	    {"name": "gSKv3_1bar_SKv3_1", "val": [0, 200]},
+	    {"name": "gK_Pstbar_K_Pst", "val": [0, 50]},
+	    {"name": "gNaTgbar_NaTg2", "val": [0, 200]}
+    ]
+  }
+}
