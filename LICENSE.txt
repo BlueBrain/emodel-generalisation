@@ -1,6 +1,6 @@
 The code of emodel-generalisation is licensed under Creative Commons 4.0 International,
 unless noted otherwise, e.g., for external dependencies.
-The submodule `parallel` is not licensed yet, and will be released in its complete form
+The submodule `parallel` is proprietary for now, and will be released in its complete form
 in a separate repository.
 
 The cell morphologies are licensed with the below mentioned CC-BY-NC-SA license, and originate from https://zenodo.org/record/5909613.

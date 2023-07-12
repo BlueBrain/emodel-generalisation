@@ -17,7 +17,7 @@ We provide several examples of the main functionalities of ```emodel-generaliast
 * run MCMC on a simple single compartment model
 * run MCMC on a simple multi-compartment model
 * run the entire generalisation worklow on a simplified version of the L5PC model of the publication [[1]](#1)
-* provide all the scripts necessary to reproduce the figures of [[1]](#1). For the scripts to run, one has to donwload the associated dataset on dataverse  with the script ```get_data.sh```
+* provide all the scripts necessary to reproduce the figures of [[1]](#1). For the scripts to run, one has to download the associated dataset on dataverse  with the script ```get_data.sh```
 
 
 ## Citation
