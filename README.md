@@ -14,7 +14,7 @@ pip install emodel-generalisation
 
 ## Examples
 
-We provide several examples of the main functionalities of ```emodel-generaliastion``` software:
+We provide several examples of the main functionalities of ```emodel-generalisation``` software:
 * run MCMC on a simple single compartment model in [hexamples/mcmc/mcmc_singlecomp](examples/mcmc/mcmc_singlecomp)
 * run MCMC on a simple multi-compartment model in [examples/mcmc/mcmc_simple_multicomp](examples/mcmc/mcmc_simple_multicomp)
 * run the entire generalisation worklow on a simplified version of the L5PC model of the pre-print [[1]](#1) in [examples/workflow](examples/workflow)
