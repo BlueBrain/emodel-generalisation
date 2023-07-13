@@ -26,7 +26,7 @@ We provide several examples of the main functionalities of ```emodel-generaliast
 
 ## Citation
 
-When you use the ``emodel-generalisation`` software or method for your research, we ask you to cite [[1]](#1) associated to this repository (use the `Cite this repository` button on the [main page](https://github.com/BlueBrain/emodel-genealisation) of the code).
+When you use the ``emodel-generalisation`` software or method for your research, we ask you to cite [[1]](#1) associated to this repository (use the `Cite this repository` button on the [main page](https://github.com/BlueBrain/emodel-generalisation) of the code).
 
 
 ## Funding & Acknowledgment
