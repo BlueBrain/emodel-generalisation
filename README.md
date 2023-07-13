@@ -4,9 +4,6 @@ Generalisation of neuronal electrical models on a morphological population with 
 
 This code accompanies the pre-print [[1]](#1).
 
-<a id="1">[1]</a> Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. bioRxiv, 2023-04.
-
-
 ## Installation
 
 This code can be installed via [pip](https://pip.pypa.io/en/stable/) (soon on pypi) with
@@ -28,6 +25,7 @@ We provide several examples of the main functionalities of ```emodel-generaliast
 
 When you use the ``emodel-generalisation`` software or method for your research, we ask you to cite [[1]](#1) associated to this repository (use the `Cite this repository` button on the [main page](https://github.com/BlueBrain/emodel-generalisation) of the code).
 
+<a id="1">[1]</a> Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. bioRxiv, 2023-04.
 
 ## Funding & Acknowledgment
 
