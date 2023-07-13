@@ -1,6 +1,6 @@
 {
     "generic_model": {
-        "morph_path": "morphologies/",
+        "morph_path": ".",
         "morphology": "simple.asc",
         "params": "config/parameters.json",
         "features": "config/features.json",
