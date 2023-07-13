@@ -14,7 +14,7 @@ pip install emodel-generalisation
 
 ## Examples
 
-We provide several examples of the main functionalities of ```emodel-generalisation``` software:
+We provide several examples of the main functionalities of ```emodel-generalisation``` code:
 * run MCMC on a simple single compartment model in [hexamples/mcmc/mcmc_singlecomp](examples/mcmc/mcmc_singlecomp)
 * run MCMC on a simple multi-compartment model in [examples/mcmc/mcmc_simple_multicomp](examples/mcmc/mcmc_simple_multicomp)
 * run the entire generalisation worklow on a simplified version of the L5PC model of the pre-print [[1]](#1) in [examples/workflow](examples/workflow)
@@ -23,7 +23,7 @@ We provide several examples of the main functionalities of ```emodel-generalisat
 
 ## Citation
 
-When you use the ``emodel-generalisation`` software or method for your research, we ask you to cite [[1]](#1) associated to this repository (use the `Cite this repository` button on the [main page](https://github.com/BlueBrain/emodel-generalisation) of the code).
+When you use the ``emodel-generalisation`` code or method for your research, we ask you to cite [[1]](#1) associated to this repository (use the `Cite this repository` button on the [main page](https://github.com/BlueBrain/emodel-generalisation) of the code).
 
 <a id="1">[1]</a> Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. bioRxiv, 2023-04.
 
