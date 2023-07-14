@@ -3,7 +3,6 @@ from emodel_generalisation.mcmc import run_several_chains
 from emodel_generalisation.parallel import init_parallel_factory
 
 if __name__ == "__main__":
-
     parallel_factory = init_parallel_factory("multiprocessing")
     # use below to run with dask (and uncomment lines in run.sh)
     # parallel_factory = init_parallel_factory("dask_dataframe")
