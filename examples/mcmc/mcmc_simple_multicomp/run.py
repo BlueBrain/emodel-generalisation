@@ -1,4 +1,4 @@
-"""Run MCMC on a simple single compartment model."""
+"""Run MCMC on a simple multicompartment model."""
 from emodel_generalisation.mcmc import run_several_chains
 from emodel_generalisation.parallel import init_parallel_factory
 
@@ -12,7 +12,7 @@ if __name__ == "__main__":
         temperature=1.0,  # increase to explore higher cost values
         n_steps=10000,  # mac number of steps, set high so it will do max
         n_chains=10,  # set to number of cpu in one node
-        emodel="all_generic",
+        emodel="generic_model",
         emodel_dir=".",
         recipes_path="config/recipes.json",
         legacy_dir_structure=False,

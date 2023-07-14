@@ -1,19 +1,4 @@
 #!/bin/bash -l
-#SBATCH --ntasks=1000
-##SBATCH --qos=longjob
-#SBATCH --time=1-00:00:00       # Time limit
-#SBATCH --mem=0
-##SBATCH --exclusive
-#SBATCH --partition=prod      # Submit to the production 'partition'
-#SBATCH --constraint=cpu
-#SBATCH --cpus-per-task=1
-#SBATCH --account=proj82      # your project number
-#SBATCH --job-name=mcmc
-
-module purge
-module load unstable py-mpi4py
-module unload python
-#ulimit -n 50000
 
 set -e
 # stops Dask workers from spilling to disk
