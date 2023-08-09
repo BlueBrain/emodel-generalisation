@@ -45,7 +45,6 @@ def create_combos_df(
     morphology_dataset_path, generalisation_rule_path, emodel, n_min_per_mtype, n_morphs
 ):
     """Create combo dataframe."""
-    print(morphology_dataset_path)
     if Path(morphology_dataset_path).suffix == ".xml":
         combos_df = (
             MorphDB.from_neurondb(
