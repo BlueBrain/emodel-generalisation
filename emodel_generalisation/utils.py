@@ -131,7 +131,7 @@ def get_score_df(df, filters=None):
     score_df = df["scores"].apply(
         lambda json_str: pd.Series(json.loads(json_str))
         if isinstance(json_str, str)
-        else pd.Series(dtype=float)
+        else lambda json_str: pd.Series(json_str, dtype=float)
     )
     if filters is not None:
         score_df = score_df.drop(
