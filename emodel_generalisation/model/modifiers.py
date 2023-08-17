@@ -39,7 +39,6 @@ def replace_axon_with_taper(sim=None, icell=None):
     chunkSize = L_target / nseg_total
 
     diams = []
-    lens = []
 
     count = 0
     for section in icell.axonal:
@@ -49,8 +48,7 @@ def replace_axon_with_taper(sim=None, icell=None):
 
         for seg in section:
             count = count + 1
-            diams.append(seg.diam)
-            lens.append(L / nseg)
+            diams.append(1.5 * seg.diam)
             if count == nseg_total:
                 break
         if count == nseg_total:
@@ -62,7 +60,6 @@ def replace_axon_with_taper(sim=None, icell=None):
     #  new axon array
     sim.neuron.h.execute("create axon[2]", icell)
 
-    L_real = 0
     count = 0
     for _, section in enumerate(icell.axon):
         section.nseg = nseg_total // 2
@@ -72,7 +69,6 @@ def replace_axon_with_taper(sim=None, icell=None):
             if count >= len(diams):
                 break
             seg.diam = diams[count]
-            L_real = L_real + lens[count]
             count = count + 1
 
         icell.axonal.append(sec=section)
@@ -91,13 +87,6 @@ def replace_axon_with_taper(sim=None, icell=None):
     icell.myelin[0].L = 1000
     icell.myelin[0].diam = diams[count - 1]
     icell.myelin[0].connect(icell.axon[1], 1.0, 0.0)
-
-    logger.debug(
-        "Replace axon with tapered AIS of length %f, target length was %f, diameters are %s",
-        L_real,
-        L_target,
-        diams,
-    )
 
 
 def taper_function(distance, strength, taper_scale, terminal_diameter, scale=1.0, dist_max=None):
@@ -130,24 +119,53 @@ def synth_axon(sim=None, icell=None, params=None, scale=1.0):
             terminal_diameter
         scale (float): scale parameter for each cell
     """
-    for section in icell.axonal:
-        sim.neuron.h.delete_section(sec=section)
+    if len(params) > 2:
+        for section in icell.axonal:
+            sim.neuron.h.delete_section(sec=section)
 
-    sim.neuron.h.execute("create axon[2]", icell)
+        sim.neuron.h.execute("create axon[2]", icell)
 
-    nseg_total = 10
-    L_target = params[0]
-    diameters = taper_function(np.linspace(0, L_target, nseg_total), *params[1:], scale=scale)
-    count = 0
-    for section in icell.axon:
-        section.nseg = nseg_total // 2
-        section.L = L_target / 2
-        for seg in section:
-            seg.diam = diameters[count]
-            count += 1
+        nseg_total = 10
+        L_target = params[0]
+        diameters = taper_function(np.linspace(0, L_target, nseg_total), *params[1:], scale=scale)
+        count = 0
+        for section in icell.axon:
+            section.nseg = nseg_total // 2
+            section.L = L_target / 2
+            for seg in section:
+                seg.diam = diameters[count]
+                count += 1
 
-        icell.axonal.append(sec=section)
-        icell.all.append(sec=section)
+            icell.axonal.append(sec=section)
+            icell.all.append(sec=section)
+    else:
+        nseg0 = 5  # number of segments for each of the two axon sections
+        nseg_total = nseg0 * 2
+        L_target = 60
+
+        diams = params
+        for section in icell.axonal:
+            sim.neuron.h.delete_section(sec=section)
+
+        #  new axon array
+        sim.neuron.h.execute("create axon[2]", icell)
+
+        count = 0
+        for _, section in enumerate(icell.axon):
+            section.nseg = nseg_total // 2
+            section.L = L_target / 2
+
+            for seg in section:
+                if count >= len(diams):
+                    break
+                seg.diam = scale * diams[count]
+                count += 1
+
+            icell.axonal.append(sec=section)
+            icell.all.append(sec=section)
+
+            if count >= len(diams):
+                break
 
     icell.axon[0].connect(icell.soma[0], 1.0, 0.0)
     icell.axon[1].connect(icell.axon[0], 1.0, 0.0)
@@ -375,3 +393,101 @@ def replace_axon_justAIS(sim=None, icell=None, diam=1.0, L_target=45):
     icell.myelin[0].L = 1000
     icell.myelin[0].diam = diam
     icell.myelin[0].connect(icell.axon[1], 1.0, 0.0)
+
+
+def get_replace_axon_hoc(params):
+    return """
+    proc replace_axon(){ local nSec, L_chunk, dist, i1, i2, count, L_target, chunkSize, localobj diams
+
+        L_target = 60  // length of stub axon
+        nseg0 = 5  // number of segments for each of the two axon sections
+
+        nseg_total = nseg0 * 2
+        chunkSize = L_target/nseg_total
+
+        nSec = 0
+        forsec axonal{nSec = nSec + 1}
+        ais_scale = $1
+        soma_scale = $2
+
+        access soma[0]
+        L = 2.0 * %s
+        area = %s
+        nseg = 3
+        diam = area / (np.pi * L) * nseg
+
+        soma_sec = icell.soma[0]
+        pt3dclear()
+        for i=0,nseg {
+            pt3dadd(0, soma_scale * i * L / (nseg - 1), 0, diam / nseg)
+        }
+
+        if(nSec < 3){ //At least two axon sections have to be present!
+
+            execerror("Less than three axon sections are present! This emodel can't be run with such a morphology!")
+
+        } else {
+
+            access axon[0]
+            axon[0] i1 = v(0.0001) // used when serializing sections prior to sim start
+            axon[1] i2 = v(0.0001) // used when serializing sections prior to sim start
+            axon[2] i3 = v(0.0001) // used when serializing sections prior to sim start
+
+            // get rid of the old axon
+            forsec axonal{delete_section()}
+            execute1("create axon[2]", CellRef)
+
+            diams = new Vector(nseg_total)
+            diams.x[0] = %s
+            diams.x[1] = %s
+            diams.x[2] = %s
+            diams.x[3] = %s
+            diams.x[4] = %s
+            diams.x[5] = %s
+            diams.x[6] = %s
+            diams.x[7] = %s
+            diams.x[8] = %s
+            diams.x[9] = %s
+
+            count = 0
+
+            // new axon dependant on old diameters
+            for i=0,1{
+                access axon[i]
+                L =  L_target/2
+                nseg = nseg_total/2
+
+                for (x) {
+                    if (x > 0 && x < 1) {
+                        diam(x) = diams.x[count] * ais_scale
+                        count = count + 1
+                    }
+                }
+
+                all.append()
+                axonal.append()
+
+                if (i == 0) {
+                    v(0.0001) = i1
+                } else {
+                    v(0.0001) = i2
+                }
+            }
+
+            nSecAxonal = 2
+            soma[0] connect axon[0](0), 1
+            axon[0] connect axon[1](0), 1
+
+            create myelin[1]
+            access myelin{
+                    L = 1000
+                    diam = diams.x[count-1]
+                    nseg = 5
+                    v(0.0001) = i3
+                    all.append()
+                    myelinated.append()
+            }
+            connect myelin(0), axon[1](1)
+        }
+    }
+    """ % tuple(params)
