@@ -48,7 +48,7 @@ def replace_axon_with_taper(sim=None, icell=None):
 
         for seg in section:
             count = count + 1
-            diams.append(1.5 * seg.diam)
+            diams.append(seg.diam)
             if count == nseg_total:
                 break
         if count == nseg_total:
@@ -396,8 +396,9 @@ def replace_axon_justAIS(sim=None, icell=None, diam=1.0, L_target=45):
 
 
 def get_replace_axon_hoc(params):
+    """Get replace_axon hoc string."""
     return """
-    proc replace_axon(){ local nSec, i1, i2, count, L_target, chunkSize, area, ais_scale, soma_scale localobj diams
+    proc replace_axon(){ local nSec, i1, i2, count, area, ais_scale, soma_scale localobj diams
 
         L_target = 60  // length of stub axon
         nseg0 = 5  // number of segments for each of the two axon sections
@@ -423,7 +424,7 @@ def get_replace_axon_hoc(params):
 
         if(nSec < 3){ //At least two axon sections have to be present!
 
-            execerror("Less than three axon sections are present! This emodel can't be run with such a morphology!")
+            execerror("Less than three axon sections are present!")
 
         } else {
 
@@ -450,7 +451,7 @@ def get_replace_axon_hoc(params):
 
             count = 0
 
-            // new axon dependant on old diameters
+            // new axon dependent on old diameters
             for i=0,1{
                 access axon[i]
                 L =  L_target/2
@@ -489,4 +490,6 @@ def get_replace_axon_hoc(params):
             connect myelin(0), axon[1](1)
         }
     }
-    """ % tuple(params)
+    """ % tuple(
+        params
+    )
