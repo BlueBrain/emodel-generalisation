@@ -397,7 +397,7 @@ def replace_axon_justAIS(sim=None, icell=None, diam=1.0, L_target=45):
 
 def get_replace_axon_hoc(params):
     return """
-    proc replace_axon(){ local nSec, L_chunk, dist, i1, i2, count, L_target, chunkSize, localobj diams
+    proc replace_axon(){ local nSec, i1, i2, count, L_target, chunkSize, area, ais_scale, soma_scale localobj diams
 
         L_target = 60  // length of stub axon
         nseg0 = 5  // number of segments for each of the two axon sections
@@ -411,15 +411,14 @@ def get_replace_axon_hoc(params):
         soma_scale = $2
 
         access soma[0]
-        L = 2.0 * %s
-        area = %s
-        nseg = 3
-        diam = area / (np.pi * L) * nseg
+        L0 = 2.0 * %s
+        area0 = %s
+        n = 3
+        diam0 = area0 / (PI * L0) * n
 
-        soma_sec = icell.soma[0]
         pt3dclear()
-        for i=0,nseg {
-            pt3dadd(0, soma_scale * i * L / (nseg - 1), 0, diam / nseg)
+        for i=0,n-1 {
+            pt3dadd(0, soma_scale * i * L0 / (n - 1), 0, diam0 / n)
         }
 
         if(nSec < 3){ //At least two axon sections have to be present!
