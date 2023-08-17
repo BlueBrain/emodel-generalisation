@@ -64,14 +64,17 @@ def create_combos_df(
             return "IN"
 
     combos_df["morph_class"] = [_class(mtype) for mtype in combos_df.mtype]
+
     with open(generalisation_rule_path, "r") as f:
         generalisation_rule = yaml.safe_load(f)
+
     if "layer" in generalisation_rule:
-        combos_df = combos_df[combos_df.layer == generalisation_rule["layer"]]
+        combos_df = combos_df[combos_df.layer == str(generalisation_rule["layer"])]
     if "morph_class" in generalisation_rule:
         combos_df = combos_df[combos_df.morph_class == generalisation_rule["morph_class"]]
     if "mtypes" in generalisation_rule:
         combos_df = combos_df[combos_df.mtype.isin(generalisation_rule["mtypes"])]
+
     combos_df["emodel"] = emodel
     combos_df["etype"] = generalisation_rule["etype"]
     for mtype in combos_df.mtype.unique():

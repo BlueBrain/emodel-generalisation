@@ -252,26 +252,28 @@ def adapt_soma_ais(
     )
 
 
-def build_all_resistance_models(access_point, emodels, exemplar_data, scales_params, fig_path):
+def build_all_resistance_models(access_point, emodels, exemplar_data, scales_params, fig_path=None):
     """Build resistance models of AIS and soma."""
     fit_df, ais_models = build_resistance_models(
         access_point, emodels, exemplar_data, scales_params, key="ais"
     )
-    plot_resistance_models(
-        fit_df, ais_models, pdf_filename=fig_path / "ais_resistance_model.pdf", key="ais"
-    )
+    if fig_path is not None:
+        plot_resistance_models(
+            fit_df, ais_models, pdf_filename=fig_path / "ais_resistance_model.pdf", key="ais"
+        )
 
     emodels = list(ais_models.keys())  # don't compute for failed emodels on ais
     fit_df, soma_models = build_resistance_models(
         access_point, emodels, exemplar_data, scales_params, key="soma"
     )
 
-    plot_resistance_models(
-        fit_df,
-        soma_models,
-        pdf_filename=fig_path / "soma_resistance_model.pdf",
-        key="soma",
-    )
+    if fig_path is not None:
+        plot_resistance_models(
+            fit_df,
+            soma_models,
+            pdf_filename=fig_path / "soma_resistance_model.pdf",
+            key="soma",
+        )
     ais_models = {k: ais_models[k] for k in soma_models}  # remove failed emodels on soma
     return {"soma": soma_models, "ais": ais_models}
 
