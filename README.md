@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/662445885.svg)](https://zenodo.org/badge/latestdoi/662445885)
+
 # emodel-generalisation
 
 Generalisation of neuronal electrical models on a morphological population with Markov Chain Monte-Carlo.
