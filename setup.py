@@ -48,6 +48,8 @@ reqs = [
     "dask-mpi>=2022.4",
     "sqlalchemy>=1.4.24",
     "sqlalchemy-utils>=0.37.2",
+    "bluecellulab>=1.3.10",
+    "voxcell>=3.1.5",
 ]
 
 doc_reqs = [
@@ -88,7 +90,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "emodel-generalisation=emodel_generalisation.cli:main",
+            "emodel-generalisation=emodel_generalisation.cli:cli",
         ],
     },
     include_package_data=True,
