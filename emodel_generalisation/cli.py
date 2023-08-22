@@ -231,6 +231,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
 @click.option("--final-path", type=str, required=True)
+@click.option("--exemplar-data-path", type=str, required=True, default="local/exemplar_data.yaml")
 @click.option("--legacy", is_flag=True)
 @click.option("--parallel-lib", default="multiprocessing", type=str)
 @click.option("--resume", is_flag=True)
@@ -246,6 +247,7 @@ def evaluate(
     morphology_path,
     config_path,
     final_path,
+    exemplar_data_path,
     legacy,
     parallel_lib,
     resume,
@@ -281,8 +283,8 @@ def evaluate(
         )
 
     # add data for adapted AIS/soma if available
-    if Path("exemplar_data.yaml").exists():
-        with open("exemplar_data.yaml") as exemplar_f:
+    if Path(exemplar_data_path).exists():
+        with open(exemplar_data_path) as exemplar_f:
             exemplar_data = yaml.safe_load(exemplar_f)
 
         for emodel, data in exemplar_data.items():
@@ -294,7 +296,6 @@ def evaluate(
                     "@dynamics:soma_scaler": "soma_scaler",
                 }
             )
-
     with Reuse(output_path, index=False) as reuse:
         cells_df = reuse(
             feature_evaluation,
@@ -357,6 +358,7 @@ def evaluate(
 @click.option("--final-path", type=str, required=True)
 @click.option("--hoc-path", type=str, default="hoc")
 @click.option("--template-path", type=str, default=None)
+@click.option("--local-dir", type=str, default="local")
 @click.option("--legacy", is_flag=True)
 @click.option("--parallel-lib", default="multiprocessing", type=str)
 @click.option("--resume", is_flag=True)
@@ -370,6 +372,7 @@ def adapt(
     final_path,
     hoc_path,
     template_path,
+    local_dir,
     legacy,
     parallel_lib,
     resume,
@@ -402,7 +405,8 @@ def adapt(
             recipes_path=Path(config_path) / "recipes.json",
             with_seeds=True,
         )
-
+    local_dir = Path(local_dir)
+    local_dir.mkdir(exist_ok=True, parents=True)
     cells_df, _ = _load_circuit(input_node_path, morphology_path)
 
     exemplar_df = pd.DataFrame()
@@ -438,7 +442,7 @@ def adapt(
 
         return exemplar_data
 
-    with Reuse("exemplar_data.yaml") as reuse:
+    with Reuse(local_dir / "exemplar_data.yaml") as reuse:
         exemplar_data = reuse(_get_exemplar_data, exemplar_df)
 
     L.info("Compute exemplar rho factors...")
@@ -448,7 +452,7 @@ def adapt(
         exemplar_df.loc[gid, "soma_scaler"] = 1.0
         exemplar_df.loc[gid, "ais_scaler"] = 1.0
 
-    with Reuse(str(Path(output_csv_path).with_suffix("")) + "_exemplar_rho.csv") as reuse:
+    with Reuse(local_dir / "exemplar_rho.csv") as reuse:
         exemplar_df = reuse(
             evaluate_rho,
             exemplar_df,
@@ -458,7 +462,7 @@ def adapt(
             db_url=sql_tmp_path,
         )
 
-    with Reuse(str(Path(output_csv_path).with_suffix("")) + "_exemplar_rho_axon.csv") as reuse:
+    with Reuse(local_dir / "exemplar_rho_axon.csv") as reuse:
         exemplar_df = reuse(
             evaluate_rho_axon,
             exemplar_df,
@@ -480,7 +484,7 @@ def adapt(
             )
         return models
 
-    with Reuse("resistance_models.yaml") as reuse:
+    with Reuse(local_dir / "resistance_models.yaml") as reuse:
         resistance_models = reuse(_get_resistance_models, exemplar_df, exemplar_data, scales_params)
 
     L.info("Adapting AIS and soma of all cells..")
@@ -538,7 +542,7 @@ def adapt(
         cell_model = create_cell_model(
             emodel,
             model_configuration=model_configuration,
-            morph_modifiers=[lambda: None],
+            morph_modifiers=None,
             morph_modifiers_hoc=[morph_modifier_hoc],
         )
         hoc = cell_model.create_hoc(
