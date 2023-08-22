@@ -339,10 +339,21 @@ def test_get_mechanisms_directory(access_point):
 def test_get_available_mechanisms(access_point):
     """ """
     assert sorted([m.name for m in access_point.get_available_mechanisms()]) == [
+        "CaDynamics_DC0",
+        "Ca_HVA",
+        "Ca_HVA2",
+        "Ca_LVAst",
         "Ih",
         "K_Pst",
+        "K_Tst",
+        "KdShu2007",
         "NaTg",
+        "NaTg2",
+        "Nap_Et2",
+        "SK_E2",
         "SKv3_1",
+        "StochKv3",
+        "TTXDynamicsSwitch",
     ]
 
 
