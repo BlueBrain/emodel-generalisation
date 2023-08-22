@@ -14,7 +14,7 @@
 # this is commented out due to an bug with tox neuron compilation
 # (https://bbpteam.epfl.ch/project/issues/browse/NSETM-2167)
 def test_empty():
-    """ empty"""
+    """empty"""
     pass
 
 

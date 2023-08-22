@@ -15,7 +15,6 @@ from morphio import Morphology
 from tqdm import tqdm
 from voxcell import CellCollection
 
-from emodel_generalisation.parallal import init_parallel_factory
 from emodel_generalisation.adaptation import adapt_soma_ais
 from emodel_generalisation.adaptation import build_all_resistance_models
 from emodel_generalisation.bluecellulab_evaluator import evaluate_currents
@@ -29,6 +28,7 @@ from emodel_generalisation.model.evaluation import evaluate_rho
 from emodel_generalisation.model.evaluation import evaluate_rho_axon
 from emodel_generalisation.model.evaluation import feature_evaluation
 from emodel_generalisation.model.modifiers import get_replace_axon_hoc
+from emodel_generalisation.parallal import init_parallel_factory
 from emodel_generalisation.utils import FEATURE_FILTER
 from emodel_generalisation.utils import get_feature_df
 from emodel_generalisation.utils import get_score_df
