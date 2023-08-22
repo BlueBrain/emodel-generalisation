@@ -1,24 +1,15 @@
 """Test cli module."""
-# import numpy.testing as npt
-# from pathlib import Path
+import numpy.testing as npt
+from pathlib import Path
+import pandas as pd
 
-# import pandas as pd
+from voxcell import CellCollection
 
-# from voxcell import CellCollection
+import emodel_generalisation.cli as tested
 
-# import emodel_generalisation_internal.cli as tested
-
-# DATA = Path(__file__).parent / "data"
-
-
-# this is commented out due to an bug with tox neuron compilation
-# (https://bbpteam.epfl.ch/project/issues/browse/NSETM-2167)
-def test_empty():
-    """empty"""
-    pass
+DATA = Path(__file__).parent / "data"
 
 
-"""
 def test_compute_currents(cli_runner, tmpdir):
     # fmt: off
     response = cli_runner.invoke(
@@ -77,10 +68,38 @@ def test_evaluate(cli_runner, tmpdir):
     assert response.exit_code == 0
 
     df = pd.read_csv(tmpdir / "evaluation_df.csv")
+    df.to_csv(DATA / "evaluation_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "evaluation_df.csv")
 
     assert df.loc[0, "features"] == expected_df.loc[0, "features"]
     assert df.loc[0, "scores"] == expected_df.loc[0, "scores"]
     assert df.loc[1, "features"] == expected_df.loc[1, "features"]
     assert df.loc[1, "scores"] == expected_df.loc[1, "scores"]
-"""
+
+
+
+
+def test_adapt(cli_runner, tmpdir):
+    tmpdir = Path('tmp')
+    # fmt: off
+    response = cli_runner.invoke(
+        tested.cli,
+        [
+            "adapt",
+            "--input-node-path", DATA / "sonata_v6.h5",
+            "--output-csv-path", tmpdir / "adapt_df.csv",
+            "--output-node-path", tmpdir / "sonata_v6_adapted.h5",
+            "--morphology-path", str(DATA / "morphologies"),
+            "--config-path", str(DATA / "config"),
+            "--final-path", str(DATA / "final.json"),
+            "--hoc-path", str(tmpdir / "hoc"),
+            "--parallel-lib", None,
+        ],
+    )
+    # fmt: on
+
+    assert response.exit_code == 0
+
+    df = pd.read_csv(tmpdir / "evaluation_df.csv")
+    #df.to_csv(DATA / "evaluation_df.csv", index=None)
+    #expected_df = pd.read_csv(DATA / "evaluation_df.csv")

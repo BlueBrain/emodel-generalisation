@@ -19,6 +19,8 @@
 # or send a letter to Creative Commons, 171
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
+import sys
+import traceback
 import importlib
 import json
 import logging
@@ -1961,8 +1963,8 @@ def rin_evaluation(
             )
         )
     # pragma: no cover
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        print("WARNING: failed rin", exc)
+    except Exception:  # pylint: disable=broad-exception-caught
+        print("WARNING: failed rin with:", "".join(traceback.format_exception(*sys.exc_info())))
         return {key: None}
 
     if responses["bpo_rin"] is None:  # pragma: no cover

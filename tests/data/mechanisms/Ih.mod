@@ -1,6 +1,6 @@
 :Comment :
 :Reference : :		Kole,Hallermann,and Stuart, J. Neurosci. 2006
-: LJP: OK, "Somatic whole- cell voltage was corrected for the  14 mV difference"
+: LJP: OK, "Somatic whole- cell voltage was corrected for the  14 mV difference" 
 
 NEURON	{
 	SUFFIX Ih

@@ -28,7 +28,7 @@ from emodel_generalisation.model.evaluation import evaluate_rho
 from emodel_generalisation.model.evaluation import evaluate_rho_axon
 from emodel_generalisation.model.evaluation import feature_evaluation
 from emodel_generalisation.model.modifiers import get_replace_axon_hoc
-from emodel_generalisation.parallal import init_parallel_factory
+from emodel_generalisation.parallel import init_parallel_factory
 from emodel_generalisation.utils import FEATURE_FILTER
 from emodel_generalisation.utils import get_feature_df
 from emodel_generalisation.utils import get_score_df
@@ -227,7 +227,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @cli.command("evaluate")
 @click.option("--input-path", type=click.Path(exists=True), required=True)
 @click.option("--output-path", default="evaluation_df.csv", type=str)
-@click.option("--n-cells-per-emodel", default=10, type=int)
+@click.option("--n-cells-per-emodel", default=None, type=int)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
 @click.option("--final-path", type=str, required=True)
@@ -273,11 +273,12 @@ def evaluate(
         )
 
     cells_df, _ = _load_circuit(input_path, morphology_path)
-    cells_df = (
-        cells_df.groupby(["emodel", "mtype"])
-        .sample(n_cells_per_emodel, random_state=42, replace=True)
-        .reset_index()
-    )
+    if n_cells_per_emodel is not None:
+        cells_df = (
+            cells_df.groupby(["emodel", "mtype"])
+            .sample(n_cells_per_emodel, random_state=42, replace=True)
+            .reset_index()
+        )
 
     # add data for adapted AIS/soma if available
     if Path("exemplar_data.yaml").exists():
