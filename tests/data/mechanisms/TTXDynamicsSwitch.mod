@@ -10,8 +10,8 @@ NEURON	{
 }
 
 PARAMETER	{
-    : 1e-12 represent 'no TTX', using 0.0 could generate problems during the 
-    : possible calculation of ettx 
+    : 1e-12 represent 'no TTX', using 0.0 could generate problems during the
+    : possible calculation of ettx
     ttxo_level = 1e-12 (mM)
 
     : Check at the end of the mod file for the reasoning behind this sentinel
@@ -37,7 +37,7 @@ INITIAL {
 : The internal ttx concentration is a sentinel value, this value should
 : not be used for any calculation
 : The reason it is here is that Neuron's default value for a concentration
-: is 1.0. In case a sodium channel uses the TTX concentration to 
+: is 1.0. In case a sodium channel uses the TTX concentration to
 : enable/disable itself, it shouldn't use the default value. It should only
 : use the ttxo value when it has been initialised by this TTXDynamicsSwitch
 : mechanism.

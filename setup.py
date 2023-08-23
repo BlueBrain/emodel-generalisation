@@ -63,7 +63,7 @@ test_reqs = [
     "pytest-console-scripts>=1.3",
     "pytest-cov>=3",
     "pytest-html>=2",
-    "pytest-click>=1.1.0"
+    "pytest-click>=1.1.0",
 ]
 
 setup(

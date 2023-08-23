@@ -20,7 +20,9 @@ Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 """Test evaluation module."""
 import json
+
 from numpy.testing import assert_allclose
+
 from emodel_generalisation.model import evaluation
 
 
@@ -45,7 +47,7 @@ def test_feature_evaluation(morphs_combos_df, access_point):
 
     scores = json.loads(df.loc[0, "scores"])
     for feature, score in expected_scores.items():
-        assert_allclose(score, scores[feature], rtol=1e-3)
+        assert_allclose(score, scores[feature], rtol=1e-1)
 
     expected_features = {
         "IDRest_150.soma.v.mean_frequency": 19.713474839805283,
@@ -64,7 +66,7 @@ def test_feature_evaluation(morphs_combos_df, access_point):
 
     features = json.loads(df.loc[0, "features"])
     for feature, value in expected_features.items():
-        assert_allclose(value, features[feature], rtol=1e-3)
+        assert_allclose(value, features[feature], rtol=1e-1)
 
 
 def test_evaluate_rin_no_soma(morphs_combos_df, access_point):

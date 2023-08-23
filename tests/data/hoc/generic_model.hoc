@@ -73,8 +73,8 @@ proc init(/* args: morphology_dir, morphology_name */) {
   somatic = new SectionList()
   myelinated = new SectionList()
 
-  synHelperList = new List()                                                     
-  synlist = new List()     
+  synHelperList = new List()
+  synlist = new List()
 
   //For compatibility with BBP CCells
   CellRef = this
@@ -223,13 +223,13 @@ proc insertChannel() {
 }
 
 proc biophys() {
-  
+
   forsec CellRef.all {
     Ra = 100
     g_pas = 4.7051946481499811e-05
     e_pas = -79.603749561469684
   }
-  
+
   forsec CellRef.apical {
     cm = 2
     ena = 50
@@ -241,7 +241,7 @@ proc biophys() {
     gCa_HVAbar_Ca_HVA2 = 3.4636229677800608e-06
     gCa_LVAstbar_Ca_LVAst = 0.00098549473641638421
   }
-  
+
   forsec CellRef.axonal {
     cm = 1
     ena = 50
@@ -259,14 +259,14 @@ proc biophys() {
     decay_CaDynamics_DC0 = 285.46128321068517
     gamma_CaDynamics_DC0 = 0.012752321129750291
   }
-  
+
   forsec CellRef.basal {
     cm = 2
     gamma_CaDynamics_DC0 = 0.048834292167029961
     gCa_HVAbar_Ca_HVA2 = 7.4498164370347347e-05
     gCa_LVAstbar_Ca_LVAst = 0.00074352999455036864
   }
-  
+
   forsec CellRef.somatic {
     cm = 1
     ena = 50
@@ -284,11 +284,11 @@ proc biophys() {
     decay_CaDynamics_DC0 = 282.09663415587323
     gamma_CaDynamics_DC0 = 0.022091065777470664
   }
-  
+
   forsec CellRef.myelinated {
     cm = 0.02
   }
-  
+
   distribute_distance(CellRef.apical, "gIhbar_Ih", "(-0.8696 + 2.087*exp((%.17g)*0.0031))*2.6113487420290699e-05")
   distribute_distance(CellRef.apical, "gNaTgbar_NaTg", "exp(%.17g*-0.00453252486077)*0.081013620392016858")
   distribute_distance(CellRef.basal, "gIhbar_Ih", "(-0.8696 + 2.087*exp((%.17g)*0.0031))*2.6113487420290699e-05")
@@ -341,7 +341,7 @@ proc geom_nsec() { local nSec
 /*
  * Replace the axon built from the original morphology file with a stub axon
  */
-    
+
     proc replace_axon(){ local nSec, L_chunk, dist, i1, i2, count, L_target, chunkSize, L_real localobj diams, lens
 
         L_target = 60  // length of stub axon

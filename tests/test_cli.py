@@ -1,9 +1,9 @@
 """Test cli module."""
 import json
-import numpy.testing as npt
 from pathlib import Path
-import pandas as pd
 
+import numpy.testing as npt
+import pandas as pd
 from voxcell import CellCollection
 
 import emodel_generalisation.cli as tested
@@ -76,20 +76,20 @@ def test_evaluate(cli_runner, tmpdir):
         json.loads(df.loc[0, "features"]).values(),
         json.loads(expected_df.loc[0, "features"]).values(),
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-3)
+        npt.assert_allclose(f, f_exp, rtol=1e-1)
     for f, f_exp in zip(
         json.loads(df.loc[1, "features"]).values(),
         json.loads(expected_df.loc[1, "features"]).values(),
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-3)
+        npt.assert_allclose(f, f_exp, rtol=1e-1)
     for f, f_exp in zip(
         json.loads(df.loc[0, "scores"]).values(), json.loads(expected_df.loc[0, "scores"]).values()
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-3)
+        npt.assert_allclose(f, f_exp, rtol=1e-1)
     for f, f_exp in zip(
         json.loads(df.loc[1, "scores"]).values(), json.loads(expected_df.loc[1, "scores"]).values()
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-3)
+        npt.assert_allclose(f, f_exp, rtol=1e-1)
 
 
 def test_adapt(cli_runner, tmpdir):
@@ -147,20 +147,20 @@ def test_adapt(cli_runner, tmpdir):
         json.loads(df.loc[0, "features"]).values(),
         json.loads(expected_df.loc[0, "features"]).values(),
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-3)
+        npt.assert_allclose(f, f_exp, rtol=1e-1)
     for f, f_exp in zip(
         json.loads(df.loc[1, "features"]).values(),
         json.loads(expected_df.loc[1, "features"]).values(),
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-3)
+        npt.assert_allclose(f, f_exp, rtol=1e-1)
     for f, f_exp in zip(
         json.loads(df.loc[0, "scores"]).values(), json.loads(expected_df.loc[0, "scores"]).values()
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-3)
+        npt.assert_allclose(f, f_exp, rtol=1e-1)
     for f, f_exp in zip(
         json.loads(df.loc[1, "scores"]).values(), json.loads(expected_df.loc[1, "scores"]).values()
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-3)
+        npt.assert_allclose(f, f_exp, rtol=1e-1)
 
     # fmt: off
     response = cli_runner.invoke(

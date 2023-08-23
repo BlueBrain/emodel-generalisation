@@ -19,13 +19,13 @@
 # or send a letter to Creative Commons, 171
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
-import sys
-import traceback
 import importlib
 import json
 import logging
 import multiprocessing
 import pickle
+import sys
+import traceback
 from copy import deepcopy
 from functools import partial
 from hashlib import sha256
