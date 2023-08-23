@@ -397,7 +397,7 @@ proc geom_nsec() { local nSec
             L_real = 0
             count = 0
 
-            // new axon dependant on old diameters
+            // new axon dependent on old diameters
             for i=0,1{
                 access axon[i]
                 L =  L_target/2

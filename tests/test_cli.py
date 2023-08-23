@@ -12,6 +12,7 @@ DATA = Path(__file__).parent / "data"
 
 
 def test_compute_currents(cli_runner, tmpdir):
+    """Test cli compute_currents."""
     # fmt: off
     response = cli_runner.invoke(
         tested.cli,
@@ -51,6 +52,7 @@ def test_compute_currents(cli_runner, tmpdir):
 
 
 def test_evaluate(cli_runner, tmpdir):
+    """Tetst cli evaluate."""
     # fmt: off
     response = cli_runner.invoke(
         tested.cli,
@@ -93,6 +95,7 @@ def test_evaluate(cli_runner, tmpdir):
 
 
 def test_adapt(cli_runner, tmpdir):
+    """Test cli adapt."""
     # fmt: off
     response = cli_runner.invoke(
         tested.cli,
@@ -171,7 +174,7 @@ def test_adapt(cli_runner, tmpdir):
             "--output-path", tmpdir / "sonata_currents_adapted.h5",
             "--morphology-path", str(DATA / "morphologies"),
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
-            "--hoc-path", str(tmpdir/ "hoc"),
+            "--hoc-path", str(tmpdir / "hoc"),
             "--parallel-lib", None,
             # "--debug-csv-path", "debug.csv"  # use this to debug
         ],
