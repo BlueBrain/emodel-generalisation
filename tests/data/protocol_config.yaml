@@ -1,0 +1,15 @@
+holding_voltage: -85.0
+step_start: 500.0
+step_stop: 2000.0
+threshold_current_precision: 0.001
+min_threshold_current: 0.0
+max_threshold_current: 0.2
+spike_at_ais: True
+deterministic: True
+celsius: 34.0
+v_init: -80.0
+rin:
+  with_ttx: True
+  step_start: 1000.0
+  step_stop: 2000.0
+  step_amp: -0.001

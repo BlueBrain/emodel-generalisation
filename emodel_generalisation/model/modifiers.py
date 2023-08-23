@@ -119,7 +119,7 @@ def synth_axon(sim=None, icell=None, params=None, scale=1.0):
             terminal_diameter
         scale (float): scale parameter for each cell
     """
-    if len(params) > 2:
+    if len(params) == 4:
         for section in icell.axonal:
             sim.neuron.h.delete_section(sec=section)
 

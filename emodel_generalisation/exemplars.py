@@ -403,8 +403,9 @@ def generate_exemplars(
     bin_params=None,
 ):
     """Create a yaml file with data to produce exemplar morphologies to optimise."""
-    figure_folder = Path(figure_folder)
-    figure_folder.mkdir(exist_ok=True)
+    if with_plots:
+        figure_folder = Path(figure_folder)
+        figure_folder.mkdir(exist_ok=True)
 
     soma_model = build_soma_model(df["path"])
     ais_model = build_ais_diameter_model(df["path"])
@@ -427,30 +428,31 @@ def generate_exemplars(
         for mtype, gids in best_gids.items():
             df["is_exemplar"] = 0
             df.loc[gids, "is_exemplar"] = 1
-            plot_surface_comparison(
-                surf_dfs[mtype],
-                df[df.mtype == mtype].reset_index() if mtype != "all" else df,
-                pdf_filename=figure_folder / f"surface_profile_{mtype}.pdf",
-                surface_percentile=surface_percentile,
-            )
+            if with_plots:
+                plot_surface_comparison(
+                    surf_dfs[mtype],
+                    df[df.mtype == mtype].reset_index() if mtype != "all" else df,
+                    pdf_filename=figure_folder / f"surface_profile_{mtype}.pdf",
+                    surface_percentile=surface_percentile,
+                )
 
-            morph = load_morphology(df.loc[gids, "path"])
-            plt.figure()
-            view.plot_morph(
-                morph,
-                ax=plt.gca(),
-                neurite_type=NeuriteType.basal_dendrite,
-                realistic_diameters=True,
-            )
-            view.plot_morph(
-                morph,
-                ax=plt.gca(),
-                neurite_type=NeuriteType.apical_dendrite,
-                realistic_diameters=True,
-            )
-            plt.axis("equal")
-            plt.tight_layout()
-            plt.savefig(figure_folder / f"exemplar_morpholgy_{mtype}.pdf")
+                morph = load_morphology(df.loc[gids, "path"])
+                plt.figure()
+                view.plot_morph(
+                    morph,
+                    ax=plt.gca(),
+                    neurite_type=NeuriteType.basal_dendrite,
+                    realistic_diameters=True,
+                )
+                view.plot_morph(
+                    morph,
+                    ax=plt.gca(),
+                    neurite_type=NeuriteType.apical_dendrite,
+                    realistic_diameters=True,
+                )
+                plt.axis("equal")
+                plt.tight_layout()
+                plt.savefig(figure_folder / f"exemplar_morpholgy_{mtype}.pdf")
 
     return {
         "soma": soma_model["soma_model"],

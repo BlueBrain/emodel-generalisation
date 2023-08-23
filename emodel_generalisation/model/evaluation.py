@@ -24,6 +24,8 @@ import json
 import logging
 import multiprocessing
 import pickle
+import sys
+import traceback
 from copy import deepcopy
 from functools import partial
 from hashlib import sha256
@@ -236,7 +238,7 @@ def _define_morphology(
     Returns:
         bluepyopt.ephys.morphologies.NrnFileMorphology: a morphology object
     """
-    if morph_modifiers is None or morph_modifiers == [None]:
+    if not morph_modifiers:
         morph_modifiers = [modifiers.replace_axon_with_taper]
         logger.debug("No morphology modifiers provided, replace_axon_with_taper will be used.")
     else:
@@ -1961,8 +1963,8 @@ def rin_evaluation(
             )
         )
     # pragma: no cover
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        print("WARNING: failed rin", exc)
+    except Exception:  # pylint: disable=broad-exception-caught
+        print("WARNING: failed rin with:", "".join(traceback.format_exception(*sys.exc_info())))
         return {key: None}
 
     if responses["bpo_rin"] is None:  # pragma: no cover

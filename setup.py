@@ -42,12 +42,14 @@ reqs = [
     "shap>=0.41.0",
     "xgboost>=1.7.5",
     "pyyaml>=6",
-    "datareuse>=0.0.2",
+    "datareuse>=0.0.3",
     "ipyparallel>=6.3,<7",
     "dask[dataframe, distributed]>=2023.3.2",
     "dask-mpi>=2022.4",
     "sqlalchemy>=1.4.24",
     "sqlalchemy-utils>=0.37.2",
+    "bluecellulab>=1.3.11",
+    "voxcell>=3.1.5",
 ]
 
 doc_reqs = [
@@ -61,6 +63,7 @@ test_reqs = [
     "pytest-console-scripts>=1.3",
     "pytest-cov>=3",
     "pytest-html>=2",
+    "pytest-click>=1.1.0",
 ]
 
 setup(
@@ -88,7 +91,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "emodel-generalisation=emodel_generalisation.cli:main",
+            "emodel-generalisation=emodel_generalisation.cli:cli",
         ],
     },
     include_package_data=True,
