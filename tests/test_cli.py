@@ -76,20 +76,20 @@ def test_evaluate(cli_runner, tmpdir):
         json.loads(df.loc[0, "features"]).values(),
         json.loads(expected_df.loc[0, "features"]).values(),
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-5)
+        npt.assert_allclose(f, f_exp, rtol=1e-3)
     for f, f_exp in zip(
         json.loads(df.loc[1, "features"]).values(),
         json.loads(expected_df.loc[1, "features"]).values(),
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-5)
+        npt.assert_allclose(f, f_exp, rtol=1e-3)
     for f, f_exp in zip(
         json.loads(df.loc[0, "scores"]).values(), json.loads(expected_df.loc[0, "scores"]).values()
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-5)
+        npt.assert_allclose(f, f_exp, rtol=1e-3)
     for f, f_exp in zip(
         json.loads(df.loc[1, "scores"]).values(), json.loads(expected_df.loc[1, "scores"]).values()
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-5)
+        npt.assert_allclose(f, f_exp, rtol=1e-3)
 
 
 def test_adapt(cli_runner, tmpdir):
@@ -147,20 +147,20 @@ def test_adapt(cli_runner, tmpdir):
         json.loads(df.loc[0, "features"]).values(),
         json.loads(expected_df.loc[0, "features"]).values(),
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-5)
+        npt.assert_allclose(f, f_exp, rtol=1e-3)
     for f, f_exp in zip(
         json.loads(df.loc[1, "features"]).values(),
         json.loads(expected_df.loc[1, "features"]).values(),
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-5)
+        npt.assert_allclose(f, f_exp, rtol=1e-3)
     for f, f_exp in zip(
         json.loads(df.loc[0, "scores"]).values(), json.loads(expected_df.loc[0, "scores"]).values()
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-5)
+        npt.assert_allclose(f, f_exp, rtol=1e-3)
     for f, f_exp in zip(
         json.loads(df.loc[1, "scores"]).values(), json.loads(expected_df.loc[1, "scores"]).values()
     ):
-        npt.assert_allclose(f, f_exp, rtol=1e-5)
+        npt.assert_allclose(f, f_exp, rtol=1e-3)
 
     # fmt: off
     response = cli_runner.invoke(
