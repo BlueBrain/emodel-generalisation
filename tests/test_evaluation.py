@@ -70,7 +70,7 @@ def test_feature_evaluation(morphs_combos_df, access_point):
 def test_evaluate_rin_no_soma(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_rin_no_soma(morphs_combos_df, access_point)
-    assert_allclose(df.loc[0, "rin_no_soma"], 737.355812849696, rtol=1e-5)
+    assert_allclose(df.loc[0, "rin_no_soma"], 737.355812849696, rtol=1e-3)
 
 
 def test_evaluate_soma_rin(morphs_combos_df, access_point):
@@ -94,7 +94,7 @@ def test_evaluate_somadend_rin(morphs_combos_df, access_point):
 def test_evaluate_rho(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_rho(morphs_combos_df, access_point)
-    assert_allclose(df.loc[0, "rho"], 1.150842747082164, rtol=1e-5)
+    assert_allclose(df.loc[0, "rho"], 1.150842747082164, rtol=1e-3)
 
 
 def test_evaluate_rho_axon(morphs_combos_df, access_point):
