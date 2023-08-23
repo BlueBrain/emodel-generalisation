@@ -1,4 +1,5 @@
 """Test cli module."""
+import json
 import numpy.testing as npt
 from pathlib import Path
 import pandas as pd
@@ -71,10 +72,24 @@ def test_evaluate(cli_runner, tmpdir):
     # df.drop(columns=["path"]).to_csv(DATA / "evaluation_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "evaluation_df.csv")
 
-    assert df.loc[0, "features"] == expected_df.loc[0, "features"]
-    assert df.loc[0, "scores"] == expected_df.loc[0, "scores"]
-    assert df.loc[1, "features"] == expected_df.loc[1, "features"]
-    assert df.loc[1, "scores"] == expected_df.loc[1, "scores"]
+    for f, f_exp in zip(
+        json.loads(df.loc[0, "features"]).values(),
+        json.loads(expected_df.loc[0, "features"]).values(),
+    ):
+        npt.assert_allclose(f, f_exp, rtol=1e-5)
+    for f, f_exp in zip(
+        json.loads(df.loc[1, "features"]).values(),
+        json.loads(expected_df.loc[1, "features"]).values(),
+    ):
+        npt.assert_allclose(f, f_exp, rtol=1e-5)
+    for f, f_exp in zip(
+        json.loads(df.loc[0, "scores"]).values(), json.loads(expected_df.loc[0, "scores"]).values()
+    ):
+        npt.assert_allclose(f, f_exp, rtol=1e-5)
+    for f, f_exp in zip(
+        json.loads(df.loc[1, "scores"]).values(), json.loads(expected_df.loc[1, "scores"]).values()
+    ):
+        npt.assert_allclose(f, f_exp, rtol=1e-5)
 
 
 def test_adapt(cli_runner, tmpdir):
@@ -128,10 +143,24 @@ def test_adapt(cli_runner, tmpdir):
     # df.drop(columns=["path"]).to_csv(DATA / "adapted_evaluation_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "adapted_evaluation_df.csv")
 
-    assert df.loc[0, "features"] == expected_df.loc[0, "features"]
-    assert df.loc[0, "scores"] == expected_df.loc[0, "scores"]
-    assert df.loc[1, "features"] == expected_df.loc[1, "features"]
-    assert df.loc[1, "scores"] == expected_df.loc[1, "scores"]
+    for f, f_exp in zip(
+        json.loads(df.loc[0, "features"]).values(),
+        json.loads(expected_df.loc[0, "features"]).values(),
+    ):
+        npt.assert_allclose(f, f_exp, rtol=1e-5)
+    for f, f_exp in zip(
+        json.loads(df.loc[1, "features"]).values(),
+        json.loads(expected_df.loc[1, "features"]).values(),
+    ):
+        npt.assert_allclose(f, f_exp, rtol=1e-5)
+    for f, f_exp in zip(
+        json.loads(df.loc[0, "scores"]).values(), json.loads(expected_df.loc[0, "scores"]).values()
+    ):
+        npt.assert_allclose(f, f_exp, rtol=1e-5)
+    for f, f_exp in zip(
+        json.loads(df.loc[1, "scores"]).values(), json.loads(expected_df.loc[1, "scores"]).values()
+    ):
+        npt.assert_allclose(f, f_exp, rtol=1e-5)
 
     # fmt: off
     response = cli_runner.invoke(

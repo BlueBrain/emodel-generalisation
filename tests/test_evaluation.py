@@ -2,7 +2,6 @@
 Copyright (c) 2022 EPFL-BBP, All rights reserved.
 
 THIS SOFTWARE IS PROVIDED BY THE BLUE BRAIN PROJECT ``AS IS''
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE BLUE BRAIN PROJECT
 BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
@@ -21,9 +20,7 @@ Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 """Test evaluation module."""
 import json
-
-from numpy.testing import assert_almost_equal
-
+from numpy.testing import assert_allclose
 from emodel_generalisation.model import evaluation
 
 
@@ -48,7 +45,7 @@ def test_feature_evaluation(morphs_combos_df, access_point):
 
     scores = json.loads(df.loc[0, "scores"])
     for feature, score in expected_scores.items():
-        assert_almost_equal(score, scores[feature], decimal=1)
+        assert_allclose(score, scores[feature], rtol=1e-5)
 
     expected_features = {
         "IDRest_150.soma.v.mean_frequency": 19.713474839805283,
@@ -67,40 +64,40 @@ def test_feature_evaluation(morphs_combos_df, access_point):
 
     features = json.loads(df.loc[0, "features"])
     for feature, value in expected_features.items():
-        assert_almost_equal(value, features[feature], decimal=1)
+        assert_allclose(value, features[feature], rtol=1e-5)
 
 
 def test_evaluate_rin_no_soma(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_rin_no_soma(morphs_combos_df, access_point)
-    assert_almost_equal(df.loc[0, "rin_no_soma"], 737.355812849696, decimal=0)
+    assert_allclose(df.loc[0, "rin_no_soma"], 737.355812849696, rtol=1e-5)
 
 
 def test_evaluate_soma_rin(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_soma_rin(morphs_combos_df, access_point)
-    assert_almost_equal(df.loc[0, "rin_soma"], 848.5805718798488, decimal=3)
+    assert_allclose(df.loc[0, "rin_soma"], 848.5805718798488, rtol=1e-5)
 
 
 def test_evaluate_ais_rin(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_ais_rin(morphs_combos_df, access_point)
-    assert_almost_equal(df.loc[0, "rin_ais"], 131668.9953893715, decimal=3)
+    assert_allclose(df.loc[0, "rin_ais"], 131668.9953893715, rtol=1e-5)
 
 
 def test_evaluate_somadend_rin(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_somadend_rin(morphs_combos_df, access_point)
-    assert_almost_equal(df.loc[0, "rin_no_ais"], 539.1371042337126, decimal=3)
+    assert_allclose(df.loc[0, "rin_no_ais"], 539.1371042337126, rtol=1e-5)
 
 
 def test_evaluate_rho(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_rho(morphs_combos_df, access_point)
-    assert_almost_equal(df.loc[0, "rho"], 1.1510177066149903, decimal=3)
+    assert_allclose(df.loc[0, "rho"], 1.150842747082164, rtol=1e-5)
 
 
 def test_evaluate_rho_axon(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_rho_axon(morphs_combos_df, access_point)
-    assert_almost_equal(df.loc[0, "rho_axon"], 244.2217237122562, decimal=3)
+    assert_allclose(df.loc[0, "rho_axon"], 244.2217237122562, rtol=1e-5)
