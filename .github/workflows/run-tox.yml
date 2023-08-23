@@ -70,11 +70,9 @@ jobs:
         report_paths: 'reports/pytest-*.xml'
     - name: Upload to codecov
       uses: codecov/codecov-action@v3
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
         fail_ci_if_error: false
-        files: ./reports/coverage-*.xml
+        files: ./coverage.xml
         flags: pytest
         name: "emodel-generalisation-py${{ matrix.python-version }}"
     - name: Upload test artifacts
