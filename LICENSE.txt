@@ -3,7 +3,7 @@ unless noted otherwise, e.g., for external dependencies.
 The submodule `parallel` is proprietary for now, and will be released in its complete form
 in a separate repository.
 
-The cell morphologies are licensed with the below mentioned CC-BY-NC-SA license, and originate from https://zenodo.org/record/5909613.
+The cell morphologies are licensed with the below mentioned CC BY 4.0 license, and originate from https://zenodo.org/record/5909613.
 
 For models for which the original source is available on ModelDB, any
 specific licenses on mentioned on ModelDB, or the generic License of ModelDB
