@@ -1,7 +1,8 @@
 # Changes here will be overwritten by Copier
 
-_commit: 0.1.44
+_commit: 0.1.51
 _src_path: git@bbpgitlab.epfl.ch:neuromath/python-template.git
+author_email: bbp-ou-cells@groupes.epfl.ch
 author_name: Blue Brain Project, EPFL
 copyright_license: GNU General Public License v3.0
 copyright_year: '2023'
@@ -16,7 +17,9 @@ project_url: https://emodel-generalisation.readthedocs.io
 repository_name: emodel-generalisation
 repository_namespace: BlueBrain
 repository_provider: github
-support_py37: false
+setup_codeql: false
+ssh_url: git@github.com:BlueBrain/emodel-generalisation.git
+team_name: neuromath
 tracker_url: https://github.com/BlueBrain/emodel-generalisation/issues
 use_pyproject_toml: false
 version: 0.1.0.dev0
