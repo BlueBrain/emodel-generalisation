@@ -1,0 +1,15 @@
+{
+  "ACAd1": {
+    "L1_DAC": {
+      "bNAC": [
+          {
+            "EModel": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/5/2/5/a/4/a/6/0/EM__emodel=try_mechanisms_raw__etype=cADpyr__species=mouse__brain_region=Primary somatosensory area, barrel field, layer 2__iteration=dace0128-3378-4d7f-b350-e7569fdbe92d__1.json",
+            "ExtractionTargetsConfiguration": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/5/e/d/8/a/f/f/3/ETC__emodel=try_mechanisms_raw__etype=cADpyr__mtype=L3_TPC:B__species=mouse__brain_region=Primary somatosensory area, barrel field, layer 2__iteration=dace0128-3378-4d7f-b350-e7569fdbe92d.json",
+            "EModelPipelineSettings": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/3/2/7/3/c/7/8/1/EMPS__emodel=try_mechanisms_raw__etype=cADpyr__mtype=L3_TPC:B__species=mouse__brain_region=Primary somatosensory area, barrel field, layer 2__iteration=dace0128-3378-4d7f-b350-e7569fdbe92d.json",
+            "EModelConfiguration": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/2/a/9/0/c/1/a/d/EMC__emodel=try_mechanisms_raw__etype=cADpyr__mtype=L3_TPC:B__species=mouse__brain_region=Primary somatosensory area, barrel field, layer 2__iteration=dace0128-3378-4d7f-b350-e7569fdbe92d.json",
+            "FitnessCalculatorConfiguration": "/gpfs/bbp.cscs.ch/data/project/proj136/nexus/bbp/mmb-emodels-for-synthesized-neurons/e/d/a/8/d/7/f/7/FCC__emodel=cNAC__etype=cNAC__iteration=fa285b7.json"
+        }
+      ]
+    }
+  }
+}
