@@ -25,6 +25,7 @@ import logging
 from itertools import chain
 from pathlib import Path
 
+from emodel_generalisation.model.nexus_converter import convert_all_config
 from emodel_generalisation.model.evaluation import LEGACY_PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import FitnessCalculatorConfiguration
@@ -889,9 +890,13 @@ class AccessPoint:
         recipes_path=None,
         legacy_dir_structure=False,
         with_seeds=False,
+        nexus_config=None,
     ):
         """Init"""
-        super().__init__()
+        if nexus_config is not None:
+            convert_all_config(nexus_config, emodel_dir)
+            final_path = Path(emodel_dir) / "emodel_parameters.json"
+            recipes_path = Path(emodel_dir) / "recipes.json"
 
         if emodel_dir is None:
             self.emodel_dir = Path.cwd()
@@ -915,14 +920,25 @@ class AccessPoint:
 
     def get_recipes(self, emodel):
         """Load the recipes from a json file for an emodel."""
-        _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
-        if self.legacy_dir_structure:
-            recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"
-        else:
-            recipes_path = self.recipes_path
+        try:
+            _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
+            if self.legacy_dir_structure:
+                recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"
+            else:
+                recipes_path = self.recipes_path
 
-        with open(recipes_path, "r") as f:
-            return json.load(f)[_emodel]
+            with open(recipes_path, "r") as f:
+                return json.load(f)[_emodel]
+
+        except KeyError:
+            _emodel = "_".join(emodel.split("_")[:-1]) if self.with_seeds else emodel
+            if self.legacy_dir_structure:
+                recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"
+            else:
+                recipes_path = self.recipes_path
+
+            with open(recipes_path, "r") as f:
+                return json.load(f)[_emodel]
 
     def get_settings(self, emodel):
         """ """
