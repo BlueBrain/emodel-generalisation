@@ -311,6 +311,7 @@ def evaluate_currents(
     return evaluate(
         morphs_combos_df,
         _isolated_current_evaluation,
+        new_columns=new_columns,
         resume=resume,
         parallel_factory=parallel_factory,
         db_url=db_url,
