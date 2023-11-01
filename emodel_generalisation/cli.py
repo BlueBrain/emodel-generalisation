@@ -69,6 +69,7 @@ def cli(verbose):
 @click.option("--resume", is_flag=True)
 @click.option("--sql-tmp-path", default=None, type=str)
 @click.option("--debug-csv-path", default=None, type=str)
+@click.option("--only-rin", is_flag=True)
 def compute_currents(
     input_path,
     output_path,
@@ -79,6 +80,7 @@ def compute_currents(
     resume,
     sql_tmp_path,
     debug_csv_path,
+    only_rin,
 ):
     """For each cell, compute the holding, thresholds currents as well as Rin/RMP.
 
@@ -110,25 +112,24 @@ def compute_currents(
         db_url=Path(sql_tmp_path) / "current_db.sql" if sql_tmp_path is not None else None,
         template_format="v6_adapted" if "@dynamics:AIS_scaler" in cells_df.columns else "v6",
         resume=resume,
+        only_rin=only_rin,
     )
     if debug_csv_path is not None:
         cells_df.to_csv(debug_csv_path, index=False)
-        for col in [
-            "@dynamics:holding_current",
-            "@dynamics:threshold_current",
-            "@dynamics:resting_potential",
-            "@dynamics:input_resistance",
-        ]:
+        cols = ["@dynamics:resting_potential", "@dynamics:input_resistance"]
+        if not only_rin:
+            cols += ["@dynamics:holding_current", "@dynamics:threshold_current"]
+        for col in cols:
             if col in cells_df.columns:
                 cells_df = cells_df.drop(col, axis=1)
-    cells_df = cells_df.rename(
-        columns={
-            "holding_current": "@dynamics:holding_current",
-            "threshold_current": "@dynamics:threshold_current",
-            "resting_potential": "@dynamics:resting_potential",
-            "input_resistance": "@dynamics:input_resistance",
-        }
-    ).drop(columns=["path", "exception", "emodel"])
+    columns = {
+        "resting_potential": "@dynamics:resting_potential",
+        "input_resistance": "@dynamics:input_resistance",
+    }
+    if not only_rin:
+        columns["holding_current"] = "@dynamics:holding_current"
+        columns["threshold_current"] = "@dynamics:threshold_current"
+    cells_df = cells_df.rename(columns).drop(columns=["path", "exception", "emodel"])
 
     failed_cells = cells_df[cells_df.isnull().any(axis=1)].index
     if len(failed_cells) > 0:
