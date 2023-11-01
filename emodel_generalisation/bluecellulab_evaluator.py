@@ -268,11 +268,12 @@ def _current_evaluation(
 
     results = {
         "resting_potential": rmp,
-        "input_resistance": rin,
+        "input_resistance": rin
     }
     if not only_rin:
         results["holding_current"] = holding_current
         results["threshold_current"] = threshold_current
+    return results
 
 
 def _isolated_current_evaluation(*args, **kwargs):

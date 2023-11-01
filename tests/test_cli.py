@@ -24,6 +24,7 @@ def test_compute_currents(cli_runner, tmpdir):
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
             "--hoc-path", str(DATA / "hoc"),
             "--parallel-lib", None,
+            "--only-rin",
             # "--debug-csv-path", "debug.csv"  # use this to debug
         ],
     )
