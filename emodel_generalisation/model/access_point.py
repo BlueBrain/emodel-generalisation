@@ -894,8 +894,9 @@ class AccessPoint:
     ):
         """Init"""
         if nexus_config is not None:
-            convert_all_config(nexus_config, emodel_dir)
-            final_path = Path(emodel_dir) / "emodel_parameters.json"
+            if not Path(emodel_dir).exists():
+                convert_all_config(nexus_config, emodel_dir)
+            final_path = Path(emodel_dir) / "final.json"
             recipes_path = Path(emodel_dir) / "recipes.json"
 
         if emodel_dir is None:
@@ -915,11 +916,15 @@ class AccessPoint:
         if final_path.exists():
             with open(final_path, "r") as f:
                 self.final = json.load(f)
+        self.emodels = list(self.final.keys()) if self.final is not None else None
         self.morph_path = None
         self.settings = {}
 
     def get_recipes(self, emodel):
         """Load the recipes from a json file for an emodel."""
+
+        _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
+        print(_emodel, emodel)
         try:
             _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
             if self.legacy_dir_structure:

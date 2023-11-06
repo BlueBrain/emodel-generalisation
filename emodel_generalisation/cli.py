@@ -2,6 +2,7 @@
 import json
 import logging
 from pathlib import Path
+from collections import defaultdict
 
 import click
 import matplotlib.pyplot as plt
@@ -39,15 +40,47 @@ _BASE_PATH = Path(__file__).parent.resolve()
 # pylint: disable=too-many-locals
 
 
-def _load_circuit(input_path, morphology_path):
+def _load_circuit(input_path, morphology_path=None):
+    """Load a circuit into a dataframe."""
     input_cells = CellCollection.load(input_path)
     cells_df = input_cells.as_dataframe()
+
     for column in cells_df.columns:
         if cells_df[column].dtype == "category":
             cells_df[column] = cells_df[column].astype(object)
-    cells_df["emodel"] = cells_df["model_template"].apply(lambda temp: temp[4:])
-    cells_df["path"] = [f"{morphology_path}/{m}.asc" for m in cells_df["morphology"]]
+
+    if "model_template" in cells_df:
+        cells_df["emodel"] = cells_df["model_template"].apply(lambda temp: temp[4:])
+
+    if morphology_path is not None:
+        cells_df["path"] = [f"{morphology_path}/{m}.asc" for m in cells_df["morphology"]]
+
     return cells_df, input_cells
+
+
+def _get_access_point(config_path, final_path=None, legacy=False, local_nexus_config="config"):
+    """Get access point."""
+    config_path = Path(config_path)
+
+    if final_path is None:
+        final_path = config_path / "final.json"
+    if legacy:
+        return AccessPoint(
+            emodel_dir=config_path,
+            final_path=final_path,
+            legacy_dir_structure=True,
+            with_seeds=True,
+        )
+
+    if not config_path.is_dir():
+        return AccessPoint(nexus_config=config_path, emodel_dir=local_nexus_config)
+
+    return AccessPoint(
+        emodel_dir=config_path.parent,
+        final_path=final_path,
+        recipes_path=config_path / "recipes.json",
+        with_seeds=True,
+    )
 
 
 @click.group()
@@ -233,7 +266,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--n-cells-per-emodel", default=None, type=int)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
-@click.option("--final-path", type=str, required=True)
+@click.option("--final-path", type=str, default=None)
 @click.option("--exemplar-data-path", type=str, required=True, default="local/exemplar_data.yaml")
 @click.option("--legacy", is_flag=True)
 @click.option("--parallel-lib", default="multiprocessing", type=str)
@@ -262,22 +295,9 @@ def evaluate(
 ):
     """Evaluate models from a circuit."""
     parallel_factory = init_parallel_factory(parallel_lib)
-    if legacy:
-        access_point = AccessPoint(
-            emodel_dir=Path(config_path),
-            final_path=final_path,
-            legacy_dir_structure=True,
-            with_seeds=True,
-        )
-    else:
-        access_point = AccessPoint(
-            emodel_dir=Path(config_path).parent,
-            final_path=final_path,
-            recipes_path=Path(config_path) / "recipes.json",
-            with_seeds=True,
-        )
-
+    access_point = _get_access_point(config_path, final_path, legacy)
     cells_df, _ = _load_circuit(input_path, morphology_path)
+
     if n_cells_per_emodel is not None:
         cells_df = (
             cells_df.groupby(["emodel", "mtype"])
@@ -352,13 +372,47 @@ def evaluate(
         )
 
 
+@cli.command("assign")
+@click.option("--input-node-path", type=click.Path(exists=True), required=True)
+@click.option("--output-node-path", default="node.h5", type=str)
+@click.option("--config-path", type=str, required=True)
+@click.option("--legacy", is_flag=True)
+def assign(input_node_path, output_node_path, config_path, legacy):
+    """Assign emodels to cells in a circuit."""
+    access_point = _get_access_point(config_path, legacy=legacy)
+    cells_df, _ = _load_circuit(input_node_path)
+    cells_df = cells_df
+
+    emodel_mappings = defaultdict(pd.DataFrame)
+    for emodel in access_point.emodels:
+        recipe = access_point.get_recipes(emodel)
+        emodel_mappings[recipe["region"]].loc[recipe["etype"], recipe["mtype"]] = emodel
+
+    def assign_emodel(row):
+        """Get emodel name to use in pandas .apply."""
+        try:
+            return "hoc:" + emodel_mappings[row["region"]].loc[row["etype"], row["mtype"]]
+        except KeyError:
+            return "hoc:no_emodel"
+
+    cells_df["model_template"] = cells_df.apply(assign_emodel, axis=1)
+    n_fails = len(cells_df[cells_df["model_template"] == "hoc:no_emodel"])
+    if n_fails > 0:
+        L.warning(f"{n_fails} cells could not be assigned emodels.")
+
+    L.info("Saving sonata file...")
+    cells = CellCollection.load(input_node_path)
+    cells.properties["model_template"] = cells_df["model_template"].to_list()
+    cells.save(output_node_path)
+
+
 @cli.command("adapt")
 @click.option("--input-node-path", type=click.Path(exists=True), required=True)
 @click.option("--output-csv-path", default="adapt_df.csv", type=str)
 @click.option("--output-node-path", default="node.h5", type=str)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
-@click.option("--final-path", type=str, required=True)
+@click.option("--final-path", type=str, default=None)
 @click.option("--hoc-path", type=str, default="hoc")
 @click.option("--template-path", type=str, default=None)
 @click.option("--local-dir", type=str, default="local")
@@ -394,30 +448,20 @@ def adapt(
         6. create hoc files with corresponding replace_axon
     """
     parallel_factory = init_parallel_factory(parallel_lib)
-    if legacy:
-        access_point = AccessPoint(
-            emodel_dir=Path(config_path),
-            final_path=final_path,
-            legacy_dir_structure=True,
-            with_seeds=True,
-        )
-    else:
-        access_point = AccessPoint(
-            emodel_dir=Path(config_path).parent,
-            final_path=final_path,
-            recipes_path=Path(config_path) / "recipes.json",
-            with_seeds=True,
-        )
+    if final_path is None:
+        final_path = Path(config_path) / "final.json"
+    access_point = _get_access_point(config_path, final_path, legacy)
     local_dir = Path(local_dir)
     local_dir.mkdir(exist_ok=True, parents=True)
     cells_df, _ = _load_circuit(input_node_path, morphology_path)
 
     exemplar_df = pd.DataFrame()
     for gid, emodel in enumerate(cells_df.emodel.unique()):
-        morph = access_point.get_morphologies(emodel)
-        exemplar_df.loc[gid, "emodel"] = emodel
-        exemplar_df.loc[gid, "path"] = morph["path"]
-        exemplar_df.loc[gid, "name"] = morph["name"]
+        if emodel != 'no_emodel':
+            morph = access_point.get_morphologies(emodel)
+            exemplar_df.loc[gid, "emodel"] = emodel
+            exemplar_df.loc[gid, "path"] = morph["path"]
+            exemplar_df.loc[gid, "name"] = morph["name"]
 
     # get exemplar data
     L.info("Extracting exemplar data...")
@@ -450,10 +494,11 @@ def adapt(
 
     L.info("Compute exemplar rho factors...")
     for gid, emodel in enumerate(cells_df.emodel.unique()):
-        exemplar_df.loc[gid, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
-        exemplar_df.loc[gid, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
-        exemplar_df.loc[gid, "soma_scaler"] = 1.0
-        exemplar_df.loc[gid, "ais_scaler"] = 1.0
+        if emodel != 'no_emodel':
+            exemplar_df.loc[gid, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
+            exemplar_df.loc[gid, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
+            exemplar_df.loc[gid, "soma_scaler"] = 1.0
+            exemplar_df.loc[gid, "ais_scaler"] = 1.0
 
     with Reuse(local_dir / "exemplar_rho.csv") as reuse:
         exemplar_df = reuse(
