@@ -241,6 +241,7 @@ def _current_evaluation(
     emodels_hoc_dir,
     morphology_path="morphology_path",
     template_format="v6_adapted",
+    only_rin=False,
 ):
     """Compute the threshold and holding currents."""
     cell_kwargs = {
@@ -258,19 +259,18 @@ def _current_evaluation(
     protocol_config["deterministic"] = set_cell_deterministic(
         cell, protocol_config["deterministic"]
     )
-
-    holding_current = calculate_holding_current(cell, protocol_config)
-    threshold_current = calculate_threshold_current(cell, protocol_config, holding_current)
+    if not only_rin:
+        holding_current = calculate_holding_current(cell, protocol_config)
+        threshold_current = calculate_threshold_current(cell, protocol_config, holding_current)
     rmp, rin = calculate_rmp_and_rin(cell, protocol_config)
 
     cell.delete()
 
-    return {
-        "holding_current": holding_current,
-        "threshold_current": threshold_current,
-        "resting_potential": rmp,
-        "input_resistance": rin,
-    }
+    results = {"resting_potential": rmp, "input_resistance": rin}
+    if not only_rin:
+        results["holding_current"] = holding_current
+        results["threshold_current"] = threshold_current
+    return results
 
 
 def _isolated_current_evaluation(*args, **kwargs):
@@ -279,11 +279,12 @@ def _isolated_current_evaluation(*args, **kwargs):
     res = isolate(_current_evaluation, timeout=timeout)(*args, **kwargs)
     if res is None:
         res = {
-            "holding_current": None,
-            "threshold_current": None,
             "resting_potential": None,
             "input_resistance": None,
         }
+        if not kwargs.get("only_rin", False):
+            res["holding_current"] = None
+            res["threshold_current"] = None
 
     return res
 
@@ -298,17 +299,17 @@ def evaluate_currents(
     parallel_factory=None,
     template_format="v6_ais_scaler",
     timeout=500,
+    only_rin=False,
 ):
     """Compute the threshold and holding currents using bluecellulab."""
+    new_columns = [["resting_potential", 0.0], ["input_resistance", 0.0]]
+    if not only_rin:
+        new_columns += [["holding_current", 0.0], ["threshold_current", 0.0]]
+
     return evaluate(
         morphs_combos_df,
         _isolated_current_evaluation,
-        new_columns=[
-            ["holding_current", 0.0],
-            ["threshold_current", 0.0],
-            ["resting_potential", 0.0],
-            ["input_resistance", 0.0],
-        ],
+        new_columns=new_columns,
         resume=resume,
         parallel_factory=parallel_factory,
         db_url=db_url,
@@ -318,5 +319,6 @@ def evaluate_currents(
             "morphology_path": morphology_path,
             "template_format": template_format,
             "timeout": timeout,
+            "only_rin": only_rin,
         },
     )

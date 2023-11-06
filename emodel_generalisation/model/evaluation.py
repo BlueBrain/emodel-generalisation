@@ -1001,7 +1001,7 @@ class FitnessCalculatorConfiguration:
             stochasticity (bool or list of str): should channels behave stochastically if they can.
                 If a list of protocol names is provided, the runs will be stochastic
                 for these protocols, and deterministic for the other ones.
-            ion_variables (list of str): ion current names and ionic concentration anmes
+            ion_variables (list of str): ion current names and ionic concentration names
                 for all available mechanisms
         """
         self.rmp_duration = 500.0

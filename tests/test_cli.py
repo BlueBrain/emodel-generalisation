@@ -50,6 +50,38 @@ def test_compute_currents(cli_runner, tmpdir):
         df["@dynamics:threshold_current"].to_list(), [0.08203125, 0.1109375], rtol=1e-5
     )
 
+    # fmt: off
+    response = cli_runner.invoke(
+        tested.cli,
+        [
+            "compute_currents",
+            "--input-path", str(DATA / "sonata_v6.h5"),
+            "--output-path", str(tmpdir / "sonata_currents_only_rin.h5"),
+            "--morphology-path", str(DATA / "morphologies"),
+            "--protocol-config-path", str(DATA / "protocol_config.yaml"),
+            "--hoc-path", str(DATA / "hoc"),
+            "--parallel-lib", None,
+            "--only-rin",
+            # "--debug-csv-path", "debug.csv"  # use this to debug
+        ],
+    )
+    # fmt: on
+    assert response.exit_code == 0
+
+    df = CellCollection().load_sonata(tmpdir / "sonata_currents_only_rin.h5").as_dataframe()
+    npt.assert_allclose(
+        df["@dynamics:resting_potential"].to_list(),
+        [-78.24665843577513, -78.04757822491321],
+        rtol=1e-5,
+    )
+    npt.assert_allclose(
+        df["@dynamics:input_resistance"].to_list(),
+        [239.4410588137958, 200.66982375732323],
+        rtol=1e-5,
+    )
+    assert "@dynamics:holding_current" not in df.columns
+    assert "@dynamics:threshold_current" not in df.columns
+
 
 def test_evaluate(cli_runner, tmpdir):
     """Tetst cli evaluate."""

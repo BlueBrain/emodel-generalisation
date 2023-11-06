@@ -914,7 +914,7 @@ class AccessPoint:
         self.settings = {}
 
     def get_recipes(self, emodel):
-        """Load the recipes fram a json file for an emodel."""
+        """Load the recipes from a json file for an emodel."""
         _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
         if self.legacy_dir_structure:
             recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"

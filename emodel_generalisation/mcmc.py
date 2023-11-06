@@ -288,7 +288,7 @@ class MarkovChain:
         raise Exception("mcmc type not implemented")
 
     def _append_result(self, step, result, accept_rate):
-        """Append result to resut dataframea and save."""
+        """Append result to main dataframe and save."""
         self.result_df.loc[step, "cost"] = result["cost"]
         self.result_df.loc[step, "accept_rate"] = accept_rate
         self.result_df.loc[step, "probability"] = result["probability"]
