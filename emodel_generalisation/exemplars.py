@@ -374,7 +374,6 @@ def get_ais(neuron):
         if neurite.type == SectionType.axon:
             return neurite
     return None
-    # raise Exception("AIS not found")
 
 
 def extract_ais_diameters(morphologies):

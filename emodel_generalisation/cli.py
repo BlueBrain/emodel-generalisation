@@ -457,7 +457,7 @@ def adapt(
 
     exemplar_df = pd.DataFrame()
     for gid, emodel in enumerate(cells_df.emodel.unique()):
-        if emodel != 'no_emodel':
+        if emodel != "no_emodel":
             morph = access_point.get_morphologies(emodel)
             exemplar_df.loc[gid, "emodel"] = emodel
             exemplar_df.loc[gid, "path"] = morph["path"]
@@ -483,9 +483,16 @@ def adapt(
         exemplar_data = {}
         for emodel in exemplar_df.emodel:
             _df = exemplar_df[exemplar_df.emodel == emodel]
+            exemplar_path = _df["path"].tolist()[0]
             _df["mtype"] = "all"
             exemplar_data[emodel] = generate_exemplars(_df, with_plots=False, surface_percentile=50)
-            exemplar_data[emodel]["ais"]["popt"] = _get_ais_profile(_df["path"].tolist()[0])
+            exemplar_data[emodel]["ais"]["popt"] = _get_ais_profile(exemplar_path)
+
+            # check we are not placeholder
+            if len(Morphology(exemplar_path).root_sections) > 1:
+                exemplar_data[emodel]["placeholder"] = True
+            else:
+                exemplar_data[emodel]["placeholder"] = False
 
         return exemplar_data
 
@@ -493,32 +500,41 @@ def adapt(
         exemplar_data = reuse(_get_exemplar_data, exemplar_df)
 
     L.info("Compute exemplar rho factors...")
+    placeholder_mask = []
     for gid, emodel in enumerate(cells_df.emodel.unique()):
-        if emodel != 'no_emodel':
+        if emodel != "no_emodel":
+            if exemplar_data[emodel]["placeholder"]:
+                placeholder_mask.append(gid)
             exemplar_df.loc[gid, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
             exemplar_df.loc[gid, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
             exemplar_df.loc[gid, "soma_scaler"] = 1.0
             exemplar_df.loc[gid, "ais_scaler"] = 1.0
 
     with Reuse(local_dir / "exemplar_rho.csv") as reuse:
-        exemplar_df = reuse(
+        data = reuse(
             evaluate_rho,
-            exemplar_df,
+            exemplar_df.loc[placeholder_mask],
             access_point,
             parallel_factory=parallel_factory,
             resume=resume,
             db_url=sql_tmp_path,
         )
+        for col in data.columns:
+            exemplar_df[col] = None
+            exemplar_df.loc[placeholder_mask, col] = data[col]
 
     with Reuse(local_dir / "exemplar_rho_axon.csv") as reuse:
-        exemplar_df = reuse(
+        data = reuse(
             evaluate_rho_axon,
-            exemplar_df,
+            exemplar_df.loc[placeholder_mask],
             access_point,
             parallel_factory=parallel_factory,
             resume=resume,
             db_url=sql_tmp_path,
         )
+        for col in data.columns:
+            exemplar_df[col] = None
+            exemplar_df.loc[placeholder_mask, col] = data[col]
 
     L.info("Create resistance models of AIS and soma...")
     scales_params = {"min": -0.5, "max": 0.5, "n": 10, "lin": False}  # possibly configurable
@@ -533,7 +549,9 @@ def adapt(
         return models
 
     with Reuse(local_dir / "resistance_models.yaml") as reuse:
-        resistance_models = reuse(_get_resistance_models, exemplar_df, exemplar_data, scales_params)
+        resistance_models = reuse(
+            _get_resistance_models, exemplar_df.loc[placeholder_mask], exemplar_data, scales_params
+        )
 
     L.info("Adapting AIS and soma of all cells..")
     cells_df["ais_scaler"] = 1.0
@@ -543,25 +561,29 @@ def adapt(
         """Adapt AIS/somam scales to match the rho factors."""
         for i, emodel in enumerate(exemplar_df.emodel):
             L.info("Adapting model: %s, %s / %s", emodel, i, len(exemplar_df))
-            rhos = (
-                exemplar_df[exemplar_df.emodel == emodel][["rho", "rho_axon", "emodel"]]
-                .set_index("emodel")
-                .to_dict()
-            )
             mask = cells_df.emodel == emodel
-
             cells_df.loc[mask, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
             cells_df.loc[mask, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
-            cells_df[mask] = adapt_soma_ais(
-                cells_df[mask],
-                access_point,
-                resistance_models[emodel],
-                rhos,
-                parallel_factory=parallel_factory,
-                min_scale=0.5,
-                max_scale=2.0,
-                n_steps=2,
-            )
+
+            if emodel in exemplar_data:
+                rhos = (
+                    exemplar_df[exemplar_df.emodel == emodel][["rho", "rho_axon", "emodel"]]
+                    .set_index("emodel")
+                    .to_dict()
+                )
+                cells_df[mask] = adapt_soma_ais(
+                    cells_df[mask],
+                    access_point,
+                    resistance_models[emodel],
+                    rhos,
+                    parallel_factory=parallel_factory,
+                    min_scale=0.5,
+                    max_scale=2.0,
+                    n_steps=2,
+                )
+            else:
+                cells_df.loc[mask, "ais_scaler"] = 1.0
+                cells_df.loc[mask, "soma_scaler"] = 1.0
         return cells_df
 
     with Reuse(output_csv_path) as reuse:
@@ -580,7 +602,7 @@ def adapt(
     else:
         template_path = Path(template_path)
 
-    for emodel in exemplar_df.emodel:
+    for emodel in exemplar_data:
         hoc_params = [
             exemplar_data[emodel]["soma"]["soma_radius"],
             exemplar_data[emodel]["soma"]["soma_surface"],
