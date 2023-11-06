@@ -122,6 +122,7 @@ def compute_currents(
         for col in cols:
             if col in cells_df.columns:
                 cells_df = cells_df.drop(col, axis=1)
+
     columns = {
         "resting_potential": "@dynamics:resting_potential",
         "input_resistance": "@dynamics:input_resistance",
@@ -129,7 +130,8 @@ def compute_currents(
     if not only_rin:
         columns["holding_current"] = "@dynamics:holding_current"
         columns["threshold_current"] = "@dynamics:threshold_current"
-    cells_df = cells_df.rename(columns).drop(columns=["path", "exception", "emodel"])
+
+    cells_df = cells_df.rename(columns=columns).drop(columns=["path", "exception", "emodel"])
 
     failed_cells = cells_df[cells_df.isnull().any(axis=1)].index
     if len(failed_cells) > 0:

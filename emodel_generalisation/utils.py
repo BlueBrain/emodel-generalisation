@@ -158,7 +158,7 @@ def plot_traces(trace_df, trace_path="traces", pdf_filename="traces.pdf"):
         pdf_filename (str): name of pdf to save
     """
     COLORS = cycle(["r"] + [f"C{i}" for i in range(10)])
-    trace_df = trace_df.copy()  # prevents annyoing panda warnings
+    trace_df = trace_df.copy()  # prevents annoying panda warnings
     if "trace_highlight" not in trace_df.columns:
         trace_df["trace_highlight"] = True
     for index in trace_df.index:

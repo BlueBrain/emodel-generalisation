@@ -266,10 +266,7 @@ def _current_evaluation(
 
     cell.delete()
 
-    results = {
-        "resting_potential": rmp,
-        "input_resistance": rin
-    }
+    results = {"resting_potential": rmp, "input_resistance": rin}
     if not only_rin:
         results["holding_current"] = holding_current
         results["threshold_current"] = threshold_current
