@@ -37,7 +37,6 @@ from neurom import iter_sections
 from neurom import load_morphology
 from neurom import view
 from scipy.optimize import curve_fit
-from tqdm import tqdm
 
 
 def build_soma_model(morphology_paths):
@@ -45,7 +44,7 @@ def build_soma_model(morphology_paths):
 
     Using only surface area for now.
     """
-    soma_surfaces = [float(get_NEURON_surface(path)) for path in tqdm(morphology_paths)]
+    soma_surfaces = [float(get_NEURON_surface(path)) for path in morphology_paths]
     soma_radii = [
         float(nm.get("soma_radius", nm.load_morphology(path))) for path in morphology_paths
     ]

@@ -64,6 +64,7 @@ def _get_access_point(config_path, final_path=None, legacy=False, local_nexus_co
 
     if final_path is None:
         final_path = config_path / "final.json"
+
     if legacy:
         return AccessPoint(
             emodel_dir=config_path,
@@ -381,20 +382,21 @@ def assign(input_node_path, output_node_path, config_path, legacy):
     """Assign emodels to cells in a circuit."""
     access_point = _get_access_point(config_path, legacy=legacy)
     cells_df, _ = _load_circuit(input_node_path)
-    cells_df = cells_df
 
-    emodel_mappings = defaultdict(pd.DataFrame)
+    emodel_mappings = defaultdict(lambda: defaultdict(dict))
+    L.info("Creating emodel mappings...")
     for emodel in access_point.emodels:
-        recipe = access_point.get_recipes(emodel)
-        emodel_mappings[recipe["region"]].loc[recipe["etype"], recipe["mtype"]] = emodel
+        recipe = access_point.recipes[emodel]
+        emodel_mappings[recipe["region"]][recipe["etype"]][recipe["mtype"]] = emodel
 
     def assign_emodel(row):
         """Get emodel name to use in pandas .apply."""
         try:
-            return "hoc:" + emodel_mappings[row["region"]].loc[row["etype"], row["mtype"]]
+            return "hoc:" + emodel_mappings[row["region"]][row["etype"]][row["mtype"]]
         except KeyError:
             return "hoc:no_emodel"
 
+    L.info("Assigning emodels...")
     cells_df["model_template"] = cells_df.apply(assign_emodel, axis=1)
     n_fails = len(cells_df[cells_df["model_template"] == "hoc:no_emodel"])
     if n_fails > 0:
@@ -448,12 +450,15 @@ def adapt(
         6. create hoc files with corresponding replace_axon
     """
     parallel_factory = init_parallel_factory(parallel_lib)
-    if final_path is None:
-        final_path = Path(config_path) / "final.json"
+
     access_point = _get_access_point(config_path, final_path, legacy)
+
     local_dir = Path(local_dir)
     local_dir.mkdir(exist_ok=True, parents=True)
+
     cells_df, _ = _load_circuit(input_node_path, morphology_path)
+
+    L.info("Extracting exemplar data...")
 
     exemplar_df = pd.DataFrame()
     for gid, emodel in enumerate(cells_df.emodel.unique()):
@@ -463,8 +468,7 @@ def adapt(
             exemplar_df.loc[gid, "path"] = morph["path"]
             exemplar_df.loc[gid, "name"] = morph["name"]
 
-    # get exemplar data
-    L.info("Extracting exemplar data...")
+    L.info(f"We found {len(exemplar_df)} emodels.")
 
     def _get_ais_profile(path):
         """Create ais profile from exemplar, instead of constant mean diameters as by default.
@@ -481,15 +485,15 @@ def adapt(
     def _get_exemplar_data(exemplar_df):
         """Create exemplar data for all emodels."""
         exemplar_data = {}
-        for emodel in exemplar_df.emodel:
-            _df = exemplar_df[exemplar_df.emodel == emodel]
+        for emodel in tqdm(exemplar_df.emodel):
+            _df = exemplar_df[exemplar_df.emodel == emodel].copy()
             exemplar_path = _df["path"].tolist()[0]
             _df["mtype"] = "all"
             exemplar_data[emodel] = generate_exemplars(_df, with_plots=False, surface_percentile=50)
             exemplar_data[emodel]["ais"]["popt"] = _get_ais_profile(exemplar_path)
 
             # check we are not placeholder
-            if len(Morphology(exemplar_path).root_sections) > 1:
+            if len(Morphology(exemplar_path).root_sections) == 1:
                 exemplar_data[emodel]["placeholder"] = True
             else:
                 exemplar_data[emodel]["placeholder"] = False
@@ -503,12 +507,16 @@ def adapt(
     placeholder_mask = []
     for gid, emodel in enumerate(cells_df.emodel.unique()):
         if emodel != "no_emodel":
-            if exemplar_data[emodel]["placeholder"]:
+            if not exemplar_data[emodel]["placeholder"]:
                 placeholder_mask.append(gid)
             exemplar_df.loc[gid, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
             exemplar_df.loc[gid, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
             exemplar_df.loc[gid, "soma_scaler"] = 1.0
             exemplar_df.loc[gid, "ais_scaler"] = 1.0
+
+    n_placeholders = len(cells_df.emodel.unique()) - len(placeholder_mask)
+    n_emodels = len(exemplar_df)
+    L.info(f"We found {n_placeholders} placeholers models out of {n_emodels} models.")
 
     with Reuse(local_dir / "exemplar_rho.csv") as reuse:
         data = reuse(
@@ -520,7 +528,8 @@ def adapt(
             db_url=sql_tmp_path,
         )
         for col in data.columns:
-            exemplar_df[col] = None
+            if col not in exemplar_df:
+                exemplar_df[col] = None
             exemplar_df.loc[placeholder_mask, col] = data[col]
 
     with Reuse(local_dir / "exemplar_rho_axon.csv") as reuse:
@@ -533,7 +542,8 @@ def adapt(
             db_url=sql_tmp_path,
         )
         for col in data.columns:
-            exemplar_df[col] = None
+            if col not in exemplar_df:
+                exemplar_df[col] = None
             exemplar_df.loc[placeholder_mask, col] = data[col]
 
     L.info("Create resistance models of AIS and soma...")
@@ -558,32 +568,33 @@ def adapt(
     cells_df["soma_scaler"] = 1.0
 
     def _adapt():
-        """Adapt AIS/somam scales to match the rho factors."""
+        """Adapt AIS/soma scales to match the rho factors."""
         for i, emodel in enumerate(exemplar_df.emodel):
-            L.info("Adapting model: %s, %s / %s", emodel, i, len(exemplar_df))
+            L.info("Adapting model: %s, %s / %s", emodel, i + 1, len(exemplar_df))
             mask = cells_df.emodel == emodel
             cells_df.loc[mask, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
             cells_df.loc[mask, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
 
             if emodel in exemplar_data:
-                rhos = (
-                    exemplar_df[exemplar_df.emodel == emodel][["rho", "rho_axon", "emodel"]]
-                    .set_index("emodel")
-                    .to_dict()
-                )
-                cells_df[mask] = adapt_soma_ais(
-                    cells_df[mask],
-                    access_point,
-                    resistance_models[emodel],
-                    rhos,
-                    parallel_factory=parallel_factory,
-                    min_scale=0.5,
-                    max_scale=2.0,
-                    n_steps=2,
-                )
-            else:
-                cells_df.loc[mask, "ais_scaler"] = 1.0
-                cells_df.loc[mask, "soma_scaler"] = 1.0
+                if exemplar_data[emodel]["placeholder"]:
+                    cells_df.loc[mask, "ais_scaler"] = 1.0
+                    cells_df.loc[mask, "soma_scaler"] = 1.0
+                else:
+                    rhos = (
+                        exemplar_df[exemplar_df.emodel == emodel][["rho", "rho_axon", "emodel"]]
+                        .set_index("emodel")
+                        .to_dict()
+                    )
+                    cells_df[mask] = adapt_soma_ais(
+                        cells_df[mask],
+                        access_point,
+                        resistance_models[emodel],
+                        rhos,
+                        parallel_factory=parallel_factory,
+                        min_scale=0.5,
+                        max_scale=2.0,
+                        n_steps=2,
+                    )
         return cells_df
 
     with Reuse(output_csv_path) as reuse:

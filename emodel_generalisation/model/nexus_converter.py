@@ -6,9 +6,10 @@ from tqdm import tqdm
 
 def _get_emodel_name(region, mtype, etype, i=None):
     """Create emodel name for internal use."""
+    base_name = f"{region.replace(' ', '_')}__{mtype.replace(' ', '_')}__{etype.replace(' ', '_')}"
     if i is not None:
-        return f"{region}_{mtype}_{etype}_{i}"
-    return f"{region}_{mtype}_{etype}"
+        return base_name + f"_{i}"
+    return base_name
 
 
 def _make_recipe_entry(config, emodel_name):
@@ -117,8 +118,7 @@ def convert_all_config(config_path, out_config_folder="config"):
     _prepare(out_config_folder)
     recipes = {}
     final = {}
-    L.info("Creating local config folder")
-    for region, region_config in tqdm(list(config.items())[:10]):
+    for region, region_config in tqdm(list(config.items())):
         for mtype, mtype_config in region_config.items():
             for etype, etype_config in mtype_config.items():
                 if etype_config["assignmentAlgorithm"] == "assignOne":
@@ -133,19 +133,8 @@ def convert_all_config(config_path, out_config_folder="config"):
                         out_config_folder,
                     )
 
-                    with open(out_config_folder / "recipes.json", "w") as recipes_file:
-                        json.dump(recipes, recipes_file, indent=4)
+    with open(out_config_folder / "recipes.json", "w") as recipes_file:
+        json.dump(recipes, recipes_file, indent=4)
 
-                    with open(out_config_folder / "final.json", "w") as final_file:
-                        json.dump(final, final_file, indent=4)
-
-                if etype_config["assignmentAlgorithm"] == "chooseRandom":
-                    # experimental, not tested
-                    for i, config in enumerate(etype_config["eModel"]):
-                        _add_emodel(recipes, final, region, mtype, etype, config, i)
-
-                    with open(out_config_folder / "recipes.json", "w") as recipes_file:
-                        json.dump(recipes, recipes_file, indent=4)
-
-                    with open(out_config_folder / "final.json", "w") as final_file:
-                        json.dump(final, final_file, indent=4)
+    with open(out_config_folder / "final.json", "w") as final_file:
+        json.dump(final, final_file, indent=4)

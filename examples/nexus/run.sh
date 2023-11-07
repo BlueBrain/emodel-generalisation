@@ -19,12 +19,12 @@ export USE_NEURODAMUS=1
 #output_dir: 
 #/gpfs/bbp.cscs.ch/data/scratch/proj134/tickets/BBPP134-901-emodel-generalisation-example/BBPP134-901-emodel-generalisation-example
 
-#rm -rf config
+rm -rf config local
 
-#emodel-generalisation -v assign \
-#    --input-node-path /gpfs/bbp.cscs.ch/data/scratch/proj134/workflow-outputs/20102023-20dd0dc6-e206-45f2-9c18-78b2edeb7744/morphologyAssignmentConfig/build/nodes.h5 \
-#    --config-path /gpfs/bbp.cscs.ch/project/proj134/scratch/tickets/BBPP134-901-emodel-generalisation-example/zisis/stage/recipe.json \
-#    --output-node-path assigned_nodes.h5
+emodel-generalisation -v assign \
+    --input-node-path /gpfs/bbp.cscs.ch/data/scratch/proj134/workflow-outputs/20102023-20dd0dc6-e206-45f2-9c18-78b2edeb7744/morphologyAssignmentConfig/build/nodes.h5 \
+    --config-path /gpfs/bbp.cscs.ch/project/proj134/scratch/tickets/BBPP134-901-emodel-generalisation-example/zisis/stage/recipe.json \
+    --output-node-path assigned_nodes.h5
 
 
 emodel-generalisation -v adapt \

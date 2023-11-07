@@ -895,6 +895,7 @@ class AccessPoint:
         """Init"""
         if nexus_config is not None:
             if not Path(emodel_dir).exists():
+                logger.info("Creating local config folder")
                 convert_all_config(nexus_config, emodel_dir)
             final_path = Path(emodel_dir) / "final.json"
             recipes_path = Path(emodel_dir) / "recipes.json"
@@ -919,31 +920,39 @@ class AccessPoint:
         self.emodels = list(self.final.keys()) if self.final is not None else None
         self.morph_path = None
         self.settings = {}
+        self._recipes = None
+
+    @property
+    def recipes(self):
+        """Cache mechanism to better handle large recipes in non-legacy setting."""
+        if self.legacy_dir_structure:
+            raise Exception("We cannot use recipes attribute with legacy.")
+
+        if not self._recipes:
+            with open(self.recipes_path, "r") as f:
+                self._recipes = json.load(f)
+        return self._recipes
 
     def get_recipes(self, emodel):
         """Load the recipes from a json file for an emodel."""
-
-        _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
-        print(_emodel, emodel)
         try:
             _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
             if self.legacy_dir_structure:
                 recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"
-            else:
-                recipes_path = self.recipes_path
 
-            with open(recipes_path, "r") as f:
-                return json.load(f)[_emodel]
+                with open(recipes_path, "r") as f:
+                    return json.load(f)[_emodel]
+            else:
+                return self.recipes[_emodel]
 
         except KeyError:
             _emodel = "_".join(emodel.split("_")[:-1]) if self.with_seeds else emodel
             if self.legacy_dir_structure:
                 recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"
+                with open(recipes_path, "r") as f:
+                    return json.load(f)[_emodel]
             else:
-                recipes_path = self.recipes_path
-
-            with open(recipes_path, "r") as f:
-                return json.load(f)[_emodel]
+                return self.recipes[_emodel]
 
     def get_settings(self, emodel):
         """ """
@@ -1066,7 +1075,6 @@ class AccessPoint:
             contain the additional entries "seclist_names" and "secarray_names" if they are
             present in the recipes.
         """
-
         recipes = self.get_recipes(emodel)
 
         if self.morph_path is None:
