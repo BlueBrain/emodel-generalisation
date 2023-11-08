@@ -476,9 +476,6 @@ class NeuronModelConfiguration:
             soma_ref_location=soma_ref_location,
         )
 
-        if any(tmp_distribution.name == d.name for d in self.distributions):
-            logger.warning("Distribution %s already exists", tmp_distribution.name)
-
         self.distributions.append(tmp_distribution)
 
     def add_parameter(

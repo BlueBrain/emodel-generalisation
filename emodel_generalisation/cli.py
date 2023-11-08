@@ -45,9 +45,9 @@ def _load_circuit(input_path, morphology_path=None):
     input_cells = CellCollection.load(input_path)
     cells_df = input_cells.as_dataframe()
 
-    for column in cells_df.columns:
-        if cells_df[column].dtype == "category":
-            cells_df[column] = cells_df[column].astype(object)
+    # for column in cells_df.columns:
+    # if cells_df[column].dtype == "category":
+    #    cells_df[column] = cells_df[column].astype(object)
 
     if "model_template" in cells_df:
         cells_df["emodel"] = cells_df["model_template"].apply(lambda temp: temp[4:])
@@ -410,7 +410,6 @@ def assign(input_node_path, output_node_path, config_path, legacy):
 
 @cli.command("adapt")
 @click.option("--input-node-path", type=click.Path(exists=True), required=True)
-@click.option("--output-csv-path", default="adapt_df.csv", type=str)
 @click.option("--output-node-path", default="node.h5", type=str)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
@@ -424,7 +423,6 @@ def assign(input_node_path, output_node_path, config_path, legacy):
 @click.option("--sql-tmp-path", default=None, type=str)
 def adapt(
     input_node_path,
-    output_csv_path,
     output_node_path,
     morphology_path,
     config_path,
@@ -485,12 +483,18 @@ def adapt(
     def _get_exemplar_data(exemplar_df):
         """Create exemplar data for all emodels."""
         exemplar_data = {}
+        _cached_data = {}  # used to avoid recomputing same exemplar data
         for emodel in tqdm(exemplar_df.emodel):
             _df = exemplar_df[exemplar_df.emodel == emodel].copy()
             exemplar_path = _df["path"].tolist()[0]
-            _df["mtype"] = "all"
-            exemplar_data[emodel] = generate_exemplars(_df, with_plots=False, surface_percentile=50)
-            exemplar_data[emodel]["ais"]["popt"] = _get_ais_profile(exemplar_path)
+
+            if exemplar_path not in _cached_data:
+                _df["mtype"] = "all"
+                _data = generate_exemplars(_df, with_plots=False, surface_percentile=50)
+                _data["ais"]["popt"] = _get_ais_profile(exemplar_path)
+                _cached_data[exemplar_path] = _data
+
+            exemplar_data[emodel] = _cached_data[exemplar_path]
 
             # check we are not placeholder
             if len(Morphology(exemplar_path).root_sections) == 1:
@@ -569,35 +573,33 @@ def adapt(
 
     def _adapt():
         """Adapt AIS/soma scales to match the rho factors."""
-        for i, emodel in enumerate(exemplar_df.emodel):
-            L.info("Adapting model: %s, %s / %s", emodel, i + 1, len(exemplar_df))
-            mask = cells_df.emodel == emodel
+        cells_df["ais_scaler"] = 1.0
+        cells_df["soma_scaler"] = 1.0
+        for i, emodel in tqdm(enumerate(exemplar_df.emodel), total=len(exemplar_df.emodel)):
+            mask = cells_df["emodel"] == emodel
             cells_df.loc[mask, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
             cells_df.loc[mask, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
 
-            if emodel in exemplar_data:
-                if exemplar_data[emodel]["placeholder"]:
-                    cells_df.loc[mask, "ais_scaler"] = 1.0
-                    cells_df.loc[mask, "soma_scaler"] = 1.0
-                else:
-                    rhos = (
-                        exemplar_df[exemplar_df.emodel == emodel][["rho", "rho_axon", "emodel"]]
-                        .set_index("emodel")
-                        .to_dict()
-                    )
-                    cells_df[mask] = adapt_soma_ais(
-                        cells_df[mask],
-                        access_point,
-                        resistance_models[emodel],
-                        rhos,
-                        parallel_factory=parallel_factory,
-                        min_scale=0.5,
-                        max_scale=2.0,
-                        n_steps=2,
-                    )
+            if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:
+                L.info("Adapting a non placeholder model...")
+                rhos = (
+                    exemplar_df[exemplar_df.emodel == emodel][["rho", "rho_axon", "emodel"]]
+                    .set_index("emodel")
+                    .to_dict()
+                )
+                cells_df[mask] = adapt_soma_ais(
+                    cells_df[mask],
+                    access_point,
+                    resistance_models[emodel],
+                    rhos,
+                    parallel_factory=parallel_factory,
+                    min_scale=0.5,
+                    max_scale=2.0,
+                    n_steps=2,
+                )
         return cells_df
 
-    with Reuse(output_csv_path) as reuse:
+    with Reuse(local_dir / "adapt_df.csv") as reuse:
         cells_df = reuse(_adapt)
 
     # finally save a node.h5 file

@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 def _get_emodel_name(region, mtype, etype, i=None):
     """Create emodel name for internal use."""
-    base_name = f"{region.replace(' ', '_')}__{mtype.replace(' ', '_')}__{etype.replace(' ', '_')}"
+    base_name = f"{region.replace(',', '').replace(' ', '_')}__{mtype}__{etype}"
     if i is not None:
         return base_name + f"_{i}"
     return base_name
