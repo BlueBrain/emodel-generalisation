@@ -45,12 +45,10 @@ def _load_circuit(input_path, morphology_path=None):
     input_cells = CellCollection.load(input_path)
     cells_df = input_cells.as_dataframe()
 
-    # for column in cells_df.columns:
-    # if cells_df[column].dtype == "category":
-    #    cells_df[column] = cells_df[column].astype(object)
-
     if "model_template" in cells_df:
-        cells_df["emodel"] = cells_df["model_template"].apply(lambda temp: temp[4:])
+        cells_df["emodel"] = (
+            cells_df["model_template"].apply(lambda temp: temp[4:]).astype("category")
+        )
 
     if morphology_path is not None:
         cells_df["path"] = [f"{morphology_path}/{m}.asc" for m in cells_df["morphology"]]
@@ -491,7 +489,7 @@ def adapt(
             if exemplar_path not in _cached_data:
                 _df["mtype"] = "all"
                 _data = generate_exemplars(_df, with_plots=False, surface_percentile=50)
-                _data["ais"]["popt"] = _get_ais_profile(exemplar_path)
+                _data["ais"] = {"popt": _get_ais_profile(exemplar_path)}
                 _cached_data[exemplar_path] = _data
 
             exemplar_data[emodel] = _cached_data[exemplar_path]
@@ -522,7 +520,7 @@ def adapt(
     n_emodels = len(exemplar_df)
     L.info(f"We found {n_placeholders} placeholers models out of {n_emodels} models.")
 
-    with Reuse(local_dir / "exemplar_rho.csv") as reuse:
+    with Reuse(local_dir / "exemplar_rho.csv", index=False) as reuse:
         data = reuse(
             evaluate_rho,
             exemplar_df.loc[placeholder_mask],
@@ -534,9 +532,9 @@ def adapt(
         for col in data.columns:
             if col not in exemplar_df:
                 exemplar_df[col] = None
-            exemplar_df.loc[placeholder_mask, col] = data[col]
+            exemplar_df.loc[placeholder_mask, col] = data[col].to_list()
 
-    with Reuse(local_dir / "exemplar_rho_axon.csv") as reuse:
+    with Reuse(local_dir / "exemplar_rho_axon.csv", index=False) as reuse:
         data = reuse(
             evaluate_rho_axon,
             exemplar_df.loc[placeholder_mask],
@@ -548,7 +546,7 @@ def adapt(
         for col in data.columns:
             if col not in exemplar_df:
                 exemplar_df[col] = None
-            exemplar_df.loc[placeholder_mask, col] = data[col]
+            exemplar_df.loc[placeholder_mask, col] = data[col].to_list()
 
     L.info("Create resistance models of AIS and soma...")
     scales_params = {"min": -0.5, "max": 0.5, "n": 10, "lin": False}  # possibly configurable
@@ -573,15 +571,20 @@ def adapt(
 
     def _adapt():
         """Adapt AIS/soma scales to match the rho factors."""
-        cells_df["ais_scaler"] = 1.0
-        cells_df["soma_scaler"] = 1.0
-        for i, emodel in tqdm(enumerate(exemplar_df.emodel), total=len(exemplar_df.emodel)):
+        ais_models = np.array(len(cells_df) * [""])
+        soma_models = np.array(len(cells_df) * [""])
+        for i, emodel in tqdm(enumerate(exemplar_df.emodel), total=n_emodels):
             mask = cells_df["emodel"] == emodel
-            cells_df.loc[mask, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
-            cells_df.loc[mask, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
+            print(emodel, any(mask))
+            ais_model = json.dumps(exemplar_data[emodel]["ais"])
+            soma_model = json.dumps(exemplar_data[emodel]["soma"])
+            ais_models[mask] = ais_model
+            soma_models[mask] = soma_model
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:
                 L.info("Adapting a non placeholder model...")
+                cells_df.loc[mask, "ais_model"] = ais_model
+                cells_df.loc[mask, "soma_model"] = soma_model
                 rhos = (
                     exemplar_df[exemplar_df.emodel == emodel][["rho", "rho_axon", "emodel"]]
                     .set_index("emodel")
@@ -597,6 +600,9 @@ def adapt(
                     max_scale=2.0,
                     n_steps=2,
                 )
+        # faster to assign with numpy, then entire column
+        cells_df["ais_model"] = ais_models
+        cells_df["soma_model"] = soma_models
         return cells_df
 
     with Reuse(local_dir / "adapt_df.csv") as reuse:
