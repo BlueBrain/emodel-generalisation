@@ -40,9 +40,9 @@ _BASE_PATH = Path(__file__).parent.resolve()
 # pylint: disable=too-many-locals
 
 
-def _load_circuit(input_path, morphology_path=None):
+def _load_circuit(input_path, morphology_path=None, population_name=None):
     """Load a circuit into a dataframe."""
-    input_cells = CellCollection.load(input_path)
+    input_cells = CellCollection.load_sonata(input_path, population_name)
     cells_df = input_cells.as_dataframe()
 
     if "model_template" in cells_df:
@@ -93,6 +93,7 @@ def cli(verbose):
 
 @cli.command("compute_currents")
 @click.option("--input-path", type=click.Path(exists=True), required=True)
+@click.option("--population_name", type=click.Path(exists=True), default=None)
 @click.option("--output-path", default="circuit_currents.h5", type=str)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--hoc-path", type=str, required=True)
@@ -104,6 +105,7 @@ def cli(verbose):
 @click.option("--only-rin", is_flag=True)
 def compute_currents(
     input_path,
+    population_name,
     output_path,
     morphology_path,
     hoc_path,
@@ -131,13 +133,14 @@ def compute_currents(
         raise Exception("If --sql-tmp-path is not set, --resume cannot work")
 
     parallel_factory = init_parallel_factory(parallel_lib)
-    cells_df, input_cells = _load_circuit(input_path, morphology_path)
+    cells_df, input_cells = _load_circuit(input_path, morphology_path, population_name)
 
     with open(protocol_config_path, "r") as prot_file:
         protocol_config = yaml.safe_load(prot_file)
 
-    cells_df = evaluate_currents(
-        cells_df,
+    # we evaluate currents only for unique morph/emodel pairs
+    unique_cells_df = evaluate_currents(
+        cells_df.drop_duplicates(["morphology", "emodel"]),
         protocol_config,
         hoc_path,
         parallel_factory=parallel_factory,
@@ -146,11 +149,25 @@ def compute_currents(
         resume=resume,
         only_rin=only_rin,
     )
+    cols = ["@dynamics:resting_potential", "@dynamics:input_resistance"]
+    if not only_rin:
+        cols += ["@dynamics:holding_current", "@dynamics:threshold_current"]
+
+    # we populate the full circuit with duplicates if any
+    if len(cells_df) == len(unique_cells_df):
+        cells_df = unique_cells_df
+    else:
+        for gid in unique_cells_df.index:
+            data = unique_cells_df.loc[gid].to_dict()
+            for col in cols:
+                cells_df[
+                    (cells_df.morphology == data["morphology"])
+                    & (cells_df.emodel == data["emodel"]),
+                    col,
+                ] = data[col]
+
     if debug_csv_path is not None:
         cells_df.to_csv(debug_csv_path, index=False)
-        cols = ["@dynamics:resting_potential", "@dynamics:input_resistance"]
-        if not only_rin:
-            cols += ["@dynamics:holding_current", "@dynamics:threshold_current"]
         for col in cols:
             if col in cells_df.columns:
                 cells_df = cells_df.drop(col, axis=1)
@@ -261,6 +278,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 
 @cli.command("evaluate")
 @click.option("--input-path", type=click.Path(exists=True), required=True)
+@click.option("--population_name", type=click.Path(exists=True), default=None)
 @click.option("--output-path", default="evaluation_df.csv", type=str)
 @click.option("--n-cells-per-emodel", default=None, type=int)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
@@ -277,6 +295,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--with-model-management", is_flag=True)
 def evaluate(
     input_path,
+    population_name,
     output_path,
     n_cells_per_emodel,
     morphology_path,
@@ -295,7 +314,7 @@ def evaluate(
     """Evaluate models from a circuit."""
     parallel_factory = init_parallel_factory(parallel_lib)
     access_point = _get_access_point(config_path, final_path, legacy)
-    cells_df, _ = _load_circuit(input_path, morphology_path)
+    cells_df, _ = _load_circuit(input_path, morphology_path, population_name)
 
     if n_cells_per_emodel is not None:
         cells_df = (
@@ -373,13 +392,14 @@ def evaluate(
 
 @cli.command("assign")
 @click.option("--input-node-path", type=click.Path(exists=True), required=True)
+@click.option("--population_name", type=click.Path(exists=True), default=None)
 @click.option("--output-node-path", default="node.h5", type=str)
 @click.option("--config-path", type=str, required=True)
 @click.option("--legacy", is_flag=True)
-def assign(input_node_path, output_node_path, config_path, legacy):
+def assign(input_node_path, population_name, output_node_path, config_path, legacy):
     """Assign emodels to cells in a circuit."""
     access_point = _get_access_point(config_path, legacy=legacy)
-    cells_df, _ = _load_circuit(input_node_path)
+    cells_df, _ = _load_circuit(input_node_path, population_name=population_name)
 
     emodel_mappings = defaultdict(lambda: defaultdict(dict))
     L.info("Creating emodel mappings...")
@@ -408,6 +428,7 @@ def assign(input_node_path, output_node_path, config_path, legacy):
 
 @cli.command("adapt")
 @click.option("--input-node-path", type=click.Path(exists=True), required=True)
+@click.option("--population_name", type=click.Path(exists=True), default=None)
 @click.option("--output-node-path", default="node.h5", type=str)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
@@ -421,6 +442,7 @@ def assign(input_node_path, output_node_path, config_path, legacy):
 @click.option("--sql-tmp-path", default=None, type=str)
 def adapt(
     input_node_path,
+    population_name,
     output_node_path,
     morphology_path,
     config_path,
@@ -452,7 +474,7 @@ def adapt(
     local_dir = Path(local_dir)
     local_dir.mkdir(exist_ok=True, parents=True)
 
-    cells_df, _ = _load_circuit(input_node_path, morphology_path)
+    cells_df, _ = _load_circuit(input_node_path, morphology_path, population_name)
 
     L.info("Extracting exemplar data...")
 

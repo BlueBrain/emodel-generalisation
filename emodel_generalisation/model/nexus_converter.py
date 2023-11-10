@@ -1,7 +1,13 @@
 """Convert nexus generate models to local AccessPoint config folder."""
 import json
+import shutil
+import filecmp
+import subprocess
 from pathlib import Path
 from tqdm import tqdm
+import logging
+
+L = logging.getLogger(__name__)
 
 
 def _get_emodel_name(region, mtype, etype, i=None):
@@ -18,6 +24,7 @@ def _make_recipe_entry(config, emodel_name):
 
     with open(config["EModelConfiguration"]) as emodelconfig_file:
         emodelconfig = json.load(emodelconfig_file)
+
     path = Path(emodelconfig["morphology"].get("path"))
     return {
         "morph_path": str(path.parent),
@@ -38,6 +45,26 @@ def _prepare(out_folder):
     out_folder.mkdir(exist_ok=True)
     (out_folder / "parameters").mkdir(exist_ok=True)
     (out_folder / "features").mkdir(exist_ok=True)
+
+
+def _make_mechanism(config, mech_path="mechanisms"):
+    """Copy mechanisms locally in a mechanisms folder."""
+    mech_path = Path(mech_path)
+    mech_path.mkdir(exist_ok=True, parents=True)
+    with open(config["EModelConfiguration"]) as emodelconfig_file:
+        emodelconfig = json.load(emodelconfig_file)
+
+    for mech in emodelconfig["mechanisms"]:
+        if mech["path"] is not None:
+            local_mech_path = mech_path / Path(mech["path"]).name
+            if local_mech_path.exists():
+                if not filecmp.cmp(mech["path"], local_mech_path):
+                    L.warning(
+                        f"Mechanism file {mech['path']} and {local_mech_path} are not the same,"
+                        "but have the same name, we do not overwrite."
+                    )
+            else:
+                shutil.copy(mech["path"], mech_path / Path(mech["path"]).name)
 
 
 def _make_parameters(config):
@@ -67,12 +94,7 @@ def _make_parameters(config):
 
 def _make_features(config):
     """Convert features entry."""
-    with open(
-        config.get(
-            "FitnessCalculatorConfiguration",
-            "/gpfs/bbp.cscs.ch/data/project/proj136/nexus/bbp/mmb-emodels-for-synthesized-neurons/e/d/a/8/d/7/f/7/FCC__emodel=cNAC__etype=cNAC__iteration=fa285b7.json",
-        )
-    ) as fitnessconf_file:
+    with open(config["FitnessCalculatorConfiguration"]) as fitnessconf_file:
         fitnessconf = json.load(fitnessconf_file)
     return fitnessconf
 
@@ -91,7 +113,9 @@ def _make_parameter_entry(config):
     return entry
 
 
-def _add_emodel(recipes, final, region, mtype, etype, config, i, out_config_folder):
+def _add_emodel(
+    recipes, final, region, mtype, etype, config, i, out_config_folder, mech_path="mechanisms"
+):
     """Add a single emodel."""
     emodel_name = _get_emodel_name(region, mtype, etype, i)
     recipes[emodel_name] = _make_recipe_entry(config, emodel_name)
@@ -101,6 +125,8 @@ def _add_emodel(recipes, final, region, mtype, etype, config, i, out_config_fold
     final[emodel_name] = _make_parameter_entry(config)
 
     params = _make_parameters(config)
+    _make_mechanism(config, mech_path)
+
     with open(out_config_folder / recipes[emodel_name]["params"], "w") as param_file:
         json.dump(params, param_file, indent=4)
 
@@ -109,7 +135,7 @@ def _add_emodel(recipes, final, region, mtype, etype, config, i, out_config_fold
         json.dump(features, feat_file, indent=4)
 
 
-def convert_all_config(config_path, out_config_folder="config"):
+def convert_all_config(config_path, out_config_folder="config", mech_path="mechanisms"):
     """Convert a nexus config_json file into a local config folder loadable via AccessPoint."""
     with open(config_path) as config_file:
         config = json.load(config_file)
@@ -131,6 +157,7 @@ def convert_all_config(config_path, out_config_folder="config"):
                         etype_config["eModel"],
                         None,
                         out_config_folder,
+                        mech_path,
                     )
 
     with open(out_config_folder / "recipes.json", "w") as recipes_file:
@@ -138,3 +165,6 @@ def convert_all_config(config_path, out_config_folder="config"):
 
     with open(out_config_folder / "final.json", "w") as final_file:
         json.dump(final, final_file, indent=4)
+
+    # compile all mechanisms
+    subprocess.run(f"nrnivmodl {mech_path}", shell=True, check=True)
