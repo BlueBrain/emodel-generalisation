@@ -97,7 +97,7 @@ def cli(verbose):
 @click.option("--output-path", default="circuit_currents.h5", type=str)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--hoc-path", type=str, required=True)
-@click.option("--protocol-config-path", type=str, required=True)
+@click.option("--protocol-config-path", type=str, default=None)
 @click.option("--parallel-lib", default="multiprocessing", type=str)
 @click.option("--resume", is_flag=True)
 @click.option("--sql-tmp-path", default=None, type=str)
@@ -135,8 +135,28 @@ def compute_currents(
     parallel_factory = init_parallel_factory(parallel_lib)
     cells_df, input_cells = _load_circuit(input_path, morphology_path, population_name)
 
-    with open(protocol_config_path, "r") as prot_file:
-        protocol_config = yaml.safe_load(prot_file)
+    if protocol_config_path is not None:
+        with open(protocol_config_path, "r") as prot_file:
+            protocol_config = yaml.safe_load(prot_file)
+    else:
+        protocol_config = {
+            "holding_voltage": -85.0,
+            "step_start": 500.0,
+            "step_stop": 2000.0,
+            "threshold_current_precision": 0.001,
+            "min_threshold_current": 0.0,
+            "max_threshold_current": 0.2,
+            "spike_at_ais": False,  # does not work with placeholder
+            "deterministic": True,
+            "celsius": 34.0,
+            "v_init": -80.0,
+            "rin": {
+                "with_ttx": False,  # if True, it requires TTXDynamicsSwitch mod file
+                "step_start": 1000.0,
+                "step_stop": 2000.0,
+                "step_amp": -0.001,
+            },
+        }
 
     # we evaluate currents only for unique morph/emodel pairs
     unique_cells_df = evaluate_currents(
@@ -145,13 +165,13 @@ def compute_currents(
         hoc_path,
         parallel_factory=parallel_factory,
         db_url=Path(sql_tmp_path) / "current_db.sql" if sql_tmp_path is not None else None,
-        template_format="v6_adapted" if "@dynamics:AIS_scaler" in cells_df.columns else "v6",
         resume=resume,
         only_rin=only_rin,
     )
-    cols = ["@dynamics:resting_potential", "@dynamics:input_resistance"]
+    cols = ["resting_potential", "input_resistance", "exception"]
     if not only_rin:
-        cols += ["@dynamics:holding_current", "@dynamics:threshold_current"]
+        cols += ["holding_current", "threshold_current"]
+        cols_rename = {col: f"@dynamics:{col}" for col in cols if col != "exception"}
 
     # we populate the full circuit with duplicates if any
     if len(cells_df) == len(unique_cells_df):
@@ -160,7 +180,7 @@ def compute_currents(
         for gid in unique_cells_df.index:
             data = unique_cells_df.loc[gid].to_dict()
             for col in cols:
-                cells_df[
+                cells_df.loc[
                     (cells_df.morphology == data["morphology"])
                     & (cells_df.emodel == data["emodel"]),
                     col,
@@ -168,20 +188,13 @@ def compute_currents(
 
     if debug_csv_path is not None:
         cells_df.to_csv(debug_csv_path, index=False)
-        for col in cols:
-            if col in cells_df.columns:
-                cells_df = cells_df.drop(col, axis=1)
 
-    columns = {
-        "resting_potential": "@dynamics:resting_potential",
-        "input_resistance": "@dynamics:input_resistance",
-    }
-    if not only_rin:
-        columns["holding_current"] = "@dynamics:holding_current"
-        columns["threshold_current"] = "@dynamics:threshold_current"
+    # ensure we don't have any previous cols with different dtype that will result in duplicates
+    for col in cols_rename.values():
+        if col in cells_df.columns:
+            cells_df = cells_df.drop(col, axis=1)
 
-    cells_df = cells_df.rename(columns=columns).drop(columns=["path", "exception", "emodel"])
-
+    cells_df = cells_df.rename(columns=cols_rename).drop(columns=["path", "exception", "emodel"])
     failed_cells = cells_df[cells_df.isnull().any(axis=1)].index
     if len(failed_cells) > 0:
         L.info("%s failed cells:", len(failed_cells))
@@ -433,8 +446,7 @@ def assign(input_node_path, population_name, output_node_path, config_path, lega
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
 @click.option("--final-path", type=str, default=None)
-@click.option("--hoc-path", type=str, default="hoc")
-@click.option("--template-path", type=str, default=None)
+@click.option("--output-hoc-path", type=str, default="hoc")
 @click.option("--local-dir", type=str, default="local")
 @click.option("--legacy", is_flag=True)
 @click.option("--parallel-lib", default="multiprocessing", type=str)
@@ -447,8 +459,7 @@ def adapt(
     morphology_path,
     config_path,
     final_path,
-    hoc_path,
-    template_path,
+    output_hoc_path,
     local_dir,
     legacy,
     parallel_lib,
@@ -588,25 +599,29 @@ def adapt(
         )
 
     L.info("Adapting AIS and soma of all cells..")
-    cells_df["ais_scaler"] = 1.0
-    cells_df["soma_scaler"] = 1.0
+    cells_df["ais_scaler"] = 0
+    cells_df["soma_scaler"] = 0
+    cells_df["ais_model"] = ""
+    cells_df["soma_model"] = ""
 
     def _adapt():
         """Adapt AIS/soma scales to match the rho factors."""
-        ais_models = np.array(len(cells_df) * [""])
-        soma_models = np.array(len(cells_df) * [""])
         for i, emodel in tqdm(enumerate(exemplar_df.emodel), total=n_emodels):
             mask = cells_df["emodel"] == emodel
-            print(emodel, any(mask))
-            ais_model = json.dumps(exemplar_data[emodel]["ais"])
-            soma_model = json.dumps(exemplar_data[emodel]["soma"])
-            ais_models[mask] = ais_model
-            soma_models[mask] = soma_model
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:
                 L.info("Adapting a non placeholder model...")
-                cells_df.loc[mask, "ais_model"] = ais_model
-                cells_df.loc[mask, "soma_model"] = soma_model
+
+                if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) == 1:
+                    raise ValueError(
+                        "We cannot adapt the full emodel {} to a placeholder morphology.".format(
+                            emodel
+                        )
+                    )
+
+                cells_df.loc[mask, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
+                cells_df.loc[mask, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
+
                 rhos = (
                     exemplar_df[exemplar_df.emodel == emodel][["rho", "rho_axon", "emodel"]]
                     .set_index("emodel")
@@ -622,9 +637,14 @@ def adapt(
                     max_scale=2.0,
                     n_steps=2,
                 )
-        # faster to assign with numpy, then entire column
-        cells_df["ais_model"] = ais_models
-        cells_df["soma_model"] = soma_models
+            else:
+                if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) > 1:
+                    raise ValueError(
+                        "We cannot adapt a placeholder emodel {} to a full morphology.".format(
+                            emodel
+                        )
+                    )
+
         return cells_df
 
     with Reuse(local_dir / "adapt_df.csv") as reuse:
@@ -638,10 +658,6 @@ def adapt(
     cells.save(output_node_path)
 
     L.info("Create hoc files...")
-    if template_path is None:
-        template_path = _BASE_PATH / "templates" / "cell_template_neurodamus.jinja2"
-    else:
-        template_path = Path(template_path)
 
     for emodel in exemplar_data:
         hoc_params = [
@@ -654,13 +670,21 @@ def adapt(
             emodel,
             model_configuration=model_configuration,
             morph_modifiers=None,
-            morph_modifiers_hoc=[morph_modifier_hoc],
+            morph_modifiers_hoc=[morph_modifier_hoc]
+            if not exemplar_data[emodel]["placeholder"]
+            else [],
         )
+
+        if not exemplar_data[emodel]["placeholder"]:
+            template_path = _BASE_PATH / "templates" / "cell_template_neurodamus.jinja2"
+        else:
+            template_path = _BASE_PATH / "templates" / "cell_template_neurodamus_placeholder.jinja2"
+
         hoc = cell_model.create_hoc(
             access_point.final[emodel]["params"],
             template=template_path.name,
             template_dir=template_path.parent,
         )
-        Path(hoc_path).mkdir(exist_ok=True)
-        with open(Path(hoc_path) / f"{emodel}.hoc", "w") as hoc_file:
+        Path(output_hoc_path).mkdir(exist_ok=True)
+        with open(Path(output_hoc_path) / f"{emodel}.hoc", "w") as hoc_file:
             hoc_file.write(hoc)

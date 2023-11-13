@@ -398,7 +398,7 @@ def replace_axon_justAIS(sim=None, icell=None, diam=1.0, L_target=45):
 def get_replace_axon_hoc(params):
     """Get replace_axon hoc string."""
     return """
-    proc replace_axon(){ local nSec, i1, i2, count, area, ais_scale, soma_scale localobj diams
+    proc replace_axon(){ local nSec, count, area, ais_scale, soma_scale localobj diams
 
         L_target = 60  // length of stub axon
         nseg0 = 5  // number of segments for each of the two axon sections
@@ -422,73 +422,54 @@ def get_replace_axon_hoc(params):
             pt3dadd(0, soma_scale * i * L0 / (n - 1), 0, diam0 / n)
         }
 
-        if(nSec < 3){ //At least two axon sections have to be present!
 
-            execerror("Less than three axon sections are present!")
+        // get rid of the old axon
+        forsec axonal{delete_section()}
+        execute1("create axon[2]", CellRef)
 
-        } else {
+        diams = new Vector(nseg_total)
+        diams.x[0] = %s
+        diams.x[1] = %s
+        diams.x[2] = %s
+        diams.x[3] = %s
+        diams.x[4] = %s
+        diams.x[5] = %s
+        diams.x[6] = %s
+        diams.x[7] = %s
+        diams.x[8] = %s
+        diams.x[9] = %s
 
-            access axon[0]
-            axon[0] i1 = v(0.0001) // used when serializing sections prior to sim start
-            axon[1] i2 = v(0.0001) // used when serializing sections prior to sim start
-            axon[2] i3 = v(0.0001) // used when serializing sections prior to sim start
+        count = 0
 
-            // get rid of the old axon
-            forsec axonal{delete_section()}
-            execute1("create axon[2]", CellRef)
+        for i=0,1{
+            access axon[i]
+            L =  L_target/2
+            nseg = nseg_total/2
 
-            diams = new Vector(nseg_total)
-            diams.x[0] = %s
-            diams.x[1] = %s
-            diams.x[2] = %s
-            diams.x[3] = %s
-            diams.x[4] = %s
-            diams.x[5] = %s
-            diams.x[6] = %s
-            diams.x[7] = %s
-            diams.x[8] = %s
-            diams.x[9] = %s
-
-            count = 0
-
-            // new axon dependent on old diameters
-            for i=0,1{
-                access axon[i]
-                L =  L_target/2
-                nseg = nseg_total/2
-
-                for (x) {
-                    if (x > 0 && x < 1) {
-                        diam(x) = diams.x[count] * ais_scale
-                        count = count + 1
-                    }
-                }
-
-                all.append()
-                axonal.append()
-
-                if (i == 0) {
-                    v(0.0001) = i1
-                } else {
-                    v(0.0001) = i2
+            for (x) {
+                if (x > 0 && x < 1) {
+                    diam(x) = diams.x[count] * ais_scale
+                    count = count + 1
                 }
             }
 
-            nSecAxonal = 2
-            soma[0] connect axon[0](0), 1
-            axon[0] connect axon[1](0), 1
-
-            create myelin[1]
-            access myelin{
-                    L = 1000
-                    diam = diams.x[count-1]
-                    nseg = 5
-                    v(0.0001) = i3
-                    all.append()
-                    myelinated.append()
-            }
-            connect myelin(0), axon[1](1)
+            all.append()
+            axonal.append()
         }
+
+        nSecAxonal = 2
+        soma[0] connect axon[0](0), 1
+        axon[0] connect axon[1](0), 1
+
+        create myelin[1]
+        access myelin{
+                L = 1000
+                diam = diams.x[count-1]
+                nseg = 5
+                all.append()
+                myelinated.append()
+        }
+        connect myelin(0), axon[1](1)
     }
     """ % tuple(
         params

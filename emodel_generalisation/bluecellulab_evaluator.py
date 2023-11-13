@@ -240,7 +240,7 @@ def _current_evaluation(
     protocol_config,
     emodels_hoc_dir,
     morphology_path="morphology_path",
-    template_format="v6_adapted",
+    template_format="v6",
     only_rin=False,
 ):
     """Compute the threshold and holding currents."""
@@ -251,7 +251,7 @@ def _current_evaluation(
         "emodel_properties": bluecellulab.circuit.EmodelProperties(
             holding_current=0,
             threshold_current=0,
-            ais_scaler=combo.get("@dynamics:AIS_scaler", None),
+            AIS_scaler=combo.get("@dynamics:AIS_scaler", None),
             soma_scaler=combo.get("@dynamics:soma_scaler", None),
         ),
     }
@@ -297,7 +297,7 @@ def evaluate_currents(
     resume=False,
     db_url="eval_db.sql",
     parallel_factory=None,
-    template_format="v6_ais_scaler",
+    template_format="v6",
     timeout=500,
     only_rin=False,
 ):
