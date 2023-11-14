@@ -342,14 +342,18 @@ def evaluate(
             exemplar_data = yaml.safe_load(exemplar_f)
 
         for emodel, data in exemplar_data.items():
-            cells_df.loc[cells_df.emodel == emodel, "ais_model"] = json.dumps(data["ais"])
-            cells_df.loc[cells_df.emodel == emodel, "soma_model"] = json.dumps(data["soma"])
+            if "ais" in data:
+                cells_df.loc[cells_df.emodel == emodel, "ais_model"] = json.dumps(data["ais"])
+                cells_df.loc[cells_df.emodel == emodel, "soma_model"] = json.dumps(data["soma"])
             cells_df = cells_df.rename(
                 columns={
                     "@dynamics:AIS_scaler": "ais_scaler",
                     "@dynamics:soma_scaler": "soma_scaler",
                 }
             )
+    cells_df = cells_df[~cells_df["ais_model"].isna()]
+    L.info(f"We found {len(cells_df.emodel.unique())} emodels with non-placeholders to evaluate.")
+
     with Reuse(output_path, index=False) as reuse:
         cells_df = reuse(
             feature_evaluation,
@@ -383,7 +387,9 @@ def evaluate(
 
         _pass = cells_score_df.copy()
         for col in cells_score_df.columns:
-            _pass[col] = cells_score_df[col] <= np.maximum(5.0, 5.0 * exemplar_score_df[col])
+            _pass[col] = cells_score_df[col] <= np.maximum(
+                5.0, 5.0 * exemplar_score_df[col].to_list()[0]
+            )
 
         pass_df = pd.DataFrame()
         pass_df["pass"] = _pass.all(axis=1)
@@ -513,27 +519,25 @@ def adapt(
 
     def _get_exemplar_data(exemplar_df):
         """Create exemplar data for all emodels."""
-        exemplar_data = {}
+        exemplar_data = defaultdict(dict)
         _cached_data = {}  # used to avoid recomputing same exemplar data
         for emodel in tqdm(exemplar_df.emodel):
             _df = exemplar_df[exemplar_df.emodel == emodel].copy()
             exemplar_path = _df["path"].tolist()[0]
 
-            if exemplar_path not in _cached_data:
-                _df["mtype"] = "all"
-                _data = generate_exemplars(_df, with_plots=False, surface_percentile=50)
-                _data["ais"] = {"popt": _get_ais_profile(exemplar_path)}
-                _cached_data[exemplar_path] = _data
-
-            exemplar_data[emodel] = _cached_data[exemplar_path]
-
-            # check we are not placeholder
             if len(Morphology(exemplar_path).root_sections) == 1:
                 exemplar_data[emodel]["placeholder"] = True
             else:
+                if exemplar_path not in _cached_data:
+                    _df["mtype"] = "all"
+                    _data = generate_exemplars(_df, with_plots=False, surface_percentile=50)
+                    _data["ais"] = {"popt": _get_ais_profile(exemplar_path)}
+                    _cached_data[exemplar_path] = _data
+
+                exemplar_data[emodel] = _cached_data[exemplar_path]
                 exemplar_data[emodel]["placeholder"] = False
 
-        return exemplar_data
+        return dict(exemplar_data)
 
     with Reuse(local_dir / "exemplar_data.yaml") as reuse:
         exemplar_data = reuse(_get_exemplar_data, exemplar_df)
@@ -544,10 +548,10 @@ def adapt(
         if emodel != "no_emodel":
             if not exemplar_data[emodel]["placeholder"]:
                 placeholder_mask.append(gid)
-            exemplar_df.loc[gid, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
-            exemplar_df.loc[gid, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
-            exemplar_df.loc[gid, "soma_scaler"] = 1.0
-            exemplar_df.loc[gid, "ais_scaler"] = 1.0
+                exemplar_df.loc[gid, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
+                exemplar_df.loc[gid, "soma_model"] = json.dumps(exemplar_data[emodel]["soma"])
+                exemplar_df.loc[gid, "soma_scaler"] = 1.0
+                exemplar_df.loc[gid, "ais_scaler"] = 1.0
 
     n_placeholders = len(cells_df.emodel.unique()) - len(placeholder_mask)
     n_emodels = len(exemplar_df)
@@ -633,8 +637,8 @@ def adapt(
                     resistance_models[emodel],
                     rhos,
                     parallel_factory=parallel_factory,
-                    min_scale=0.5,
-                    max_scale=2.0,
+                    min_scale=0.9,
+                    max_scale=1.1,
                     n_steps=2,
                 )
             else:
@@ -658,33 +662,34 @@ def adapt(
     cells.save(output_node_path)
 
     L.info("Create hoc files...")
+    Path(output_hoc_path).mkdir(exist_ok=True)
 
     for emodel in exemplar_data:
-        hoc_params = [
-            exemplar_data[emodel]["soma"]["soma_radius"],
-            exemplar_data[emodel]["soma"]["soma_surface"],
-        ] + exemplar_data[emodel]["ais"]["popt"]
-        morph_modifier_hoc = get_replace_axon_hoc(hoc_params)
+        if not exemplar_data[emodel]["placeholder"]:
+            hoc_params = [
+                exemplar_data[emodel]["soma"]["soma_radius"],
+                exemplar_data[emodel]["soma"]["soma_surface"],
+            ] + exemplar_data[emodel]["ais"]["popt"]
+            morph_modifier_hoc = [get_replace_axon_hoc(hoc_params)]
+            template_path = _BASE_PATH / "templates" / "cell_template_neurodamus.jinja2"
+
+        else:
+            template_path = _BASE_PATH / "templates" / "cell_template_neurodamus_placeholder.jinja2"
+            morph_modifier_hoc = []
+
         model_configuration = access_point.get_configuration(emodel)
         cell_model = create_cell_model(
             emodel,
             model_configuration=model_configuration,
             morph_modifiers=None,
-            morph_modifiers_hoc=[morph_modifier_hoc]
-            if not exemplar_data[emodel]["placeholder"]
-            else [],
+            morph_modifiers_hoc=morph_modifier_hoc,
         )
-
-        if not exemplar_data[emodel]["placeholder"]:
-            template_path = _BASE_PATH / "templates" / "cell_template_neurodamus.jinja2"
-        else:
-            template_path = _BASE_PATH / "templates" / "cell_template_neurodamus_placeholder.jinja2"
 
         hoc = cell_model.create_hoc(
             access_point.final[emodel]["params"],
             template=template_path.name,
             template_dir=template_path.parent,
         )
-        Path(output_hoc_path).mkdir(exist_ok=True)
+
         with open(Path(output_hoc_path) / f"{emodel}.hoc", "w") as hoc_file:
             hoc_file.write(hoc)

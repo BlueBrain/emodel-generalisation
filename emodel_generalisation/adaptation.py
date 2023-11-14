@@ -138,10 +138,10 @@ def plot_resistance_models(fit_df, models, pdf_filename="resistance_model.pdf", 
 def _adapt_combo(combo, models, rhos, key="soma", min_scale=0.01, max_scale=10):
     """Adapt soma/ais size."""
     emodel = combo["emodel"]
-    rin_soma = combo[f"rin_no_{key}"] * rhos[emodel]
+    rin = combo[f"rin_no_{key}"] * rhos[emodel]
     p = Polynomial(models[emodel]["resistance"]["polyfit_params"])
 
-    roots_all = (p - np.log10(rin_soma)).roots()
+    roots_all = (p - np.log10(rin)).roots()
     roots = roots_all[np.imag(roots_all) == 0]
     scale = 10 ** np.real(roots[np.argmin(abs(roots - 1))])
 
