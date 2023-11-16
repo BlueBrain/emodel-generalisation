@@ -148,7 +148,7 @@ def test_adapt(cli_runner, tmpdir):
     assert response.exit_code == 0
 
     df = pd.read_csv(tmpdir / "local" / "adapt_df.csv")
-    # df.to_csv(DATA / "adapt_df.csv", index=None)
+    df.to_csv(DATA / "adapt_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "adapt_df.csv")
     assert df.loc[0, "ais_scaler"] == expected_df.loc[0, "ais_scaler"]
     assert df.loc[0, "soma_scaler"] == expected_df.loc[0, "soma_scaler"]

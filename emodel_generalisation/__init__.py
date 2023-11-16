@@ -23,7 +23,7 @@
 
 import os
 
-os.environ['NEURON_MODULE_OPTION'] = '-nogui'
+os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
 
 PARAM_LABELS = {
     # passive
