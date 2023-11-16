@@ -1,11 +1,12 @@
 """Convert nexus generate models to local AccessPoint config folder."""
-import json
-import shutil
 import filecmp
+import json
+import logging
+import shutil
 import subprocess
 from pathlib import Path
+
 from tqdm import tqdm
-import logging
 
 L = logging.getLogger(__name__)
 
@@ -60,8 +61,10 @@ def _make_mechanism(config, mech_path="mechanisms"):
             if local_mech_path.exists():
                 if not filecmp.cmp(mech["path"], local_mech_path):
                     L.warning(
-                        f"Mechanism file {mech['path']} and {local_mech_path} are not the same,"
-                        "but have the same name, we do not overwrite."
+                        "Mechanism file %s  and %s are not the same,"
+                        "but have the same name, we do not overwrite.",
+                        mech["path"],
+                        local_mech_path,
                     )
             else:
                 shutil.copy(mech["path"], mech_path / Path(mech["path"]).name)

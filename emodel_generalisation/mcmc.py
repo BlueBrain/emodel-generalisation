@@ -943,7 +943,7 @@ def get_mean_sd(efeatures, feat):
             try:
                 _f = ".".join([f["protocol_name"], f["recording_name"], f["efel_feature_name"]])
             except TypeError:
-                _f = 'fail'
+                _f = "fail"
             if _f == feat:
                 f_mean = f["mean"]
                 f_std = f["original_std"]

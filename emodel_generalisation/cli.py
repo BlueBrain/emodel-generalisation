@@ -1,8 +1,8 @@
 """Cli app."""
 import json
 import logging
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 import click
 import matplotlib.pyplot as plt
@@ -171,7 +171,7 @@ def compute_currents(
     cols = ["resting_potential", "input_resistance", "exception"]
     if not only_rin:
         cols += ["holding_current", "threshold_current"]
-        cols_rename = {col: f"@dynamics:{col}" for col in cols if col != "exception"}
+    cols_rename = {col: f"@dynamics:{col}" for col in cols if col != "exception"}
 
     # we populate the full circuit with duplicates if any
     if len(cells_df) == len(unique_cells_df):
@@ -351,8 +351,11 @@ def evaluate(
                     "@dynamics:soma_scaler": "soma_scaler",
                 }
             )
-    cells_df = cells_df[~cells_df["ais_model"].isna()]
-    L.info(f"We found {len(cells_df.emodel.unique())} emodels with non-placeholders to evaluate.")
+    if "ais_model" in cells_df.columns:
+        cells_df = cells_df[~cells_df["ais_model"].isna()]
+        L.info(
+            "We found %s emodels with non-placeholders to evaluate.", len(cells_df.emodel.unique())
+        )
 
     with Reuse(output_path, index=False) as reuse:
         cells_df = reuse(
@@ -437,7 +440,7 @@ def assign(input_node_path, population_name, output_node_path, config_path, lega
     cells_df["model_template"] = cells_df.apply(assign_emodel, axis=1)
     n_fails = len(cells_df[cells_df["model_template"] == "hoc:no_emodel"])
     if n_fails > 0:
-        L.warning(f"{n_fails} cells could not be assigned emodels.")
+        L.warning("%s cells could not be assigned emodels.", n_fails)
 
     L.info("Saving sonata file...")
     cells = CellCollection.load(input_node_path)
@@ -503,7 +506,7 @@ def adapt(
             exemplar_df.loc[gid, "path"] = morph["path"]
             exemplar_df.loc[gid, "name"] = morph["name"]
 
-    L.info(f"We found {len(exemplar_df)} emodels.")
+    L.info("We found %s emodels.", len(exemplar_df))
 
     def _get_ais_profile(path):
         """Create ais profile from exemplar, instead of constant mean diameters as by default.
@@ -555,7 +558,7 @@ def adapt(
 
     n_placeholders = len(cells_df.emodel.unique()) - len(placeholder_mask)
     n_emodels = len(exemplar_df)
-    L.info(f"We found {n_placeholders} placeholers models out of {n_emodels} models.")
+    L.info("We found %s placeholders models out of %s models.", n_placeholders, n_emodels)
 
     with Reuse(local_dir / "exemplar_rho.csv", index=False) as reuse:
         data = reuse(
@@ -610,7 +613,7 @@ def adapt(
 
     def _adapt():
         """Adapt AIS/soma scales to match the rho factors."""
-        for i, emodel in tqdm(enumerate(exemplar_df.emodel), total=n_emodels):
+        for emodel in tqdm(exemplar_df.emodel):
             mask = cells_df["emodel"] == emodel
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:
@@ -618,9 +621,7 @@ def adapt(
 
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) == 1:
                     raise ValueError(
-                        "We cannot adapt the full emodel {} to a placeholder morphology.".format(
-                            emodel
-                        )
+                        f"We cannot adapt the full emodel {emodel} to a placeholder morphology."
                     )
 
                 cells_df.loc[mask, "ais_model"] = json.dumps(exemplar_data[emodel]["ais"])
@@ -631,7 +632,7 @@ def adapt(
                     .set_index("emodel")
                     .to_dict()
                 )
-                cells_df[mask] = adapt_soma_ais(
+                cells_df.loc[mask] = adapt_soma_ais(
                     cells_df[mask],
                     access_point,
                     resistance_models[emodel],
@@ -641,12 +642,11 @@ def adapt(
                     max_scale=1.1,
                     n_steps=2,
                 )
+
             else:
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) > 1:
                     raise ValueError(
-                        "We cannot adapt a placeholder emodel {} to a full morphology.".format(
-                            emodel
-                        )
+                        f"We cannot adapt a placeholder emodel {emodel} to a full morphology."
                     )
 
         return cells_df

@@ -132,6 +132,7 @@ def run_spike_sim(cell, config, holding_current, step_current):
         celsius=config["celsius"],
         v_init=config["v_init"],
         cvode=config.get("deterministic", True),
+        dt=config.get("dt", 0.025),
     )
 
     time = cell.get_time()
@@ -178,7 +179,6 @@ def set_cell_deterministic(cell, deterministic):
                         f"deterministic_{mech_name}",
                         1 if deterministic else 0,
                     )
-    return deterministic
 
 
 def calculate_rmp_and_rin(cell, config):
@@ -195,6 +195,7 @@ def calculate_rmp_and_rin(cell, config):
         celsius=config["celsius"],
         v_init=config["v_init"],
         cvode=config.get("deterministic", True),
+        dt=config.get("dt", 0.025),
     )
 
     time = cell.get_time()
@@ -230,7 +231,12 @@ def calculate_holding_current(cell, config):
     vclamp.amp1 = config["holding_voltage"]
 
     simulation = bluecellulab.Simulation()
-    simulation.run(1000, cvode=config.get("deterministic", True), v_init=config["v_init"])
+    simulation.run(
+        1000,
+        cvode=config.get("deterministic", True),
+        v_init=config["v_init"],
+        dt=config.get("dt", 0.025),
+    )
 
     return vclamp.i
 
@@ -256,9 +262,7 @@ def _current_evaluation(
         ),
     }
     cell = bluecellulab.Cell(**cell_kwargs)
-    protocol_config["deterministic"] = set_cell_deterministic(
-        cell, protocol_config["deterministic"]
-    )
+    set_cell_deterministic(cell, protocol_config["deterministic"])
     if not only_rin:
         holding_current = calculate_holding_current(cell, protocol_config)
         threshold_current = calculate_threshold_current(cell, protocol_config, holding_current)
@@ -298,7 +302,7 @@ def evaluate_currents(
     db_url="eval_db.sql",
     parallel_factory=None,
     template_format="v6",
-    timeout=500,
+    timeout=1000,
     only_rin=False,
 ):
     """Compute the threshold and holding currents using bluecellulab."""

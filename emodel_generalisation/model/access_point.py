@@ -25,10 +25,10 @@ import logging
 from itertools import chain
 from pathlib import Path
 
-from emodel_generalisation.model.nexus_converter import convert_all_config
 from emodel_generalisation.model.evaluation import LEGACY_PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import FitnessCalculatorConfiguration
+from emodel_generalisation.model.nexus_converter import convert_all_config
 
 # pylint: disable=too-many-lines
 

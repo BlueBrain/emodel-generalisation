@@ -134,13 +134,12 @@ def test_adapt(cli_runner, tmpdir):
         [
             "adapt",
             "--input-node-path", str(DATA / "sonata_v6.h5"),
-            "--output-csv-path", str(tmpdir / "adapt_df.csv"),
             "--output-node-path", str(tmpdir / "sonata_v6_adapted.h5"),
             "--morphology-path", str(DATA / "morphologies"),
             "--config-path", str(DATA / "config"),
             "--final-path", str(DATA / "final.json"),
             "--local-dir", str(tmpdir / 'local'),
-            "--hoc-path", str(tmpdir / "hoc"),
+            "--output-hoc-path", str(tmpdir / "hoc"),
             "--parallel-lib", None,
         ],
     )
@@ -148,7 +147,7 @@ def test_adapt(cli_runner, tmpdir):
 
     assert response.exit_code == 0
 
-    df = pd.read_csv(tmpdir / "adapt_df.csv")
+    df = pd.read_csv(tmpdir / "local" / "adapt_df.csv")
     # df.to_csv(DATA / "adapt_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "adapt_df.csv")
     assert df.loc[0, "ais_scaler"] == expected_df.loc[0, "ais_scaler"]

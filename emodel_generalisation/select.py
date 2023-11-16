@@ -51,7 +51,6 @@ def select_model_morphos(
     df.loc[:, "cost"] = score_df.max(1).to_list()
 
     # ensure rheobase is shown first if it fails
-    print(score_df)
     df.loc[score_df["SearchThresholdCurrent.soma.v.bpo_threshold_current"] > clip, "cost"] = 1000
     score_df.loc[
         score_df["SearchThresholdCurrent.soma.v.bpo_threshold_current"] > clip,

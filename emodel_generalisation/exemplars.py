@@ -20,7 +20,6 @@
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 from functools import partial
-from multiprocessing.pool import Pool
 from pathlib import Path
 
 import matplotlib.pyplot as plt

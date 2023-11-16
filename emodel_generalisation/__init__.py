@@ -21,6 +21,10 @@
 
 # pylint: disable=line-too-long
 
+import os
+
+os.environ['NEURON_MODULE_OPTION'] = '-nogui'
+
 PARAM_LABELS = {
     # passive
     "g_pas.all": "all: ḡpas",
