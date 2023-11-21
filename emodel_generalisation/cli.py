@@ -168,10 +168,10 @@ def compute_currents(
         resume=resume,
         only_rin=only_rin,
     )
+
     cols = ["resting_potential", "input_resistance", "exception"]
     if not only_rin:
         cols += ["holding_current", "threshold_current"]
-    cols_rename = {col: f"@dynamics:{col}" for col in cols if col != "exception"}
 
     # we populate the full circuit with duplicates if any
     if len(cells_df) == len(unique_cells_df):
@@ -186,6 +186,33 @@ def compute_currents(
                     col,
                 ] = data[col]
 
+    failed_cells = cells_df[
+        cells_df["input_resistance"].isna() | (cells_df["input_resistance"] < 0)
+    ].index
+    if len(failed_cells) > 0:
+        L.info("%s failed cells, we retry with fixed timesteps:", len(failed_cells))
+        L.info(cells_df.loc[failed_cells])
+        protocol_config["deterministic"] = False
+        cells_df.loc[failed_cells] = evaluate_currents(
+            cells_df.loc[failed_cells],
+            protocol_config,
+            hoc_path,
+            parallel_factory=parallel_factory,
+            db_url=Path(sql_tmp_path) / "current_db.sql" if sql_tmp_path is not None else None,
+            resume=resume,
+            only_rin=only_rin,
+        )
+
+        failed_cells = cells_df[
+            cells_df["input_resistance"].isna() | (cells_df["input_resistance"] < 0)
+        ].index
+        if len(failed_cells) > 0:
+            L.info("still %s failed cells (we drop):", len(failed_cells))
+            L.info(cells_df.loc[failed_cells])
+            cells_df.loc[failed_cells, "mtype"] = None
+
+    cols_rename = {col: f"@dynamics:{col}" for col in cols if col != "exception"}
+
     if debug_csv_path is not None:
         cells_df.to_csv(debug_csv_path, index=False)
 
@@ -195,11 +222,6 @@ def compute_currents(
             cells_df = cells_df.drop(col, axis=1)
 
     cells_df = cells_df.rename(columns=cols_rename).drop(columns=["path", "exception", "emodel"])
-    failed_cells = cells_df[cells_df.isnull().any(axis=1)].index
-    if len(failed_cells) > 0:
-        L.info("%s failed cells:", len(failed_cells))
-        L.info(cells_df.loc[failed_cells])
-        cells_df.loc[failed_cells, "mtype"] = None
 
     output_cells = CellCollection.from_dataframe(cells_df)
     output_cells.population_name = input_cells.population_name
@@ -297,6 +319,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
 @click.option("--final-path", type=str, default=None)
+@click.option("--local-config-path", type=str, default="config")
 @click.option("--exemplar-data-path", type=str, required=True, default="local/exemplar_data.yaml")
 @click.option("--legacy", is_flag=True)
 @click.option("--parallel-lib", default="multiprocessing", type=str)
@@ -314,6 +337,7 @@ def evaluate(
     morphology_path,
     config_path,
     final_path,
+    local_config_path,
     exemplar_data_path,
     legacy,
     parallel_lib,
@@ -326,7 +350,9 @@ def evaluate(
 ):
     """Evaluate models from a circuit."""
     parallel_factory = init_parallel_factory(parallel_lib)
-    access_point = _get_access_point(config_path, final_path, legacy)
+    access_point = _get_access_point(
+        config_path, final_path, legacy, local_nexus_config=local_config_path
+    )
     cells_df, _ = _load_circuit(input_path, morphology_path, population_name)
 
     if n_cells_per_emodel is not None:
@@ -417,10 +443,15 @@ def evaluate(
 @click.option("--population_name", type=click.Path(exists=True), default=None)
 @click.option("--output-node-path", default="node.h5", type=str)
 @click.option("--config-path", type=str, required=True)
+@click.option("--local-config-path", type=str, default="config")
 @click.option("--legacy", is_flag=True)
-def assign(input_node_path, population_name, output_node_path, config_path, legacy):
+def assign(
+    input_node_path, population_name, output_node_path, config_path, local_config_path, legacy
+):
     """Assign emodels to cells in a circuit."""
-    access_point = _get_access_point(config_path, legacy=legacy)
+    access_point = _get_access_point(
+        config_path, legacy=legacy, local_nexus_config=local_config_path
+    )
     cells_df, _ = _load_circuit(input_node_path, population_name=population_name)
 
     emodel_mappings = defaultdict(lambda: defaultdict(dict))
@@ -454,6 +485,7 @@ def assign(input_node_path, population_name, output_node_path, config_path, lega
 @click.option("--output-node-path", default="node.h5", type=str)
 @click.option("--morphology-path", type=click.Path(exists=True), required=False)
 @click.option("--config-path", type=str, required=True)
+@click.option("--local-config-path", type=str, default="config")
 @click.option("--final-path", type=str, default=None)
 @click.option("--output-hoc-path", type=str, default="hoc")
 @click.option("--local-dir", type=str, default="local")
@@ -467,6 +499,7 @@ def adapt(
     output_node_path,
     morphology_path,
     config_path,
+    local_config_path,
     final_path,
     output_hoc_path,
     local_dir,
@@ -487,9 +520,21 @@ def adapt(
         5. save circuit with @dynamics:AIS_scaler and @dynamics:soma_scaler entries
         6. create hoc files with corresponding replace_axon
     """
+    if parallel_lib.startswith("dask"):
+        import dask.distributed
+        import os
+
+        dask_config = dask.config.config
+        _TMP = os.environ.get("TMPDIR", None)
+        if _TMP is not None:
+            dask_config["temporary-directory"] = _TMP
+            dask.config.set(dask_config)
+
     parallel_factory = init_parallel_factory(parallel_lib)
 
-    access_point = _get_access_point(config_path, final_path, legacy)
+    access_point = _get_access_point(
+        config_path, final_path, legacy, local_nexus_config=local_config_path
+    )
 
     local_dir = Path(local_dir)
     local_dir.mkdir(exist_ok=True, parents=True)
