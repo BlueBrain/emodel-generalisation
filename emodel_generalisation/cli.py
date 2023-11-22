@@ -59,7 +59,6 @@ def _load_circuit(input_path, morphology_path=None, population_name=None):
 def _get_access_point(config_path, final_path=None, legacy=False, local_config="config"):
     """Get access point."""
     config_path = Path(config_path)
-
     if final_path is None:
         final_path = config_path / "final.json"
 

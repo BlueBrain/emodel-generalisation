@@ -892,8 +892,10 @@ class AccessPoint:
         """Init"""
         if nexus_config is not None:
             if not Path(emodel_dir).exists():
-                logger.info("Creating local config folder")
+                logger.info("Creating local config folder.")
                 convert_all_config(nexus_config, emodel_dir)
+            else:
+                logger.info("We found an existing config folder, we will not convert nexus recipe.")
             final_path = Path(emodel_dir) / "final.json"
             recipes_path = Path(emodel_dir) / "recipes.json"
 
