@@ -1,0 +1,687 @@
+{
+  "fitness": 83.82559352243047,
+  "parameter": [
+    {
+      "name": "g_pas.all",
+      "value": 0.00011464571499393493,
+      "unitCode": ""
+    },
+    {
+      "name": "e_pas.all",
+      "value": -90.76112353775714,
+      "unitCode": ""
+    },
+    {
+      "name": "gNaTgbar_NaTg.somatic",
+      "value": 0.16064398961382065,
+      "unitCode": ""
+    },
+    {
+      "name": "gK_Pstbar_K_Pst.somatic",
+      "value": 0.02850916537654713,
+      "unitCode": ""
+    },
+    {
+      "name": "gK_Tstbar_K_Tst.somatic",
+      "value": 0.13590324278922428,
+      "unitCode": ""
+    },
+    {
+      "name": "gSKv3_1bar_SKv3_1.somatic",
+      "value": 0.02676353194732173,
+      "unitCode": ""
+    },
+    {
+      "name": "gCa_HVAbar_Ca_HVA2.somatic",
+      "value": 0.0007864890305468311,
+      "unitCode": ""
+    },
+    {
+      "name": "gCa_LVAstbar_Ca_LVAst.somatic",
+      "value": 0.00013980499600730646,
+      "unitCode": ""
+    },
+    {
+      "name": "gSK_E2bar_SK_E2.somatic",
+      "value": 0.0025214357930357597,
+      "unitCode": ""
+    },
+    {
+      "name": "decay_CaDynamics_DC0.somatic",
+      "value": 299.99999986,
+      "unitCode": ""
+    },
+    {
+      "name": "gamma_CaDynamics_DC0.somatic",
+      "value": 0.016911262850663182,
+      "unitCode": ""
+    },
+    {
+      "name": "gIhbar_Ih.somatic",
+      "value": 6.517003077276937e-05,
+      "unitCode": ""
+    },
+    {
+      "name": "gNaTgbar_NaTg.axonal",
+      "value": 0.7163587078649017,
+      "unitCode": ""
+    },
+    {
+      "name": "gNap_Et2bar_Nap_Et2.axonal",
+      "value": 0.016259004521709072,
+      "unitCode": ""
+    },
+    {
+      "name": "gK_Pstbar_K_Pst.axonal",
+      "value": 0.5344221275398411,
+      "unitCode": ""
+    },
+    {
+      "name": "gK_Tstbar_K_Tst.axonal",
+      "value": 0.1531293238198892,
+      "unitCode": ""
+    },
+    {
+      "name": "gSKv3_1bar_SKv3_1.axonal",
+      "value": 0.09687343252161282,
+      "unitCode": ""
+    },
+    {
+      "name": "gCa_HVAbar_Ca_HVA2.axonal",
+      "value": 0.004999999997500001,
+      "unitCode": ""
+    },
+    {
+      "name": "gCa_LVAstbar_Ca_LVAst.axonal",
+      "value": 0.004647559672317921,
+      "unitCode": ""
+    },
+    {
+      "name": "gSK_E2bar_SK_E2.axonal",
+      "value": 0.0007368707634340013,
+      "unitCode": ""
+    },
+    {
+      "name": "decay_CaDynamics_DC0.axonal",
+      "value": 200.30797046030716,
+      "unitCode": ""
+    },
+    {
+      "name": "gamma_CaDynamics_DC0.axonal",
+      "value": 0.0051930527821589315,
+      "unitCode": ""
+    },
+    {
+      "name": "gIhbar_Ih.axonal",
+      "value": 0.0004771222892014275,
+      "unitCode": ""
+    }
+  ],
+  "score": [
+    {
+      "name": "IDrest_120.soma.v.Spikecount",
+      "value": 0.6844710707559675,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.doublet_ISI",
+      "value": 0.8966250263549316,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.depol_block_bool",
+      "value": 0.8635755391767456,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.ISI_log_slope",
+      "value": 0.09587917221374587,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.ISI_CV",
+      "value": 1.1837770510642307,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_first_ISI",
+      "value": 7.267308796482038,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_second_ISI",
+      "value": 6.242512648166881,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_third_ISI",
+      "value": 0.694906835582203,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_last_ISI",
+      "value": 0.23383554389332492,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.mean_frequency",
+      "value": 0.6043743628395611,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.voltage_base",
+      "value": 0.6778991958642563,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.voltage_after_stim",
+      "value": 0.982093220106496,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.time_to_last_spike",
+      "value": 0.9753543188699755,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.burst_number",
+      "value": 0.5291502622129182,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_time_to_first_spike",
+      "value": 0.5236127196115115,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.time_to_first_spike",
+      "value": 3.536374098996994,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.number_initial_spikes",
+      "value": 0.29345526570522285,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.irregularity_index",
+      "value": 0.7310113627885102,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.adaptation_index",
+      "value": 0.4687459632698165,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.burst_mean_freq",
+      "value": 1.0530062071255417,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.AHP_time_from_peak",
+      "value": 2.344356738083681,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.AHP_depth",
+      "value": 3.5567915386431714,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.Spikecount",
+      "value": 1.4810326349581824,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.doublet_ISI",
+      "value": 4.0611131390367134,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.depol_block_bool",
+      "value": 0.3518657752744984,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.ISI_log_slope",
+      "value": 0.5021081267485643,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.ISI_CV",
+      "value": 0.9734682768008425,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_first_ISI",
+      "value": 5.3894510064005265,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_second_ISI",
+      "value": 1.0463401699657433,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_third_ISI",
+      "value": 1.0389668773200198,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_last_ISI",
+      "value": 1.569823115115082,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.mean_frequency",
+      "value": 1.5622045457274063,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.voltage_base",
+      "value": 1.7805017951472466,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.voltage_after_stim",
+      "value": 0.7063281555188481,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.time_to_last_spike",
+      "value": 0.23214598624358923,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.burst_number",
+      "value": 0.45401858887714774,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_time_to_first_spike",
+      "value": 1.2181635489558402,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.time_to_first_spike",
+      "value": 0.4343839041139707,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.number_initial_spikes",
+      "value": 0.09484198846626626,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.irregularity_index",
+      "value": 0.5358980374620733,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.adaptation_index",
+      "value": 0.3417081297242687,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.burst_mean_freq",
+      "value": 0.3365820981369117,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.AHP_time_from_peak",
+      "value": 2.8173930886047325,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.AHP_depth",
+      "value": 5.710296536089874,
+      "unitCode": ""
+    },
+    {
+      "name": "APWaveform_280.soma.v.AP_amplitude",
+      "value": 1.5270561392037267,
+      "unitCode": ""
+    },
+    {
+      "name": "APWaveform_280.soma.v.AP1_amp",
+      "value": 0.06231083527876155,
+      "unitCode": ""
+    },
+    {
+      "name": "APWaveform_280.soma.v.AP_duration_half_width",
+      "value": 1.0072047874276313,
+      "unitCode": ""
+    },
+    {
+      "name": "APWaveform_280.soma.v.AHP_depth",
+      "value": 5.157989564514176,
+      "unitCode": ""
+    },
+    {
+      "name": "RinProtocol.soma.v.ohmic_input_resistance_vb_ssse",
+      "value": 0.8529557843102817,
+      "unitCode": ""
+    },
+    {
+      "name": "SearchHoldingCurrent.soma.v.voltage_base",
+      "value": 0.013588649389263225,
+      "unitCode": ""
+    },
+    {
+      "name": "RMPProtocol.soma.v.voltage_base",
+      "value": 3.9456974111083993,
+      "unitCode": ""
+    },
+    {
+      "name": "SearchHoldingCurrent.soma.v.bpo_holding_current",
+      "value": 1.7605276216786043,
+      "unitCode": ""
+    },
+    {
+      "name": "SearchThresholdCurrent.soma.v.bpo_threshold_current",
+      "value": 1.5617683755914307,
+      "unitCode": ""
+    },
+    {
+      "name": "IDhyperpol_150.soma.v.mean_frequency",
+      "value": 0.06402727843698829,
+      "unitCode": ""
+    },
+    {
+      "name": "IDhyperpol_150.soma.v.voltage_base",
+      "value": 0.18526521277508665,
+      "unitCode": ""
+    },
+    {
+      "name": "IDhyperpol_150.soma.v.depol_block_bool",
+      "value": 0.609449400220044,
+      "unitCode": ""
+    }
+  ],
+  "features": [
+    {
+      "name": "IDrest_120.soma.v.Spikecount",
+      "value": 6.0,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.doublet_ISI",
+      "value": 388.4750000001753,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.depol_block_bool",
+      "value": 0.0,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.ISI_log_slope",
+      "value": -0.021187291485018196,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.ISI_CV",
+      "value": 0.01310198567761565,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_first_ISI",
+      "value": 2.574168221892139,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_second_ISI",
+      "value": 2.6437541308562116,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_third_ISI",
+      "value": 2.6705835224899506,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_last_ISI",
+      "value": 2.717022143720587,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.mean_frequency",
+      "value": 3.1093318823034353,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.voltage_base",
+      "value": -80.60387241487605,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.voltage_after_stim",
+      "value": -83.29854551095909,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.time_to_last_spike",
+      "value": 1929.6750000051838,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.burst_number",
+      "value": 1.0,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.inv_time_to_first_spike",
+      "value": 19.305019305172063,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.time_to_first_spike",
+      "value": 51.79999999959011,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.number_initial_spikes",
+      "value": 1.0,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.irregularity_index",
+      "value": 2.550000000009277,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.adaptation_index",
+      "value": -0.004556025169207075,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.burst_mean_freq",
+      "value": 3.195100845360914,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.AHP_time_from_peak",
+      "value": 5.43750000001567,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_120.soma.v.AHP_depth",
+      "value": -7.313707053128387,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.Spikecount",
+      "value": 29.0,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.doublet_ISI",
+      "value": 62.02499999994359,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.depol_block_bool",
+      "value": 0.0,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.ISI_log_slope",
+      "value": 0.01402896451924851,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.ISI_CV",
+      "value": 0.014845282711671083,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_first_ISI",
+      "value": 16.122531237418936,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_second_ISI",
+      "value": 15.47388781432742,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_third_ISI",
+      "value": 15.10574018128262,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_last_ISI",
+      "value": 14.582573824226934,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.mean_frequency",
+      "value": 15.006468305263676,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.voltage_base",
+      "value": -75.84585328773396,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.voltage_after_stim",
+      "value": -84.52628574252923,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.time_to_last_spike",
+      "value": 1932.5000000051941,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.burst_number",
+      "value": 1.0,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.inv_time_to_first_spike",
+      "value": 49.38271605031231,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.time_to_first_spike",
+      "value": 20.249999999618808,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.number_initial_spikes",
+      "value": 3.0,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.irregularity_index",
+      "value": 0.23703703704878384,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.adaptation_index",
+      "value": 0.0007049430894003972,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.burst_mean_freq",
+      "value": 15.165381095523832,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.AHP_time_from_peak",
+      "value": 5.217241379325287,
+      "unitCode": ""
+    },
+    {
+      "name": "IDrest_200.soma.v.AHP_depth",
+      "value": -11.321329412998034,
+      "unitCode": ""
+    },
+    {
+      "name": "APWaveform_280.soma.v.AP_amplitude",
+      "value": 101.82862201932647,
+      "unitCode": ""
+    },
+    {
+      "name": "APWaveform_280.soma.v.AP1_amp",
+      "value": 102.4992915675295,
+      "unitCode": ""
+    },
+    {
+      "name": "APWaveform_280.soma.v.AP_duration_half_width",
+      "value": 0.912499999999981,
+      "unitCode": ""
+    },
+    {
+      "name": "APWaveform_280.soma.v.AHP_depth",
+      "value": -13.598881667415831,
+      "unitCode": ""
+    },
+    {
+      "name": "IDhyperpol_150.soma.v.mean_frequency",
+      "value": 5.842983108451456,
+      "unitCode": ""
+    },
+    {
+      "name": "IDhyperpol_150.soma.v.voltage_base",
+      "value": -83.37772754596502,
+      "unitCode": ""
+    },
+    {
+      "name": "IDhyperpol_150.soma.v.depol_block_bool",
+      "value": 0.0,
+      "unitCode": ""
+    },
+    {
+      "name": "RinProtocol.soma.v.ohmic_input_resistance_vb_ssse",
+      "value": 141.27012488991326,
+      "unitCode": ""
+    },
+    {
+      "name": "SearchHoldingCurrent.soma.v.voltage_base",
+      "value": -83.02866945536867,
+      "unitCode": ""
+    },
+    {
+      "name": "RMPProtocol.soma.v.voltage_base",
+      "value": -87.57245560383399,
+      "unitCode": ""
+    },
+    {
+      "name": "SearchHoldingCurrent.soma.v.bpo_holding_current",
+      "value": 0.0328125,
+      "unitCode": ""
+    },
+    {
+      "name": "SearchThresholdCurrent.soma.v.bpo_threshold_current",
+      "value": 0.06508092444913642,
+      "unitCode": ""
+    }
+  ],
+  "scoreValidation": [],
+  "passedValidation": true,
+  "seed": 7
+}

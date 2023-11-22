@@ -56,7 +56,7 @@ def _load_circuit(input_path, morphology_path=None, population_name=None):
     return cells_df, input_cells
 
 
-def _get_access_point(config_path, final_path=None, legacy=False, local_nexus_config="config"):
+def _get_access_point(config_path, final_path=None, legacy=False, local_config="config"):
     """Get access point."""
     config_path = Path(config_path)
 
@@ -72,7 +72,7 @@ def _get_access_point(config_path, final_path=None, legacy=False, local_nexus_co
         )
 
     if not config_path.is_dir():
-        return AccessPoint(nexus_config=config_path, emodel_dir=local_nexus_config)
+        return AccessPoint(nexus_config=config_path, emodel_dir=local_config)
 
     return AccessPoint(
         emodel_dir=config_path.parent,
@@ -351,7 +351,7 @@ def evaluate(
     """Evaluate models from a circuit."""
     parallel_factory = init_parallel_factory(parallel_lib)
     access_point = _get_access_point(
-        config_path, final_path, legacy, local_nexus_config=local_config_path
+        config_path, final_path, legacy, local_config=local_config_path
     )
     cells_df, _ = _load_circuit(input_path, morphology_path, population_name)
 
@@ -450,7 +450,7 @@ def assign(
 ):
     """Assign emodels to cells in a circuit."""
     access_point = _get_access_point(
-        config_path, legacy=legacy, local_nexus_config=local_config_path
+        config_path, legacy=legacy, local_config=local_config_path
     )
     cells_df, _ = _load_circuit(input_node_path, population_name=population_name)
 
@@ -533,7 +533,7 @@ def adapt(
     parallel_factory = init_parallel_factory(parallel_lib)
 
     access_point = _get_access_point(
-        config_path, final_path, legacy, local_nexus_config=local_config_path
+        config_path, final_path, legacy, local_config=local_config_path
     )
 
     local_dir = Path(local_dir)

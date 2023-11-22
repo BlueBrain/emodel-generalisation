@@ -21,6 +21,7 @@ Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 """Test AccessPoint module."""
 from pathlib import Path
+from emodel_generalisation.model.access_point import AccessPoint
 
 DATA = Path(__file__).parent / "data"
 EMODEL = "generic_model"
@@ -513,3 +514,23 @@ def test_get_configuration(access_point):
         },
         "morph_modifiers": None,
     }
+
+
+def test_load_nexus_recipe(tmpdir):
+    """Test loading a nexus recipe by converting it to a config folder."""
+    access_point = AccessPoint(
+        nexus_config=DATA / "nexus_recipe.json",
+        emodel_dir=tmpdir / "config",
+    )
+    assert access_point.emodels == ["AAA__GEN_mtype__GEN_etype"]
+
+    access_point = AccessPoint(
+        nexus_config=DATA / "nexus_recipe.json",
+        emodel_dir=tmpdir / "config",
+    )
+    assert access_point.emodels == ["AAA__GEN_mtype__GEN_etype"]
+
+    assert (tmpdir / "config" / "recipes.json").exists()
+    assert (tmpdir / "config" / "final.json").exists()
+    assert (tmpdir / "config" / "parameters" / "AAA__GEN_mtype__GEN_etype.json").exists()
+    assert (tmpdir / "config" / "features" / "AAA__GEN_mtype__GEN_etype.json").exists()
