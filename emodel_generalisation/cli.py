@@ -448,9 +448,7 @@ def assign(
     input_node_path, population_name, output_node_path, config_path, local_config_path, legacy
 ):
     """Assign emodels to cells in a circuit."""
-    access_point = _get_access_point(
-        config_path, legacy=legacy, local_config=local_config_path
-    )
+    access_point = _get_access_point(config_path, legacy=legacy, local_config=local_config_path)
     cells_df, _ = _load_circuit(input_node_path, population_name=population_name)
 
     emodel_mappings = defaultdict(lambda: defaultdict(dict))
@@ -528,6 +526,7 @@ def adapt(
         if _TMP is not None:
             dask_config["temporary-directory"] = _TMP
             dask.config.set(dask_config)
+            logging.debug("Dask will use %s as tmpdir", _TMP)
 
     parallel_factory = init_parallel_factory(parallel_lib)
 
