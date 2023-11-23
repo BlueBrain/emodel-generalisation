@@ -187,7 +187,6 @@ def evaluate(
 
     # Drop exception column if present
     if "exception" in df.columns:
-        logger.warning("The 'exception' column is going to be replaced")
         df = df.drop(columns=["exception"])
 
     # Shallow copy the given DataFrame to add internal rows

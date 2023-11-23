@@ -352,4 +352,5 @@ def init_parallel_factory(parallel_lib, *args, **kwargs):
         )
         raise
     L.info("Initialized %s factory", parallel_lib)
+
     return parallel_factory

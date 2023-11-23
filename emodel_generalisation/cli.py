@@ -228,7 +228,6 @@ def compute_currents(
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     output_cells.save(output_path)
 
-    # clean up the parallel library, if needed
     parallel_factory.shutdown()
 
 
@@ -319,7 +318,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--config-path", type=str, required=True)
 @click.option("--final-path", type=str, default=None)
 @click.option("--local-config-path", type=str, default="config")
-@click.option("--exemplar-data-path", type=str, required=True, default="local/exemplar_data.yaml")
+@click.option("--local-dir", type=str, default="local")
 @click.option("--legacy", is_flag=True)
 @click.option("--parallel-lib", default="multiprocessing", type=str)
 @click.option("--resume", is_flag=True)
@@ -337,7 +336,7 @@ def evaluate(
     config_path,
     final_path,
     local_config_path,
-    exemplar_data_path,
+    local_dir,
     legacy,
     parallel_lib,
     resume,
@@ -362,6 +361,7 @@ def evaluate(
         )
 
     # add data for adapted AIS/soma if available
+    exemplar_data_path = Path(local_dir) / "exemplar_data.yaml"
     if Path(exemplar_data_path).exists():
         with open(exemplar_data_path) as exemplar_f:
             exemplar_data = yaml.safe_load(exemplar_f)
@@ -381,6 +381,9 @@ def evaluate(
         L.info(
             "We found %s emodels with non-placeholders to evaluate.", len(cells_df.emodel.unique())
         )
+    else:
+        L.info("Nothing to compute, only placeholder models found.")
+        return None
 
     with Reuse(output_path, index=False) as reuse:
         cells_df = reuse(
@@ -435,6 +438,8 @@ def evaluate(
             clip=clip,
             feature_filter=feature_filter,
         )
+
+    parallel_factory.shutdown()
 
 
 @cli.command("assign")
@@ -517,19 +522,7 @@ def adapt(
         5. save circuit with @dynamics:AIS_scaler and @dynamics:soma_scaler entries
         6. create hoc files with corresponding replace_axon
     """
-    if parallel_lib.startswith("dask"):
-        import dask.distributed
-        import os
-
-        dask_config = dask.config.config
-        _TMP = os.environ.get("TMPDIR", None)
-        if _TMP is not None:
-            dask_config["temporary-directory"] = _TMP
-            dask.config.set(dask_config)
-            logging.debug("Dask will use %s as tmpdir", _TMP)
-
     parallel_factory = init_parallel_factory(parallel_lib)
-
     access_point = _get_access_point(
         config_path, final_path, legacy, local_config=local_config_path
     )
@@ -693,6 +686,8 @@ def adapt(
                     )
 
         return cells_df
+
+    parallel_factory.shutdown()
 
     with Reuse(local_dir / "adapt_df.csv") as reuse:
         cells_df = reuse(_adapt)

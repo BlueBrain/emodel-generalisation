@@ -24,6 +24,10 @@
 import os
 
 os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
+_TMPDIR = os.environ.get("TMPDIR", None)
+if _TMPDIR is not None:
+    os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR
+
 
 PARAM_LABELS = {
     # passive
