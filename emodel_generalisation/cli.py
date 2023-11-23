@@ -306,7 +306,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
     path = main_path / "feature_distributions"
     path.mkdir(exist_ok=True)
     for (emodel, mtype), df in tqdm(
-        cells_df.groupby(["emodel", "mtype"], disable=os.environ.get("NO_PROGRESS"))
+        cells_df.groupby(["emodel", "mtype"], disable=os.environ.get("NO_PROGRESS", False))
     ):
         _df = {"features": get_feature_df(df, filters=feature_filter)}
         try:
@@ -572,7 +572,7 @@ def adapt(
         """Create exemplar data for all emodels."""
         exemplar_data = defaultdict(dict)
         _cached_data = {}  # used to avoid recomputing same exemplar data
-        for emodel in tqdm(exemplar_df.emodel, disable=os.environ.get("NO_PROGRESS")):
+        for emodel in tqdm(exemplar_df.emodel, disable=os.environ.get("NO_PROGRESS", False)):
             _df = exemplar_df[exemplar_df.emodel == emodel].copy()
             exemplar_path = _df["path"].tolist()[0]
 
@@ -661,7 +661,7 @@ def adapt(
 
     def _adapt():
         """Adapt AIS/soma scales to match the rho factors."""
-        for emodel in tqdm(exemplar_df.emodel, disable=os.environ.get("NO_PROGRESS")):
+        for emodel in tqdm(exemplar_df.emodel, disable=os.environ.get("NO_PROGRESS", False)):
             mask = cells_df["emodel"] == emodel
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:

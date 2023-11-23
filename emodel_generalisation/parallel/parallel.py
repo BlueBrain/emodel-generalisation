@@ -311,7 +311,7 @@ class DaskDataFrameFactory(DaskFactory):
                 df = pd.DataFrame(iterable)
                 ddf = dd.from_pandas(df, **kwargs)
                 future = ddf.apply(func, meta=meta, axis=1).persist()
-                if not os.environ.get("NO_PROGRESS"):
+                if not os.environ.get("NO_PROGRESS", False):
                     progress(future)
                 # Put into a list because of the 'yield from' in _with_batches
                 return [future.compute()]
