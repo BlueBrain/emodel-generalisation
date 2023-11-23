@@ -1,4 +1,5 @@
 """Cli app."""
+import os
 import json
 import logging
 from collections import defaultdict
@@ -83,11 +84,20 @@ def _get_access_point(config_path, final_path=None, legacy=False, local_config="
 
 @click.group()
 @click.option("-v", "--verbose", count=True)
-def cli(verbose):
+@click.option("--no-progress", is_flag=True)
+def cli(verbose, no_progress):
     """Cli."""
     loglevel = (logging.WARNING, logging.INFO, logging.DEBUG)[min(verbose, 2)]
     logformat = "%(asctime)s %(levelname)s %(name)s: %(message)s"
     logging.basicConfig(level=loglevel, format=logformat)
+
+    if loglevel >= logging.INFO:  # pragma: no cover
+        logging.getLogger("distributed").level = max(
+            logging.getLogger("distributed").level, logging.WARNING
+        )
+
+    if no_progress:
+        os.environ["NO_PROGRESS"] = "True"
 
 
 @cli.command("compute_currents")
@@ -295,7 +305,9 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
     L.info("Plotting feature distributions...")
     path = main_path / "feature_distributions"
     path.mkdir(exist_ok=True)
-    for (emodel, mtype), df in tqdm(cells_df.groupby(["emodel", "mtype"])):
+    for (emodel, mtype), df in tqdm(
+        cells_df.groupby(["emodel", "mtype"], disable=os.environ.get("NO_PROGRESS"))
+    ):
         _df = {"features": get_feature_df(df, filters=feature_filter)}
         try:
             plot_feature_distributions(
@@ -560,7 +572,7 @@ def adapt(
         """Create exemplar data for all emodels."""
         exemplar_data = defaultdict(dict)
         _cached_data = {}  # used to avoid recomputing same exemplar data
-        for emodel in tqdm(exemplar_df.emodel):
+        for emodel in tqdm(exemplar_df.emodel, disable=os.environ.get("NO_PROGRESS")):
             _df = exemplar_df[exemplar_df.emodel == emodel].copy()
             exemplar_path = _df["path"].tolist()[0]
 
@@ -649,7 +661,7 @@ def adapt(
 
     def _adapt():
         """Adapt AIS/soma scales to match the rho factors."""
-        for emodel in tqdm(exemplar_df.emodel):
+        for emodel in tqdm(exemplar_df.emodel, disable=os.environ.get("NO_PROGRESS")):
             mask = cells_df["emodel"] == emodel
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:

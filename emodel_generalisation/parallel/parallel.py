@@ -51,10 +51,10 @@ class ParallelFactory:
     # pylint: disable=unused-argument
     def __init__(self, batch_size=None, chunk_size=None):
         self.batch_size = batch_size or int(os.getenv(self._BATCH_SIZE, "0")) or None
-        L.info("Using %s=%s", self._BATCH_SIZE, self.batch_size)
+        L.debug("Using %s=%s", self._BATCH_SIZE, self.batch_size)
 
         self.chunk_size = batch_size or int(os.getenv(self._CHUNK_SIZE, "0")) or None
-        L.info("Using %s=%s", self._CHUNK_SIZE, self.chunk_size)
+        L.debug("Using %s=%s", self._CHUNK_SIZE, self.chunk_size)
 
         if not hasattr(self, "nb_processes"):
             self.nb_processes = 1
@@ -215,13 +215,13 @@ class DaskFactory(ParallelFactory):
         dask_scheduler_path = scheduler_file or os.getenv(self._SCHEDULER_PATH)
         self.interactive = True
         if dask_scheduler_path:  # pragma: no cover
-            L.info("Connecting dask_mpi with scheduler %s", dask_scheduler_path)
+            L.debug("Connecting dask_mpi with scheduler %s", dask_scheduler_path)
         if address:  # pragma: no cover
-            L.info("Connecting dask_mpi with address %s", address)
+            L.debug("Connecting dask_mpi with address %s", address)
         if not dask_scheduler_path and not address:  # pragma: no cover
             self.interactive = False
             dask_mpi.initialize()
-            L.info("Starting dask_mpi...")
+            L.debug("Starting dask_mpi...")
 
         self.client = dask.distributed.Client(
             address=address,
@@ -311,7 +311,8 @@ class DaskDataFrameFactory(DaskFactory):
                 df = pd.DataFrame(iterable)
                 ddf = dd.from_pandas(df, **kwargs)
                 future = ddf.apply(func, meta=meta, axis=1).persist()
-                progress(future)
+                if not os.environ.get("NO_PROGRESS"):
+                    progress(future)
                 # Put into a list because of the 'yield from' in _with_batches
                 return [future.compute()]
 
