@@ -220,7 +220,8 @@ class DaskFactory(ParallelFactory):
             L.debug("Connecting dask_mpi with address %s", address)
         if not dask_scheduler_path and not address:  # pragma: no cover
             self.interactive = False
-            dask_mpi.initialize()
+            # local_directory is a fix for https://github.com/dask/dask-mpi/pull/114
+            dask_mpi.initialize(local_directory=None)
             L.debug("Starting dask_mpi...")
 
         self.client = dask.distributed.Client(
