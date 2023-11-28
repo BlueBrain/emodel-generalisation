@@ -24,7 +24,7 @@ def _get_emodel_name(region, mtype, etype, i=None):
         "-",
         ":",
     ]:
-        _mtype = _region.replace(char, "_")
+        _region = _region.replace(char, "_")
         _mtype = _mtype.replace(char, "_")
         _etype = _etype.replace(char, "_")
     base_name = f"{_region}__{_mtype}__{_etype}"
