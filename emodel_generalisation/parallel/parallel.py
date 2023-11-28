@@ -282,11 +282,11 @@ class DaskDataFrameFactory(DaskFactory):
         )
         if dask_config is None:  # pragma: no cover
             dask_config = {
-                "distributed.worker.use_file_locking": False,
+                "distributed.worker.use-file-locking": False,
                 "distributed.worker.memory.target": False,
                 "distributed.worker.memory.spill": False,
                 "distributed.worker.memory.pause": 0.8,
-                "distributed.worker.memory.terminate": 95,
+                "distributed.worker.memory.terminate": 0.95,
                 "distributed.worker.profile.interval": "10000ms",
                 "distributed.worker.profile.cycle": "1000000ms",
                 "distributed.admin.tick.limit": "1h",
