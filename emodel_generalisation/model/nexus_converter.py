@@ -2,8 +2,10 @@
 import filecmp
 import json
 import logging
+import os
 import shutil
 import subprocess
+from copy import copy
 from pathlib import Path
 
 from tqdm import tqdm
@@ -13,7 +15,19 @@ L = logging.getLogger(__name__)
 
 def _get_emodel_name(region, mtype, etype, i=None):
     """Create emodel name for internal use."""
-    base_name = f"{region.replace(',', '').replace(' ', '_')}__{mtype}__{etype}"
+    _region = copy(region)
+    _mtype = copy(mtype)
+    _etype = copy(etype)
+    for char in [
+        ",",
+        " ",
+        "-",
+        ":",
+    ]:
+        _mtype = _region.replace(char, "_")
+        _mtype = _mtype.replace(char, "_")
+        _etype = _etype.replace(char, "_")
+    base_name = f"{_region}__{_mtype}__{_etype}"
     if i is not None:
         return base_name + f"_{i}"
     return base_name
@@ -147,7 +161,7 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
     _prepare(out_config_folder)
     recipes = {}
     final = {}
-    for region, region_config in tqdm(list(config.items())):
+    for region, region_config in tqdm(config.items()):
         for mtype, mtype_config in region_config.items():
             for etype, etype_config in mtype_config.items():
                 if etype_config["assignmentAlgorithm"] == "assignOne":
@@ -169,5 +183,16 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
     with open(out_config_folder / "final.json", "w") as final_file:
         json.dump(final, final_file, indent=4)
 
-    # compile all mechanisms
+
+def compile_mechanisms(mech_path="mechanisms", compiled_mech_path=None):
+    """Compile mechanisms in custom location or TMPDIR."""
+    if compiled_mech_path is None:
+        compiled_mech_path = os.environ.get("TMPDIR", ".")
+
+    cwd = os.getcwd()
+    compiled_mech_path = Path(compiled_mech_path).resolve()
+    compiled_mech_path.mkdir(exist_ok=True)
+    mech_path = Path(mech_path).resolve()
+    os.chdir(compiled_mech_path)
     subprocess.run(f"nrnivmodl {mech_path}", shell=True, check=True)
+    os.chdir(cwd)

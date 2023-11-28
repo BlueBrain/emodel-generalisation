@@ -22,6 +22,14 @@
 # pylint: disable=line-too-long
 
 import os
+from pathlib import Path
+
+import neuron
+
+# load mechanisms if they are in tmpdir
+mod_lib_path = Path(os.environ.get("TMPDIR", None))
+if (mod_lib_path / "x86_64").exists():
+    neuron.load_mechanisms(str(mod_lib_path))
 
 os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
 _TMPDIR = os.environ.get("TMPDIR", None)

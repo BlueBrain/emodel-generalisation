@@ -21,6 +21,7 @@ Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 """Test AccessPoint module."""
 from pathlib import Path
+
 from emodel_generalisation.model.access_point import AccessPoint
 
 DATA = Path(__file__).parent / "data"

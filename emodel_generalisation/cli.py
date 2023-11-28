@@ -1,7 +1,7 @@
 """Cli app."""
-import os
 import json
 import logging
+import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -72,7 +72,11 @@ def _get_access_point(config_path, final_path=None, legacy=False, local_config="
         )
 
     if not config_path.is_dir():
-        return AccessPoint(nexus_config=config_path, emodel_dir=local_config)
+        return AccessPoint(
+            nexus_config=config_path,
+            emodel_dir=local_config,
+            mech_path=Path(local_config) / "mechanisms",
+        )
 
     return AccessPoint(
         emodel_dir=config_path.parent,
