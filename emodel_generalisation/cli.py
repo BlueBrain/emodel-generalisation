@@ -399,7 +399,7 @@ def evaluate(
         )
     else:
         L.info("Nothing to compute, only placeholder models found.")
-        return None
+        return
 
     with Reuse(output_path, index=False) as reuse:
         cells_df = reuse(
@@ -568,8 +568,7 @@ def adapt(
         morphology = Morphology(path)
         orig_lens = next(extract_ais_path_distances([morphology]))
         orig_diams = next(extract_ais_diameters([morphology]))
-        lens = np.linspace(0, 60, 10)
-        diams = np.interp(lens, orig_lens, orig_diams)
+        diams = np.interp(np.linspace(0, 60, 10), orig_lens, orig_diams)
         return diams.tolist()
 
     def _get_exemplar_data(exemplar_df):

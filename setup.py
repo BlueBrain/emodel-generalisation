@@ -48,7 +48,7 @@ reqs = [
     "dask-mpi>=2022.4",
     "sqlalchemy>=1.4.24",
     "sqlalchemy-utils>=0.37.2",
-    "bluecellulab>=1.3.11",
+    "bluecellulab>=1.7.6",
     "voxcell>=3.1.5",
 ]
 
