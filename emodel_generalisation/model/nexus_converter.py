@@ -18,12 +18,7 @@ def _get_emodel_name(region, mtype, etype, i=None):
     _region = copy(region)
     _mtype = copy(mtype)
     _etype = copy(etype)
-    for char in [
-        ",",
-        " ",
-        "-",
-        ":",
-    ]:
+    for char in [",", " ", "-", ":"]:
         _region = _region.replace(char, "_")
         _mtype = _mtype.replace(char, "_")
         _etype = _etype.replace(char, "_")
