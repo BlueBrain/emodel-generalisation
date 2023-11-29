@@ -16,7 +16,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/f/d/f/d/3/c/3/0/Ih.mod"
+      "path": "mechanisms/Ih.mod"
     },
     {
       "name": "NaTg",
@@ -25,7 +25,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/d/e/9/5/8/9/6/5/NaTg.mod"
+      "path": "mechanisms/NaTg.mod"
     },
     {
       "name": "CaDynamics_DC0",
@@ -34,7 +34,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/7/2/a/6/0/e/d/a/CaDynamics_DC0.mod"
+      "path": "mechanisms/CaDynamics_DC0.mod"
     },
     {
       "name": "Ca_HVA2",
@@ -43,7 +43,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/2/3/b/1/e/b/f/b/Ca_HVA2.mod"
+      "path": "mechanisms/Ca_HVA2.mod"
     },
     {
       "name": "Ca_LVAst",
@@ -52,7 +52,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/9/d/7/6/1/a/9/e/Ca_LVAst.mod"
+      "path": "mechanisms/Ca_LVAst.mod"
     },
     {
       "name": "SKv3_1",
@@ -61,7 +61,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/9/f/d/c/c/b/0/2/SKv3_1.mod"
+      "path": "mechanisms/SKv3_1.mod"
     },
     {
       "name": "SK_E2",
@@ -70,7 +70,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/7/1/a/f/d/b/2/0/SK_E2.mod"
+      "path": "mechanisms/SK_E2.mod"
     },
     {
       "name": "K_Pst",
@@ -79,7 +79,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/a/d/a/b/5/b/a/f/K_Pst.mod"
+      "path": "mechanisms/K_Pst.mod"
     },
     {
       "name": "K_Tst",
@@ -88,7 +88,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/2/e/5/8/7/4/6/b/K_Tst.mod"
+      "path": "mechanisms/K_Tst.mod"
     },
     {
       "name": "pas",
@@ -106,7 +106,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/f/d/f/d/3/c/3/0/Ih.mod"
+      "path": "mechanisms/Ih.mod"
     },
     {
       "name": "Nap_Et2",
@@ -115,7 +115,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/f/d/c/a/f/a/3/3/Nap_Et2.mod"
+      "path": "mechanisms/Nap_Et2.mod"
     },
     {
       "name": "NaTg",
@@ -124,7 +124,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/d/e/9/5/8/9/6/5/NaTg.mod"
+      "path": "mechanisms/NaTg.mod"
     },
     {
       "name": "CaDynamics_DC0",
@@ -133,7 +133,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/7/2/a/6/0/e/d/a/CaDynamics_DC0.mod"
+      "path": "mechanisms/CaDynamics_DC0.mod"
     },
     {
       "name": "Ca_HVA2",
@@ -142,7 +142,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/2/3/b/1/e/b/f/b/Ca_HVA2.mod"
+      "path": "mechanisms/Ca_HVA2.mod"
     },
     {
       "name": "Ca_LVAst",
@@ -151,7 +151,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/9/d/7/6/1/a/9/e/Ca_LVAst.mod"
+      "path": "mechanisms/Ca_LVAst.mod"
     },
     {
       "name": "SKv3_1",
@@ -160,7 +160,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/9/f/d/c/c/b/0/2/SKv3_1.mod"
+      "path": "mechanisms/SKv3_1.mod"
     },
     {
       "name": "SK_E2",
@@ -169,7 +169,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/7/1/a/f/d/b/2/0/SK_E2.mod"
+      "path": "mechanisms/SK_E2.mod"
     },
     {
       "name": "K_Pst",
@@ -178,7 +178,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/a/d/a/b/5/b/a/f/K_Pst.mod"
+      "path": "mechanisms/K_Pst.mod"
     },
     {
       "name": "K_Tst",
@@ -187,7 +187,7 @@
       "version": null,
       "temperature": null,
       "ljp_corrected": null,
-      "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/2/e/5/8/7/4/6/b/K_Tst.mod"
+      "path": "mechanisms/K_Tst.mod"
     }
   ],
   "distributions": [
@@ -467,9 +467,9 @@
     }
   ],
   "morphology": {
-    "name": "cylindrical_morphology_19.1399",
+    "name": "simple",
     "format": null,
-    "path": "/gpfs/bbp.cscs.ch/data/project/proj134/nexus/bbp/mmb-point-neuron-framework-model/b/e/d/d/8/5/0/9/cylindrical_morphology_19.1399.swc",
+    "path": "morphologies/simple.asc",
     "seclist_names": null,
     "secarray_names": null,
     "section_index": null
