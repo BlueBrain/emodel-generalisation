@@ -75,7 +75,7 @@ def _get_access_point(config_path, final_path=None, legacy=False, local_config="
         return AccessPoint(
             nexus_config=config_path,
             emodel_dir=local_config,
-            mech_path=Path(local_config) / "mechanisms",
+            mech_path=Path(local_config) / "mechanisms"
         )
 
     return AccessPoint(
@@ -684,7 +684,7 @@ def adapt(
                     .to_dict()
                 )
                 cells_df.loc[mask] = adapt_soma_ais(
-                    cells_df[mask],
+                    cells_df.loc[mask],
                     access_point,
                     resistance_models[emodel],
                     rhos,
@@ -701,8 +701,6 @@ def adapt(
                     )
 
         return cells_df
-
-    parallel_factory.shutdown()
 
     with Reuse(local_dir / "adapt_df.csv") as reuse:
         cells_df = reuse(_adapt)
@@ -746,3 +744,5 @@ def adapt(
 
         with open(Path(output_hoc_path) / f"{emodel}.hoc", "w") as hoc_file:
             hoc_file.write(hoc)
+
+    parallel_factory.shutdown()

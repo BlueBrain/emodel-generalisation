@@ -10,6 +10,8 @@ from pathlib import Path
 
 from tqdm import tqdm
 
+import neuron
+
 L = logging.getLogger(__name__)
 
 
@@ -180,10 +182,9 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
 
 
 def compile_mechanisms(mech_path="mechanisms", compiled_mech_path=None):
-    """Compile mechanisms in custom location or TMPDIR."""
+    """Compile mechanisms in custom location."""
     if compiled_mech_path is None:
-        compiled_mech_path = os.environ.get("TMPDIR", ".")
-
+        compiled_mech_path = os.environ.get('TMPDIR', '.')
     cwd = os.getcwd()
     compiled_mech_path = Path(compiled_mech_path).resolve()
     compiled_mech_path.mkdir(exist_ok=True)

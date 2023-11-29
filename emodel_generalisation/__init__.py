@@ -24,16 +24,13 @@
 import os
 from pathlib import Path
 
+os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
+
 import neuron
 
-# load mechanisms if they are in tmpdir
-mod_lib_path = os.environ.get("TMPDIR", None)
-if mod_lib_path is not None and Path(mod_lib_path / "x86_64").exists():
-    neuron.load_mechanisms(mod_lib_path)
-
-os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
 _TMPDIR = os.environ.get("TMPDIR", None)
 if _TMPDIR is not None:
+    neuron.load_mechanisms(_TMPDIR)
     os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR
 
 
