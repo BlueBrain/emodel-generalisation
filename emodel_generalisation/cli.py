@@ -343,6 +343,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--feature-filter", default="", type=str)
 @click.option("--validation-path", default="analysis_plot", type=str)
 @click.option("--with-model-management", is_flag=True)
+@click.option("--evaluate-all", is_flag=True)
 def evaluate(
     input_path,
     population_name,
@@ -361,6 +362,7 @@ def evaluate(
     feature_filter,
     validation_path,
     with_model_management,
+    evaluate_all,
 ):
     """Evaluate models from a circuit."""
     parallel_factory = init_parallel_factory(parallel_lib)
@@ -392,14 +394,16 @@ def evaluate(
                     "@dynamics:soma_scaler": "soma_scaler",
                 }
             )
-    if "ais_model" in cells_df.columns:
-        cells_df = cells_df[~cells_df["ais_model"].isna()]
-        L.info(
-            "We found %s emodels with non-placeholders to evaluate.", len(cells_df.emodel.unique())
-        )
-    else:
-        L.info("Nothing to compute, only placeholder models found.")
-        return
+    if not evaluate_all:
+        if "ais_model" in cells_df.columns:
+            cells_df = cells_df[~cells_df["ais_model"].isna()]
+            L.info(
+                "We found %s emodels with non-placeholders to evaluate.",
+                len(cells_df.emodel.unique()),
+            )
+        else:
+            L.info("Nothing to compute, only placeholder models found.")
+            return
 
     with Reuse(output_path, index=False) as reuse:
         cells_df = reuse(

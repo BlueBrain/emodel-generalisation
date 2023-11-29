@@ -96,6 +96,7 @@ def test_evaluate(cli_runner, tmpdir):
             "--config-path", str(DATA / "config"),
             "--final-path", str(DATA / "final.json"),
             "--parallel-lib", None,
+            "--evaluate-all",
         ],
     )
     # fmt: on
