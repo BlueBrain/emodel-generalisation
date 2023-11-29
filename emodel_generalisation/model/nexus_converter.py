@@ -10,8 +10,6 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-import neuron
-
 L = logging.getLogger(__name__)
 
 
@@ -59,7 +57,7 @@ def _prepare(out_folder):
     (out_folder / "features").mkdir(exist_ok=True)
 
 
-def _make_mechanism(config, mech_path="mechanisms"):
+def _make_mechanism(config, mech_path="mechanisms", base_path="."):
     """Copy mechanisms locally in a mechanisms folder."""
     mech_path = Path(mech_path)
     mech_path.mkdir(exist_ok=True, parents=True)
@@ -70,7 +68,10 @@ def _make_mechanism(config, mech_path="mechanisms"):
         if mech["path"] is not None:
             local_mech_path = mech_path / Path(mech["path"]).name
             if local_mech_path.exists():
-                if not filecmp.cmp(mech["path"], local_mech_path):
+                path = mech["path"]
+                if not Path(mech["path"]).is_absolute():
+                    path = Path(base_path) / mech["path"]
+                if not filecmp.cmp(path, local_mech_path):
                     L.warning(
                         "Mechanism file %s  and %s are not the same,"
                         "but have the same name, we do not overwrite.",
@@ -128,7 +129,16 @@ def _make_parameter_entry(config):
 
 
 def _add_emodel(
-    recipes, final, region, mtype, etype, config, i, out_config_folder, mech_path="mechanisms"
+    recipes,
+    final,
+    region,
+    mtype,
+    etype,
+    config,
+    i,
+    out_config_folder,
+    mech_path="mechanisms",
+    base_path=".",
 ):
     """Add a single emodel."""
     emodel_name = _get_emodel_name(region, mtype, etype, i)
@@ -139,7 +149,7 @@ def _add_emodel(
     final[emodel_name] = _make_parameter_entry(config)
 
     params = _make_parameters(config)
-    _make_mechanism(config, mech_path)
+    _make_mechanism(config, mech_path, base_path)
 
     with open(out_config_folder / recipes[emodel_name]["params"], "w") as param_file:
         json.dump(params, param_file, indent=4)
@@ -164,7 +174,6 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
                 for entry, data in etype_config["eModel"].items():
                     if not Path(data).is_absolute():
                         etype_config["eModel"][entry] = Path(config_path).parent / data
-                    print(etype_config)
                 if etype_config["assignmentAlgorithm"] == "assignOne":
                     _add_emodel(
                         recipes,
@@ -176,6 +185,7 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
                         None,
                         out_config_folder,
                         mech_path,
+                        Path(config_path).parent,
                     )
 
     with open(out_config_folder / "recipes.json", "w") as recipes_file:

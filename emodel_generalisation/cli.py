@@ -75,7 +75,7 @@ def _get_access_point(config_path, final_path=None, legacy=False, local_config="
         return AccessPoint(
             nexus_config=config_path,
             emodel_dir=local_config,
-            mech_path=Path(local_config) / "mechanisms"
+            mech_path=Path(local_config) / "mechanisms",
         )
 
     return AccessPoint(

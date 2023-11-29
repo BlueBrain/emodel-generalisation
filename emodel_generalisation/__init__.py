@@ -20,20 +20,21 @@
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 # pylint: disable=line-too-long
-
+import logging
 import os
-from pathlib import Path
 
 os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
-
-import neuron
+logger = logging.getLogger(__name__)
 
 _TMPDIR = os.environ.get("TMPDIR", None)
 if _TMPDIR is not None:
     try:
-        neuron.load_mechanisms(_TMPDIR)
-    except:
-        pass
+        import neuron
+
+        if not neuron.load_mechanisms(_TMPDIR):
+            raise Exception("Could not load mod files")
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        logger.debug("Could not load mod files from %s because of %s", _TMPDIR, exc)
     os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR
 
 
