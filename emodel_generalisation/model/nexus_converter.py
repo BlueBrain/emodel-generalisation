@@ -161,6 +161,10 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
     for region, region_config in tqdm(config.items()):
         for mtype, mtype_config in region_config.items():
             for etype, etype_config in mtype_config.items():
+                for entry, data in etype_config["eModel"].items():
+                    if not Path(data).is_absolute():
+                        etype_config["eModel"][entry] = Path(config_path).parent / data
+                    print(etype_config)
                 if etype_config["assignmentAlgorithm"] == "assignOne":
                     _add_emodel(
                         recipes,
@@ -184,7 +188,7 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
 def compile_mechanisms(mech_path="mechanisms", compiled_mech_path=None):
     """Compile mechanisms in custom location."""
     if compiled_mech_path is None:
-        compiled_mech_path = os.environ.get('TMPDIR', '.')
+        compiled_mech_path = os.environ.get("TMPDIR", ".")
     cwd = os.getcwd()
     compiled_mech_path = Path(compiled_mech_path).resolve()
     compiled_mech_path.mkdir(exist_ok=True)

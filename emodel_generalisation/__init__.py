@@ -30,7 +30,10 @@ import neuron
 
 _TMPDIR = os.environ.get("TMPDIR", None)
 if _TMPDIR is not None:
-    neuron.load_mechanisms(_TMPDIR)
+    try:
+        neuron.load_mechanisms(_TMPDIR)
+    except:
+        pass
     os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR
 
 
