@@ -67,10 +67,12 @@ def _make_mechanism(config, mech_path="mechanisms", base_path="."):
     for mech in emodelconfig["mechanisms"]:
         if mech["path"] is not None:
             local_mech_path = mech_path / Path(mech["path"]).name
+
+            path = mech["path"]
+            if not Path(mech["path"]).is_absolute():
+                path = Path(base_path) / mech["path"]
+
             if local_mech_path.exists():
-                path = mech["path"]
-                if not Path(mech["path"]).is_absolute():
-                    path = Path(base_path) / mech["path"]
                 if not filecmp.cmp(path, local_mech_path):
                     L.warning(
                         "Mechanism file %s  and %s are not the same,"
@@ -79,7 +81,7 @@ def _make_mechanism(config, mech_path="mechanisms", base_path="."):
                         local_mech_path,
                     )
             else:
-                shutil.copy(mech["path"], mech_path / Path(mech["path"]).name)
+                shutil.copy(path, mech_path / Path(mech["path"]).name)
 
 
 def _make_parameters(config):
