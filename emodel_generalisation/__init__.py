@@ -22,6 +22,7 @@
 # pylint: disable=line-too-long
 import logging
 import os
+from pathlib import Path
 
 os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
 logger = logging.getLogger(__name__)
@@ -31,8 +32,9 @@ if _TMPDIR is not None:
     try:
         import neuron
 
-        if not neuron.load_mechanisms(_TMPDIR):
-            raise Exception("Could not load mod files")
+        if (Path(_TMPDIR) / "x86_64").exists():
+            if not neuron.load_mechanisms(_TMPDIR):
+                raise Exception("Could not load mod files")
     except Exception as exc:  # pylint: disable=broad-exception-caught
         logger.debug("Could not load mod files from %s because of %s", _TMPDIR, exc)
     os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR

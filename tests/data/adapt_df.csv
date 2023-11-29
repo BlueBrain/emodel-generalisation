@@ -1,7 +1,7 @@
-Unnamed: 0,morphology,mtype,synapse_class,etype,region,layer,model_template,hemisphere,morph_class,x,y,z,orientation,emodel,path,ais_scaler,soma_scaler,ais_model,soma_model
-1,hashed/be/fb/befbcea89657fdd07ae181b977b9e320,L5_TPC:A,EXC,generic,MOs@right,5,hoc:generic_model,right,PYR,3887.062211566772,1924.0204607290975,6775.602532718369,"[[1. 0. 0.]
+Unnamed: 0,etype,mtype,synapse_class,morphology,region,model_template,morph_class,layer,hemisphere,x,y,z,orientation,emodel,ais_scaler,soma_scaler,ais_model,soma_model
+1,generic,L5_TPC:A,EXC,hashed/be/fb/befbcea89657fdd07ae181b977b9e320,MOs@right,hoc:generic_model,PYR,5,right,3887.062211566772,1924.0204607290975,6775.602532718369,"[[1. 0. 0.]
  [0. 1. 0.]
- [0. 0. 1.]]",generic_model,/gpfs/bbp.cscs.ch/home/arnaudon/code/emodel-generalisation/tests/data/morphologies/hashed/be/fb/befbcea89657fdd07ae181b977b9e320.asc,1.1,1.1,"{""popt"": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}","{""soma_surface"": 1167.714655051592, ""soma_radius"": 10.0}"
-2,hashed/d6/a9/d6a9976c7588ae0111f17f28e39a1e6d,L5_TPC:A,EXC,generic,MOp@right,5,hoc:generic_model,right,PYR,6291.256509715739,1139.1852640664094,6812.970413610967,"[[1. 0. 0.]
+ [0. 0. 1.]]",generic_model,1.1,1.1,"{""popt"": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}","{""soma_surface"": 1167.714655051592, ""soma_radius"": 10.0}"
+2,generic,L5_TPC:A,EXC,hashed/d6/a9/d6a9976c7588ae0111f17f28e39a1e6d,MOp@right,hoc:generic_model,PYR,5,right,6291.256509715739,1139.1852640664094,6812.970413610967,"[[1. 0. 0.]
  [0. 1. 0.]
- [0. 0. 1.]]",generic_model,/gpfs/bbp.cscs.ch/home/arnaudon/code/emodel-generalisation/tests/data/morphologies/hashed/d6/a9/d6a9976c7588ae0111f17f28e39a1e6d.asc,1.1,1.1,"{""popt"": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}","{""soma_surface"": 1167.714655051592, ""soma_radius"": 10.0}"
+ [0. 0. 1.]]",generic_model,1.1,1.1,"{""popt"": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}","{""soma_surface"": 1167.714655051592, ""soma_radius"": 10.0}"

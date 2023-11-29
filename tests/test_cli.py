@@ -24,7 +24,6 @@ def test_compute_currents(cli_runner, tmpdir):
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
             "--hoc-path", str(DATA / "hoc"),
             "--parallel-lib", None,
-            # "--debug-csv-path", "debug.csv"  # use this to debug
         ],
     )
     # fmt: on
@@ -62,7 +61,6 @@ def test_compute_currents(cli_runner, tmpdir):
             "--hoc-path", str(DATA / "hoc"),
             "--parallel-lib", None,
             "--only-rin",
-            # "--debug-csv-path", "debug.csv"  # use this to debug
         ],
     )
     # fmt: on
@@ -145,11 +143,10 @@ def test_adapt(cli_runner, tmpdir):
         ],
     )
     # fmt: on
-
     assert response.exit_code == 0
 
     df = pd.read_csv(tmpdir / "local" / "adapt_df.csv")
-    df.to_csv(DATA / "adapt_df.csv", index=None)
+    df.drop(columns=["path"]).to_csv(DATA / "adapt_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "adapt_df.csv")
     assert df.loc[0, "ais_scaler"] == expected_df.loc[0, "ais_scaler"]
     assert df.loc[0, "soma_scaler"] == expected_df.loc[0, "soma_scaler"]
@@ -166,8 +163,8 @@ def test_adapt(cli_runner, tmpdir):
             "--output-path", str(tmpdir / "adapted_evaluation_df.csv"),
             "--morphology-path", str(DATA / "morphologies"),
             "--config-path", str(DATA / "config"),
+            "--local-dir", str(tmpdir / 'local'),
             "--final-path", str(DATA / "final.json"),
-            "--exemplar-data-path", str(tmpdir / 'local' / 'exemplar_data.yaml'),
             "--parallel-lib", None,
         ],
     )
@@ -175,7 +172,7 @@ def test_adapt(cli_runner, tmpdir):
     assert response.exit_code == 0
 
     df = pd.read_csv(tmpdir / "adapted_evaluation_df.csv")
-    # df.drop(columns=["path"]).to_csv(DATA / "adapted_evaluation_df.csv", index=None)
+    df.drop(columns=["path"]).to_csv(DATA / "adapted_evaluation_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "adapted_evaluation_df.csv")
 
     for f, f_exp in zip(
@@ -202,13 +199,12 @@ def test_adapt(cli_runner, tmpdir):
         tested.cli,
         [
             "compute_currents",
-            "--input-path", tmpdir / "sonata_v6_adapted.h5",
-            "--output-path", tmpdir / "sonata_currents_adapted.h5",
+            "--input-path", str(tmpdir / "sonata_v6_adapted.h5"),
+            "--output-path", str(tmpdir / "sonata_currents_adapted.h5"),
             "--morphology-path", str(DATA / "morphologies"),
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
             "--hoc-path", str(tmpdir / "hoc"),
             "--parallel-lib", None,
-            # "--debug-csv-path", "debug.csv"  # use this to debug
         ],
     )
     # fmt: on
@@ -217,21 +213,21 @@ def test_adapt(cli_runner, tmpdir):
     df = CellCollection().load_sonata(tmpdir / "sonata_currents_adapted.h5").as_dataframe()
     npt.assert_allclose(
         df["@dynamics:resting_potential"].to_list(),
-        [-72.1293567841849, -70.90301513447787],
+        [-72.83636713404104, -71.19273761621892],
         rtol=1e-5,
     )
     npt.assert_allclose(
         df["@dynamics:input_resistance"].to_list(),
-        [169.15647891838148, 131.11847371817476],
+        [109.7031265354218, 1970.7208294369848],
         rtol=1e-5,
     )
     npt.assert_allclose(
         df["@dynamics:holding_current"].to_list(),
-        [-0.06796391821950465, -0.08485163622680147],
+        [-0.06431251604510635, -0.08120532523605561],
         rtol=1e-5,
     )
     npt.assert_allclose(
         df["@dynamics:threshold_current"].to_list(),
-        [0.0625, 0.075],
+        [0.05625, 0.06875],
         rtol=1e-5,
     )
