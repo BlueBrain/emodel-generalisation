@@ -310,7 +310,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
     path = main_path / "feature_distributions"
     path.mkdir(exist_ok=True)
     for (emodel, mtype), df in tqdm(
-        cells_df.groupby(["emodel", "mtype"], disable=os.environ.get("NO_PROGRESS", False))
+        cells_df.groupby(["emodel", "mtype"]), disable=os.environ.get("NO_PROGRESS", False)
     ):
         _df = {"features": get_feature_df(df, filters=feature_filter)}
         try:
