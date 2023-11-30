@@ -172,6 +172,8 @@ def compute_currents(
         }
 
     # we evaluate currents only for unique morph/emodel pairs
+    print(cells_df)
+    # cells_df = cells_df.sample(100000)
     unique_cells_df = evaluate_currents(
         cells_df.drop_duplicates(["morphology", "emodel"]),
         protocol_config,
@@ -182,6 +184,7 @@ def compute_currents(
         only_rin=only_rin,
     )
 
+    print(unique_cells_df)
     cols = ["resting_potential", "input_resistance", "exception"]
     if not only_rin:
         cols += ["holding_current", "threshold_current"]
@@ -190,14 +193,10 @@ def compute_currents(
     if len(cells_df) == len(unique_cells_df):
         cells_df = unique_cells_df
     else:
-        for gid in unique_cells_df.index:
-            data = unique_cells_df.loc[gid].to_dict()
+        unique_cells_df = unique_cells_df.set_index(["morphology", "emodel"])
+        for entry, data in tqdm(cells_df.groupby(["morphology", "emodel"])):
             for col in cols:
-                cells_df.loc[
-                    (cells_df.morphology == data["morphology"])
-                    & (cells_df.emodel == data["emodel"]),
-                    col,
-                ] = data[col]
+                cells_df.loc[data.index, col] = unique_cells_df.loc[entry, col]
 
     failed_cells = cells_df[
         cells_df["input_resistance"].isna() | (cells_df["input_resistance"] < 0)

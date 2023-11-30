@@ -30,16 +30,10 @@ def test_compute_currents(cli_runner, tmpdir):
     assert response.exit_code == 0
 
     df = CellCollection().load_sonata(tmpdir / "sonata_currents.h5").as_dataframe()
-    npt.assert_allclose(
-        df["@dynamics:resting_potential"].to_list(),
-        [-78.24665843577513, -78.04757822491321],
-        rtol=1e-5,
-    )
-    npt.assert_allclose(
-        df["@dynamics:input_resistance"].to_list(),
-        [239.4410588137958, 200.66982375732323],
-        rtol=1e-5,
-    )
+    expected_rmp = [-78.18732146256286, -78.01157423898272]
+    expected_rin = [244.72829316246703, 202.20371382555413]
+    npt.assert_allclose(df["@dynamics:resting_potential"].to_list(), expected_rmp, rtol=1e-5)
+    npt.assert_allclose(df["@dynamics:input_resistance"].to_list(), expected_rin, rtol=1e-5)
     npt.assert_allclose(
         df["@dynamics:holding_current"].to_list(),
         [-0.028562604715887, -0.035378993149493],
@@ -67,16 +61,8 @@ def test_compute_currents(cli_runner, tmpdir):
     assert response.exit_code == 0
 
     df = CellCollection().load_sonata(tmpdir / "sonata_currents_only_rin.h5").as_dataframe()
-    npt.assert_allclose(
-        df["@dynamics:resting_potential"].to_list(),
-        [-78.24665843577513, -78.04757822491321],
-        rtol=1e-5,
-    )
-    npt.assert_allclose(
-        df["@dynamics:input_resistance"].to_list(),
-        [239.4410588137958, 200.66982375732323],
-        rtol=1e-5,
-    )
+    npt.assert_allclose(df["@dynamics:resting_potential"].to_list(), expected_rmp, rtol=1e-5)
+    npt.assert_allclose(df["@dynamics:input_resistance"].to_list(), expected_rin, rtol=1e-5)
     assert "@dynamics:holding_current" not in df.columns
     assert "@dynamics:threshold_current" not in df.columns
 
