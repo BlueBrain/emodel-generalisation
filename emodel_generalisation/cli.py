@@ -191,7 +191,9 @@ def compute_currents(
         cells_df = unique_cells_df
     else:
         unique_cells_df = unique_cells_df.set_index(["morphology", "emodel"])
-        for entry, data in tqdm(cells_df.groupby(["morphology", "emodel"])):
+        for entry, data in tqdm(
+            cells_df.groupby(["morphology", "emodel"]), disable=os.environ.get("NO_PROGRESS", False)
+        ):
             for col in cols:
                 cells_df.loc[data.index, col] = unique_cells_df.loc[entry, col]
 
