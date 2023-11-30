@@ -1,0 +1,478 @@
+{
+  "mechanisms": [
+    {
+      "name": "pas",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": null
+    },
+    {
+      "name": "Ih",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/Ih.mod"
+    },
+    {
+      "name": "NaTg",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/NaTg.mod"
+    },
+    {
+      "name": "CaDynamics_DC0",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/CaDynamics_DC0.mod"
+    },
+    {
+      "name": "Ca_HVA2",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/Ca_HVA2.mod"
+    },
+    {
+      "name": "Ca_LVAst",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/Ca_LVAst.mod"
+    },
+    {
+      "name": "SKv3_1",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/SKv3_1.mod"
+    },
+    {
+      "name": "SK_E2",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/SK_E2.mod"
+    },
+    {
+      "name": "K_Pst",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/K_Pst.mod"
+    },
+    {
+      "name": "K_Tst",
+      "stochastic": false,
+      "location": "somatic",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/K_Tst.mod"
+    },
+    {
+      "name": "pas",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": null
+    },
+    {
+      "name": "Ih",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/Ih.mod"
+    },
+    {
+      "name": "Nap_Et2",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/Nap_Et2.mod"
+    },
+    {
+      "name": "NaTg",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/NaTg.mod"
+    },
+    {
+      "name": "CaDynamics_DC0",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/CaDynamics_DC0.mod"
+    },
+    {
+      "name": "Ca_HVA2",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/Ca_HVA2.mod"
+    },
+    {
+      "name": "Ca_LVAst",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/Ca_LVAst.mod"
+    },
+    {
+      "name": "SKv3_1",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/SKv3_1.mod"
+    },
+    {
+      "name": "SK_E2",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/SK_E2.mod"
+    },
+    {
+      "name": "K_Pst",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/K_Pst.mod"
+    },
+    {
+      "name": "K_Tst",
+      "stochastic": false,
+      "location": "axonal",
+      "version": null,
+      "temperature": null,
+      "ljp_corrected": null,
+      "path": "mechanisms/K_Tst.mod"
+    }
+  ],
+  "distributions": [
+    {
+      "name": "uniform",
+      "function": null,
+      "soma_ref_location": 0.5
+    }
+  ],
+  "parameters": [
+    {
+      "name": "v_init",
+      "value": -80,
+      "location": "global"
+    },
+    {
+      "name": "celsius",
+      "value": 34,
+      "location": "global"
+    },
+    {
+      "name": "Ra",
+      "value": 100,
+      "location": "all"
+    },
+    {
+      "name": "ena",
+      "value": 50,
+      "location": "all"
+    },
+    {
+      "name": "ek",
+      "value": -90,
+      "location": "all"
+    },
+    {
+      "name": "g_pas",
+      "value": [
+        1e-06,
+        0.0002
+      ],
+      "location": "all",
+      "mechanism": "pas"
+    },
+    {
+      "name": "e_pas",
+      "value": [
+        -95,
+        -60
+      ],
+      "location": "all",
+      "mechanism": "pas"
+    },
+    {
+      "name": "cm",
+      "value": 1,
+      "location": "all"
+    },
+    {
+      "name": "vshiftm_NaTg",
+      "value": 13,
+      "location": "somatic",
+      "mechanism": "NaTg"
+    },
+    {
+      "name": "vshifth_NaTg",
+      "value": 15,
+      "location": "somatic",
+      "mechanism": "NaTg"
+    },
+    {
+      "name": "slopem_NaTg",
+      "value": 7,
+      "location": "somatic",
+      "mechanism": "NaTg"
+    },
+    {
+      "name": "gNaTgbar_NaTg",
+      "value": [
+        0,
+        1.0
+      ],
+      "location": "somatic",
+      "mechanism": "NaTg"
+    },
+    {
+      "name": "gK_Pstbar_K_Pst",
+      "value": [
+        0,
+        0.5
+      ],
+      "location": "somatic",
+      "mechanism": "K_Pst"
+    },
+    {
+      "name": "gK_Tstbar_K_Tst",
+      "value": [
+        0,
+        0.5
+      ],
+      "location": "somatic",
+      "mechanism": "K_Tst"
+    },
+    {
+      "name": "gSKv3_1bar_SKv3_1",
+      "value": [
+        0,
+        0.1
+      ],
+      "location": "somatic",
+      "mechanism": "SKv3_1"
+    },
+    {
+      "name": "gCa_HVAbar_Ca_HVA2",
+      "value": [
+        0,
+        0.005
+      ],
+      "location": "somatic",
+      "mechanism": "Ca_HVA2"
+    },
+    {
+      "name": "gCa_LVAstbar_Ca_LVAst",
+      "value": [
+        0,
+        0.005
+      ],
+      "location": "somatic",
+      "mechanism": "Ca_LVAst"
+    },
+    {
+      "name": "gSK_E2bar_SK_E2",
+      "value": [
+        0,
+        0.005
+      ],
+      "location": "somatic",
+      "mechanism": "SK_E2"
+    },
+    {
+      "name": "decay_CaDynamics_DC0",
+      "value": [
+        20,
+        300
+      ],
+      "location": "somatic",
+      "mechanism": "CaDynamics_DC0"
+    },
+    {
+      "name": "gamma_CaDynamics_DC0",
+      "value": [
+        0.005,
+        0.05
+      ],
+      "location": "somatic",
+      "mechanism": "CaDynamics_DC0"
+    },
+    {
+      "name": "gIhbar_Ih",
+      "value": [
+        0,
+        0.0005
+      ],
+      "location": "somatic",
+      "mechanism": "Ih"
+    },
+    {
+      "name": "vshifth_NaTg",
+      "value": 10,
+      "location": "axonal",
+      "mechanism": "NaTg"
+    },
+    {
+      "name": "slopem_NaTg",
+      "value": 9,
+      "location": "axonal",
+      "mechanism": "NaTg"
+    },
+    {
+      "name": "gNaTgbar_NaTg",
+      "value": [
+        0,
+        1.5
+      ],
+      "location": "axonal",
+      "mechanism": "NaTg"
+    },
+    {
+      "name": "gNap_Et2bar_Nap_Et2",
+      "value": [
+        0,
+        0.02
+      ],
+      "location": "axonal",
+      "mechanism": "Nap_Et2"
+    },
+    {
+      "name": "gK_Pstbar_K_Pst",
+      "value": [
+        0,
+        1
+      ],
+      "location": "axonal",
+      "mechanism": "K_Pst"
+    },
+    {
+      "name": "gK_Tstbar_K_Tst",
+      "value": [
+        0,
+        0.75
+      ],
+      "location": "axonal",
+      "mechanism": "K_Tst"
+    },
+    {
+      "name": "gSKv3_1bar_SKv3_1",
+      "value": [
+        0,
+        0.1
+      ],
+      "location": "axonal",
+      "mechanism": "SKv3_1"
+    },
+    {
+      "name": "gCa_HVAbar_Ca_HVA2",
+      "value": [
+        0,
+        0.005
+      ],
+      "location": "axonal",
+      "mechanism": "Ca_HVA2"
+    },
+    {
+      "name": "gCa_LVAstbar_Ca_LVAst",
+      "value": [
+        0,
+        0.005
+      ],
+      "location": "axonal",
+      "mechanism": "Ca_LVAst"
+    },
+    {
+      "name": "gSK_E2bar_SK_E2",
+      "value": [
+        0,
+        0.005
+      ],
+      "location": "axonal",
+      "mechanism": "SK_E2"
+    },
+    {
+      "name": "decay_CaDynamics_DC0",
+      "value": [
+        20,
+        300
+      ],
+      "location": "axonal",
+      "mechanism": "CaDynamics_DC0"
+    },
+    {
+      "name": "gamma_CaDynamics_DC0",
+      "value": [
+        0.005,
+        0.05
+      ],
+      "location": "axonal",
+      "mechanism": "CaDynamics_DC0"
+    },
+    {
+      "name": "gIhbar_Ih",
+      "value": [
+        0,
+        0.0005
+      ],
+      "location": "axonal",
+      "mechanism": "Ih"
+    }
+  ],
+  "morphology": {
+    "name": "simple",
+    "format": null,
+    "path": "morphologies/simple.asc",
+    "seclist_names": null,
+    "secarray_names": null,
+    "section_index": null
+  },
+  "morph_modifiers": null
+}

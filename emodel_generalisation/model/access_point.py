@@ -28,6 +28,8 @@ from pathlib import Path
 from emodel_generalisation.model.evaluation import LEGACY_PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import FitnessCalculatorConfiguration
+from emodel_generalisation.model.nexus_converter import compile_mechanisms
+from emodel_generalisation.model.nexus_converter import convert_all_config
 
 # pylint: disable=too-many-lines
 
@@ -475,9 +477,6 @@ class NeuronModelConfiguration:
             soma_ref_location=soma_ref_location,
         )
 
-        if any(tmp_distribution.name == d.name for d in self.distributions):
-            logger.warning("Distribution %s already exists", tmp_distribution.name)
-
         self.distributions.append(tmp_distribution)
 
     def add_parameter(
@@ -889,9 +888,20 @@ class AccessPoint:
         recipes_path=None,
         legacy_dir_structure=False,
         with_seeds=False,
+        nexus_config=None,
+        mech_path="mechanisms",
+        compiled_mech_path=None,
     ):
         """Init"""
-        super().__init__()
+        if nexus_config is not None:
+            if not Path(emodel_dir).exists():
+                logger.info("Creating local config folder.")
+                convert_all_config(nexus_config, emodel_dir, mech_path=mech_path)
+            else:
+                logger.info("We found an existing config folder, we will not convert nexus recipe.")
+            compile_mechanisms(mech_path, compiled_mech_path)
+            final_path = Path(emodel_dir) / "final.json"
+            recipes_path = Path(emodel_dir) / "recipes.json"
 
         if emodel_dir is None:
             self.emodel_dir = Path.cwd()
@@ -910,19 +920,42 @@ class AccessPoint:
         if final_path.exists():
             with open(final_path, "r") as f:
                 self.final = json.load(f)
+        self.emodels = list(self.final.keys()) if self.final is not None else None
         self.morph_path = None
         self.settings = {}
+        self._recipes = None
+
+    @property
+    def recipes(self):
+        """Cache mechanism to better handle large recipes in non-legacy setting."""
+        if self.legacy_dir_structure:
+            raise Exception("We cannot use recipes attribute with legacy.")
+
+        if not self._recipes:
+            with open(self.recipes_path, "r") as f:
+                self._recipes = json.load(f)
+        return self._recipes
 
     def get_recipes(self, emodel):
         """Load the recipes from a json file for an emodel."""
-        _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
-        if self.legacy_dir_structure:
-            recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"
-        else:
-            recipes_path = self.recipes_path
+        try:
+            _emodel = "_".join(emodel.split("_")[:2]) if self.with_seeds else emodel
+            if self.legacy_dir_structure:
+                recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"
 
-        with open(recipes_path, "r") as f:
-            return json.load(f)[_emodel]
+                with open(recipes_path, "r") as f:
+                    return json.load(f)[_emodel]
+            else:
+                return self.recipes[_emodel]
+
+        except KeyError:
+            _emodel = "_".join(emodel.split("_")[:-1]) if self.with_seeds else emodel
+            if self.legacy_dir_structure:
+                recipes_path = self.emodel_dir / _emodel / "config" / "recipes" / "recipes.json"
+                with open(recipes_path, "r") as f:
+                    return json.load(f)[_emodel]
+            else:
+                return self.recipes[_emodel]
 
     def get_settings(self, emodel):
         """ """
@@ -1045,7 +1078,6 @@ class AccessPoint:
             contain the additional entries "seclist_names" and "secarray_names" if they are
             present in the recipes.
         """
-
         recipes = self.get_recipes(emodel)
 
         if self.morph_path is None:

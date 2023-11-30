@@ -20,7 +20,6 @@
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 from functools import partial
-from multiprocessing.pool import Pool
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -37,7 +36,6 @@ from neurom import iter_sections
 from neurom import load_morphology
 from neurom import view
 from scipy.optimize import curve_fit
-from tqdm import tqdm
 
 
 def build_soma_model(morphology_paths):
@@ -45,7 +43,7 @@ def build_soma_model(morphology_paths):
 
     Using only surface area for now.
     """
-    soma_surfaces = [float(get_NEURON_surface(path)) for path in tqdm(morphology_paths)]
+    soma_surfaces = [float(get_NEURON_surface(path)) for path in morphology_paths]
     soma_radii = [
         float(nm.get("soma_radius", nm.load_morphology(path))) for path in morphology_paths
     ]
@@ -107,17 +105,14 @@ def get_surface_density(neuron_path, path_bins, neurite_type="basal", tpe="area"
 def get_surface_profile(df, path_bins, neurite_type="basal", morphology_path="path", tpe="area"):
     """Get surface profile."""
     surface_df = pd.DataFrame()
-    with Pool() as pool:
-        for gid, res in enumerate(
-            pool.map(
-                partial(
-                    get_surface_density, path_bins=path_bins, neurite_type=neurite_type, tpe=tpe
-                ),
-                df[morphology_path],
-            )
-        ):
-            for b, s in res:
-                surface_df.loc[gid, b] = s
+    for gid, res in enumerate(
+        map(
+            partial(get_surface_density, path_bins=path_bins, neurite_type=neurite_type, tpe=tpe),
+            df[morphology_path],
+        )
+    ):
+        for b, s in res:
+            surface_df.loc[gid, b] = s
     surface_df[surface_df.isna()] = 0
 
     return surface_df
@@ -349,7 +344,11 @@ def build_ais_diameter_model(morphology_paths, bin_size=2, total_length=60, with
         bounds[0][0] = 0.0
         bounds[1][0] = 0.000001
 
-    popt, _ = curve_fit(taper_function, np.array(bins), np.array(means), bounds=bounds)[:2]
+    if len(bins) == 2:
+        means = np.interp(np.linspace(bins[0], bins[-1], 5), bins, means)
+        bins = np.linspace(bins[0], bins[-1], 5)
+
+    popt = curve_fit(taper_function, np.array(bins), np.array(means), bounds=bounds)[0]
 
     model = {}
     # first value is the length of AIS
@@ -374,7 +373,6 @@ def get_ais(neuron):
         if neurite.type == SectionType.axon:
             return neurite
     return None
-    # raise Exception("AIS not found")
 
 
 def extract_ais_diameters(morphologies):
@@ -417,9 +415,10 @@ def generate_exemplars(
     )
 
     for mtype in df.mtype.unique():
-        best_gids[mtype], surf_dfs[mtype] = get_best_exemplar(
-            df[df.mtype == mtype], surface_percentile=surface_percentile, bin_params=bin_params
-        )
+        if mtype != "all":
+            best_gids[mtype], surf_dfs[mtype] = get_best_exemplar(
+                df[df.mtype == mtype], surface_percentile=surface_percentile, bin_params=bin_params
+            )
 
     if with_plots:
         plot_soma_shape_models(soma_model, pdf_filename=figure_folder / "soma_shape_model.pdf")

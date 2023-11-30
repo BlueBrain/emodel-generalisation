@@ -187,7 +187,6 @@ def evaluate(
 
     # Drop exception column if present
     if "exception" in df.columns:
-        logger.warning("The 'exception' column is going to be replaced")
         df = df.drop(columns=["exception"])
 
     # Shallow copy the given DataFrame to add internal rows
@@ -209,7 +208,7 @@ def evaluate(
 
     # Create the database if required and get the task ids to run
     if db_url is None:
-        logger.info("Not using SQL backend to save iterations")
+        logger.debug("Not using SQL backend to save iterations")
         db = None
     else:
         db, db_url, task_ids = _prepare_db(db_url, to_evaluate, df, resume, task_ids)

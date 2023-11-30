@@ -1736,7 +1736,7 @@ def _single_feature_evaluation(
     if "morph_modifiers" not in access_point.settings:
         access_point.settings["morph_modifiers"] = None
 
-    if "ais_scaler" in combo and isinstance(combo["ais_model"], str):
+    if "ais_model" in combo and isinstance(combo["ais_model"], str):
         if access_point.settings["morph_modifiers"] is None:
             access_point.settings["morph_modifiers"] = []
         access_point.settings["morph_modifiers"].append(
@@ -1747,7 +1747,7 @@ def _single_feature_evaluation(
             )
         )
 
-    if "soma_scaler" in combo and isinstance(combo["soma_model"], str):
+    if "soma_model" in combo and isinstance(combo["soma_model"], str):
         if access_point.settings["morph_modifiers"] is None:
             access_point.settings["morph_modifiers"] = []
         access_point.settings["morph_modifiers"].append(

@@ -9,7 +9,7 @@ deterministic: True
 celsius: 34.0
 v_init: -80.0
 rin:
-  with_ttx: True
+  with_ttx: False
   step_start: 1000.0
   step_stop: 2000.0
   step_amp: -0.001

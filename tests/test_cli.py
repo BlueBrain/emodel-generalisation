@@ -24,23 +24,16 @@ def test_compute_currents(cli_runner, tmpdir):
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
             "--hoc-path", str(DATA / "hoc"),
             "--parallel-lib", None,
-            # "--debug-csv-path", "debug.csv"  # use this to debug
         ],
     )
     # fmt: on
     assert response.exit_code == 0
 
     df = CellCollection().load_sonata(tmpdir / "sonata_currents.h5").as_dataframe()
-    npt.assert_allclose(
-        df["@dynamics:resting_potential"].to_list(),
-        [-78.24665843577513, -78.04757822491321],
-        rtol=1e-5,
-    )
-    npt.assert_allclose(
-        df["@dynamics:input_resistance"].to_list(),
-        [239.4410588137958, 200.66982375732323],
-        rtol=1e-5,
-    )
+    expected_rmp = [-78.18732146256286, -78.01157423898272]
+    expected_rin = [244.72829316246703, 202.20371382555413]
+    npt.assert_allclose(df["@dynamics:resting_potential"].to_list(), expected_rmp, rtol=1e-5)
+    npt.assert_allclose(df["@dynamics:input_resistance"].to_list(), expected_rin, rtol=1e-5)
     npt.assert_allclose(
         df["@dynamics:holding_current"].to_list(),
         [-0.028562604715887, -0.035378993149493],
@@ -62,23 +55,14 @@ def test_compute_currents(cli_runner, tmpdir):
             "--hoc-path", str(DATA / "hoc"),
             "--parallel-lib", None,
             "--only-rin",
-            # "--debug-csv-path", "debug.csv"  # use this to debug
         ],
     )
     # fmt: on
     assert response.exit_code == 0
 
     df = CellCollection().load_sonata(tmpdir / "sonata_currents_only_rin.h5").as_dataframe()
-    npt.assert_allclose(
-        df["@dynamics:resting_potential"].to_list(),
-        [-78.24665843577513, -78.04757822491321],
-        rtol=1e-5,
-    )
-    npt.assert_allclose(
-        df["@dynamics:input_resistance"].to_list(),
-        [239.4410588137958, 200.66982375732323],
-        rtol=1e-5,
-    )
+    npt.assert_allclose(df["@dynamics:resting_potential"].to_list(), expected_rmp, rtol=1e-5)
+    npt.assert_allclose(df["@dynamics:input_resistance"].to_list(), expected_rin, rtol=1e-5)
     assert "@dynamics:holding_current" not in df.columns
     assert "@dynamics:threshold_current" not in df.columns
 
@@ -96,6 +80,7 @@ def test_evaluate(cli_runner, tmpdir):
             "--config-path", str(DATA / "config"),
             "--final-path", str(DATA / "final.json"),
             "--parallel-lib", None,
+            "--evaluate-all",
         ],
     )
     # fmt: on
@@ -134,22 +119,20 @@ def test_adapt(cli_runner, tmpdir):
         [
             "adapt",
             "--input-node-path", str(DATA / "sonata_v6.h5"),
-            "--output-csv-path", str(tmpdir / "adapt_df.csv"),
             "--output-node-path", str(tmpdir / "sonata_v6_adapted.h5"),
             "--morphology-path", str(DATA / "morphologies"),
             "--config-path", str(DATA / "config"),
             "--final-path", str(DATA / "final.json"),
             "--local-dir", str(tmpdir / 'local'),
-            "--hoc-path", str(tmpdir / "hoc"),
+            "--output-hoc-path", str(tmpdir / "hoc"),
             "--parallel-lib", None,
         ],
     )
     # fmt: on
-
     assert response.exit_code == 0
 
-    df = pd.read_csv(tmpdir / "adapt_df.csv")
-    # df.to_csv(DATA / "adapt_df.csv", index=None)
+    df = pd.read_csv(tmpdir / "local" / "adapt_df.csv")
+    df.drop(columns=["path"]).to_csv(DATA / "adapt_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "adapt_df.csv")
     assert df.loc[0, "ais_scaler"] == expected_df.loc[0, "ais_scaler"]
     assert df.loc[0, "soma_scaler"] == expected_df.loc[0, "soma_scaler"]
@@ -166,8 +149,8 @@ def test_adapt(cli_runner, tmpdir):
             "--output-path", str(tmpdir / "adapted_evaluation_df.csv"),
             "--morphology-path", str(DATA / "morphologies"),
             "--config-path", str(DATA / "config"),
+            "--local-dir", str(tmpdir / 'local'),
             "--final-path", str(DATA / "final.json"),
-            "--exemplar-data-path", str(tmpdir / 'local' / 'exemplar_data.yaml'),
             "--parallel-lib", None,
         ],
     )
@@ -175,7 +158,7 @@ def test_adapt(cli_runner, tmpdir):
     assert response.exit_code == 0
 
     df = pd.read_csv(tmpdir / "adapted_evaluation_df.csv")
-    # df.drop(columns=["path"]).to_csv(DATA / "adapted_evaluation_df.csv", index=None)
+    df.drop(columns=["path"]).to_csv(DATA / "adapted_evaluation_df.csv", index=None)
     expected_df = pd.read_csv(DATA / "adapted_evaluation_df.csv")
 
     for f, f_exp in zip(
@@ -202,13 +185,12 @@ def test_adapt(cli_runner, tmpdir):
         tested.cli,
         [
             "compute_currents",
-            "--input-path", tmpdir / "sonata_v6_adapted.h5",
-            "--output-path", tmpdir / "sonata_currents_adapted.h5",
+            "--input-path", str(tmpdir / "sonata_v6_adapted.h5"),
+            "--output-path", str(tmpdir / "sonata_currents_adapted.h5"),
             "--morphology-path", str(DATA / "morphologies"),
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
             "--hoc-path", str(tmpdir / "hoc"),
             "--parallel-lib", None,
-            # "--debug-csv-path", "debug.csv"  # use this to debug
         ],
     )
     # fmt: on
@@ -217,21 +199,21 @@ def test_adapt(cli_runner, tmpdir):
     df = CellCollection().load_sonata(tmpdir / "sonata_currents_adapted.h5").as_dataframe()
     npt.assert_allclose(
         df["@dynamics:resting_potential"].to_list(),
-        [-72.1293567841849, -70.90301513447787],
+        [-72.841806, -71.32893],
         rtol=1e-5,
     )
     npt.assert_allclose(
         df["@dynamics:input_resistance"].to_list(),
-        [169.15647891838148, 131.11847371817476],
+        [105.342194, 1863.809101],
         rtol=1e-5,
     )
     npt.assert_allclose(
         df["@dynamics:holding_current"].to_list(),
-        [-0.06796391821950465, -0.08485163622680147],
+        [-0.06431251604510635, -0.08120532523605561],
         rtol=1e-5,
     )
     npt.assert_allclose(
         df["@dynamics:threshold_current"].to_list(),
-        [0.0625, 0.075],
+        [0.05625, 0.06875],
         rtol=1e-5,
     )

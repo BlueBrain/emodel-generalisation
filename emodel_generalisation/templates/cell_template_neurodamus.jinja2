@@ -31,6 +31,9 @@ proc check_simulator() {
  */
 {%- endif %}
 
+strdef {{template_name}}_NeededAttributes
+ {{template_name}}_NeededAttributes = "AIS_scaler;soma_scaler"
+
 begintemplate {{template_name}}
   public init, morphology, geom_nseg_fixed, geom_nsec, getCell, getCCell, setCCell, gid, getCell
   public channel_seed, channel_seed_set
@@ -78,7 +81,7 @@ proc connect2target() { //$o1 target point process, $o2 returned NetCon
 }
 
 
-proc init(/* args: morphology_dir, morphology_name, ais_scaler, soma_scaler */) {
+proc init(/* args: morphology_dir, morphology_name, AIS_scaler, soma_scaler */) {
   all = new SectionList()
   apical = new SectionList()
   axonal = new SectionList()
