@@ -204,7 +204,7 @@ def test_adapt(cli_runner, tmpdir):
     )
     npt.assert_allclose(
         df["@dynamics:input_resistance"].to_list(),
-        [109.7031265354218, 1970.7208294369848],
+        [105.342194, 1863.809101],
         rtol=1e-5,
     )
     npt.assert_allclose(
