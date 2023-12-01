@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.0..0.2.1)
+
+> 1 December 2023
+
+### Chores And Housekeeping
+
+- Relax deps versions (Alexis Arnaudon - [#18](https://github.com/BlueBrain/emodel-generalisation/pull/18))
+
 ## [0.2.0](https://github.com/BlueBrain/emodel-generalisation/compare/0.1.1..0.2.0)
 
 > 30 November 2023
@@ -16,6 +24,7 @@
 
 ### General Changes
 
+- Release 0.2.2 (Alexis Arnaudon - [#17](https://github.com/BlueBrain/emodel-generalisation/pull/17))
 - Bump mikepenz/action-junit-report from 3 to 4 (dependabot[bot] - [#12](https://github.com/BlueBrain/emodel-generalisation/pull/12))
 - Bump actions/checkout from 3 to 4 (Adrien Berchet - [#11](https://github.com/BlueBrain/emodel-generalisation/pull/11))
 
