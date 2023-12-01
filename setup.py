@@ -26,19 +26,19 @@ from setuptools import find_namespace_packages
 from setuptools import setup
 
 reqs = [
-    "matplotlib>=3.6.3",
+    "matplotlib>=3.6.2",
     "morphio>=3.3.4",
     "neurom>=3.2.2",
     "numpy>=1.23.5",
     "pandas>=1.5.3",
-    "scipy>=1.10.1",
+    "scipy>=1.10.0",
     "seaborn>=0.12.2",
     "bluepyopt>=1.13.196",
     "neuron>=8.2.2",
     "morph-tool>=2.9.1",
     "luigi-tools>=0.3.3",
     "diameter_synthesis>=0.5.4",
-    "scikit-learn>=1.2.2",
+    "scikit-learn>=1.1.3",
     "shap>=0.41.0",
     "xgboost>=1.7.5,<2",
     "pyyaml>=6",
