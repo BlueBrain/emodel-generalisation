@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.1..0.2.2)
+
+> 7 December 2023
+
+### Fixes
+
+- Load mod files after compile (Alexis Arnaudon - [#20](https://github.com/BlueBrain/emodel-generalisation/pull/20))
+
 ## [0.2.1](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.0..0.2.1)
 
 > 1 December 2023
@@ -7,6 +15,10 @@
 ### Chores And Housekeeping
 
 - Relax deps versions (Alexis Arnaudon - [#18](https://github.com/BlueBrain/emodel-generalisation/pull/18))
+
+### General Changes
+
+- Release 0.2.1 (Alexis Arnaudon - [#19](https://github.com/BlueBrain/emodel-generalisation/pull/19))
 
 ## [0.2.0](https://github.com/BlueBrain/emodel-generalisation/compare/0.1.1..0.2.0)
 
