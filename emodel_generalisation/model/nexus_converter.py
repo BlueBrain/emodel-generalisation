@@ -197,6 +197,20 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
         json.dump(final, final_file, indent=4)
 
 
+def load_mechanisms():
+    _TMPDIR = os.environ.get("TMPDIR", None)
+    if _TMPDIR is not None:
+        try:
+            import neuron
+
+            if (Path(_TMPDIR) / "x86_64").exists():
+                if not neuron.load_mechanisms(_TMPDIR):
+                    raise Exception("Could not load mod files")
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            L.debug("Could not load mod files from %s because of %s", _TMPDIR, exc)
+        os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR
+
+
 def compile_mechanisms(mech_path="mechanisms", compiled_mech_path=None):
     """Compile mechanisms in custom location."""
     if compiled_mech_path is None:
@@ -208,3 +222,5 @@ def compile_mechanisms(mech_path="mechanisms", compiled_mech_path=None):
     os.chdir(compiled_mech_path)
     subprocess.run(f"nrnivmodl {mech_path}", shell=True, check=True)
     os.chdir(cwd)
+    # load mechs after compile
+    load_mechanisms()
