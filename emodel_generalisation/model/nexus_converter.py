@@ -8,6 +8,7 @@ import subprocess
 from copy import copy
 from pathlib import Path
 
+import neuron
 from tqdm import tqdm
 
 L = logging.getLogger(__name__)
@@ -198,11 +199,10 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
 
 
 def load_mechanisms():
+    """Load mechanisms if present in TMPDIR."""
     _TMPDIR = os.environ.get("TMPDIR", None)
     if _TMPDIR is not None:
         try:
-            import neuron
-
             if (Path(_TMPDIR) / "x86_64").exists():
                 if not neuron.load_mechanisms(_TMPDIR):
                     raise Exception("Could not load mod files")

@@ -20,8 +20,6 @@
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 import json
-import os
-import logging
 import pickle
 from copy import deepcopy
 from functools import partial
