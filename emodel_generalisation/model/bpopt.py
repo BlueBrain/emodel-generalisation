@@ -19,6 +19,7 @@
 # or send a letter to Creative Commons, 171
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
+import os
 import logging
 
 import numpy as np
@@ -368,6 +369,9 @@ class BPEMProtocol(ephys.protocols.SweepProtocol):
 
         param_values = {} if param_values is None else param_values
         responses = {} if responses is None else responses
+
+        if os.environ.get("DISABLE_CVODE", False):
+            self.cvode_active = False
 
         return super().run(
             cell_model=cell_model,
