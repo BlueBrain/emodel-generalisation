@@ -1085,8 +1085,6 @@ class AccessPoint:
                 morph_file = recipes["morphology"][0][1]
             morph_path = Path(recipes["morph_path"]) / morph_file
 
-            if not morph_path.is_absolute():
-                morph_path = Path(self.emodel_dir) / morph_path
         else:
             morph_path = Path(self.morph_path)
 
