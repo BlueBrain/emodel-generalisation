@@ -137,7 +137,7 @@ class IDrest(BPEM_stimulus):
         self.amp_rel = kwargs.get("thresh_perc", 200.0)
 
         self.holding_current = kwargs.get("holding_current", None)
-        self.rel_holding_current = kwargs.get("rel_holding_current", 1.0)
+        self.holding_voltage = kwargs.get("holding_voltage", None)
         self.threshold_current = None
 
         if self.amp is None and self.amp_rel is None:
@@ -160,10 +160,6 @@ class IDrest(BPEM_stimulus):
         return self.delay + self.duration
 
     @property
-    def holding(self):
-        return self.holding_current * self.rel_holding_current
-
-    @property
     def amplitude(self):
         if self.amp_rel is None or self.threshold_current is None:
             return self.amp
@@ -173,30 +169,27 @@ class IDrest(BPEM_stimulus):
         """Run stimulus"""
 
         icomp = self.location.instantiate(sim=sim, icell=icell)
-
         self.iclamp = sim.neuron.h.IClamp(icomp.x, sec=icomp.sec)
         self.iclamp.dur = self.total_duration
-
         self.current_vec = sim.neuron.h.Vector()
         self.time_vec = sim.neuron.h.Vector()
-        print("-000000", self.holding, self.holding_current, self.amplitude)
         self.time_vec.append(0.0)
-        self.current_vec.append(self.holding)
+        self.current_vec.append(self.holding_current)
 
         self.time_vec.append(self.delay)
-        self.current_vec.append(self.holding)
+        self.current_vec.append(self.holding_current)
 
         self.time_vec.append(self.delay)
-        self.current_vec.append(self.holding + self.amplitude)
+        self.current_vec.append(self.holding_current + self.amplitude)
 
         self.time_vec.append(self.stim_end)
-        self.current_vec.append(self.holding + self.amplitude)
+        self.current_vec.append(self.holding_current + self.amplitude)
 
         self.time_vec.append(self.stim_end)
-        self.current_vec.append(self.holding)
+        self.current_vec.append(self.holding_current)
 
         self.time_vec.append(self.total_duration)
-        self.current_vec.append(self.holding)
+        self.current_vec.append(self.holding_current)
 
         self.iclamp.delay = 0
         self.current_vec.play(
@@ -210,7 +203,7 @@ class IDrest(BPEM_stimulus):
         """Return current time series"""
 
         t = np.arange(0.0, self.total_duration, dt)
-        current = np.full(t.shape, self.holding, dtype="float64")
+        current = np.full(t.shape, self.holding_current, dtype="float64")
 
         ton_idx = int(self.stim_start / dt)
         toff_idx = int(self.stim_end / dt)
