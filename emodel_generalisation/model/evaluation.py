@@ -20,6 +20,7 @@
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 import importlib
+import os
 import json
 import logging
 import multiprocessing
@@ -1568,6 +1569,14 @@ def get_simulator(stochasticity, cell_model, dt=None, cvode_minstep=0.0):
         dt (float): if not None, cvode will be disabled and fixed timesteps used.
         cvode_minstep (float): minimum time step allowed for a CVODE step.
     """
+    # set smaller tolerance to handle michaelis-mentens term with cvode
+    if os.environ.get("MM_CVODE"):
+        import neuron
+
+        cvode = neuron.h.CVode()
+        cvode.atolscale("cai", 1e-8)
+        cvode.atol(1e-8)
+
     if stochasticity:
         for mechanism in cell_model.mechanisms:
             if not mechanism.deterministic:
