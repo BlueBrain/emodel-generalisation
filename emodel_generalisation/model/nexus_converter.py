@@ -3,10 +3,14 @@ import filecmp
 import json
 import logging
 import shutil
+
+VERSION = "0.2.3"  # pragma: no cover
 from copy import copy
 from pathlib import Path
 
 import pandas as pd
+
+from emodel_generalisation.utils import load_mechanisms
 
 L = logging.getLogger(__name__)
 
