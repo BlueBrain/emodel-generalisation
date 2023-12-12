@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import subprocess
 from collections import defaultdict
 from pathlib import Path
 
@@ -458,6 +459,30 @@ def evaluate(
         )
 
     parallel_factory.shutdown()
+
+
+def compile_mechanisms(mech_path="mechanisms", compiled_mech_path=None):
+    """Compile mechanisms in custom location."""
+    if compiled_mech_path is None:
+        compiled_mech_path = os.environ.get("TMPDIR", ".")
+    cwd = os.getcwd()
+    compiled_mech_path = Path(compiled_mech_path).resolve()
+    compiled_mech_path.mkdir(exist_ok=True)
+    mech_path = Path(mech_path).resolve()
+    os.chdir(compiled_mech_path)
+    subprocess.run(f"nrnivmodl {mech_path}", shell=True, check=True)
+    os.chdir(cwd)
+
+
+@cli.command("prepare")
+@click.option("--config-path", type=str, required=True)
+@click.option("--local-config-path", type=str, default="config")
+@click.option("--mechanisms-path", type=str, required=True)
+@click.option("--legacy", is_flag=True)
+def prepare(config_path, local_config_path, mechanisms_path, legacy):
+    """Prepare config folder and compile mechanisms."""
+    access_point = _get_access_point(config_path, legacy=legacy, local_config=local_config_path)
+    compile_mechanisms(access_point.mech_path, mechanisms_path)
 
 
 @cli.command("assign")
