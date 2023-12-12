@@ -525,14 +525,15 @@ class ResponseDependencies:
             "target_voltage",
             efel_feature_name="steady_state_voltage_stimend",
             recording_names={"": "target_voltage.soma.v"},
-            stim_start=200,
-            stim_end=500,
             exp_mean=self.stimulus.holding_voltage,
             exp_std=1,
             threshold=-20.0,
         )
         hold_prot = SearchHoldingCurrent(
-            "target_voltage", self.stimulus.location, target_voltage=target_voltage, no_spikes=False
+            "target_voltage",
+            self.stimulus.location,
+            target_voltage=target_voltage,
+            stimulus_duration=2000.0,
         )
         responses = hold_prot.run(cell_model, param_values, sim, isolate, timeout, responses)
         self.stimulus.holding_current = responses["bpo_holding_current"]
@@ -799,6 +800,8 @@ class SearchHoldingCurrent(BPEMProtocol):
         """
 
         stimulus_definition = {
+            # if we put larger, and we have spikes before end of delay, Spikecount will fail as it
+            # takes entire traces
             "delay": 0.0,
             "amp": 0.0,
             "thresh_perc": None,
@@ -837,12 +840,13 @@ class SearchHoldingCurrent(BPEMProtocol):
 
         self.max_depth = max_depth
 
+        # start/end are not used by this feature
         self.spike_feature = ephys.efeatures.eFELFeature(
-            name="SearchHoldingCurrent.Spikecount",
+            name=f"{name}.Spikecount",
             efel_feature_name="Spikecount",
-            recording_names={"": f"SearchHoldingCurrent.{location.name}.v"},
-            stim_start=0.0,
-            stim_end=stimulus_duration,
+            recording_names={"": f"{name}.{location.name}.v"},
+            stim_start=0,
+            stim_end=1000,
             exp_mean=1,
             exp_std=0.1,
         )
@@ -856,12 +860,13 @@ class SearchHoldingCurrent(BPEMProtocol):
         response = BPEMProtocol.run(
             self, cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
         )
+
         if response is None or response[self.recording_name] is None:
             return None
 
         if self.no_spikes:
             n_spikes = self.spike_feature.calculate_feature(response)
-            if n_spikes is None or n_spikes > 0:
+            if n_spikes is not None and n_spikes > 0:
                 return None
 
         voltage_base = self.target_voltage.calculate_feature(response)
@@ -1066,12 +1071,13 @@ class SearchThresholdCurrent(ProtocolWithDependencies):
         self.no_spikes = no_spikes
         self.max_depth = max_depth
 
+        # start/end are not used by this feature
         self.spike_feature = ephys.efeatures.eFELFeature(
             name=f"{name}.Spikecount",
             efel_feature_name="Spikecount",
             recording_names={"": f"{name}.{location.name}.v"},
-            stim_start=stimulus_delay,
-            stim_end=stimulus_delay + stimulus_duration,
+            stim_start=0,
+            stim_end=1000,
             exp_mean=1,
             exp_std=0.1,
         )
