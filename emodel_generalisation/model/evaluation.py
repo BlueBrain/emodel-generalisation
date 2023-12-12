@@ -1005,12 +1005,12 @@ class FitnessCalculatorConfiguration:
             ion_variables (list of str): ion current names and ionic concentration names
                 for all available mechanisms
         """
-        self.rmp_duration = 500.0
-        self.rin_step_delay = 500.0
-        self.rin_step_duration = 500.0
-        self.rin_step_amp = -0.02
-        self.rin_totduration = 1000.0
-        self.search_holding_duration = 500.0
+        self.rmp_duration = 2000.0
+        self.rin_step_delay = 2000.0
+        self.rin_step_duration = 3000.0
+        self.rin_step_amp = -0.001
+        self.rin_totduration = self.rin_step_delay + self.rin_step_duration
+        self.search_holding_duration = 2000.0
         self.search_threshold_step_delay = 500.0
         self.search_threshold_step_duration = 2000.0
         self.search_threshold_totduration = 3000.0
