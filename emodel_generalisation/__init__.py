@@ -208,4 +208,6 @@ _TMPDIR = os.environ.get("TMPDIR", False)
 if _TMPDIR:
     os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR
 
+os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
+
 load_mechanisms()
