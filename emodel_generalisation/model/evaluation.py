@@ -20,6 +20,7 @@
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 import importlib
+import os
 import json
 import logging
 import multiprocessing
@@ -54,6 +55,7 @@ logger = logging.getLogger(__name__)
 protocol_type_to_class = {
     "Protocol": bpopt.BPEMProtocol,
     "ThresholdBasedProtocol": bpopt.ThresholdBasedProtocol,
+    "ReboundBurstProtocol": bpopt.ReboundBurstProtocol,
 }
 
 soma_loc = NrnSeclistCompLocation(name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5)
@@ -238,7 +240,7 @@ def _define_morphology(
     Returns:
         bluepyopt.ephys.morphologies.NrnFileMorphology: a morphology object
     """
-    if not morph_modifiers:
+    if morph_modifiers is None:
         morph_modifiers = [modifiers.replace_axon_with_taper]
         logger.debug("No morphology modifiers provided, replace_axon_with_taper will be used.")
     else:
@@ -1004,12 +1006,12 @@ class FitnessCalculatorConfiguration:
             ion_variables (list of str): ion current names and ionic concentration names
                 for all available mechanisms
         """
-        self.rmp_duration = 500.0
-        self.rin_step_delay = 500.0
-        self.rin_step_duration = 500.0
-        self.rin_step_amp = -0.02
-        self.rin_totduration = 1000.0
-        self.search_holding_duration = 500.0
+        self.rmp_duration = 2000.0
+        self.rin_step_delay = 2000.0
+        self.rin_step_duration = 3000.0
+        self.rin_step_amp = -0.001
+        self.rin_totduration = self.rin_step_delay + self.rin_step_duration
+        self.search_holding_duration = 2000.0
         self.search_threshold_step_delay = 500.0
         self.search_threshold_step_duration = 2000.0
         self.search_threshold_totduration = 3000.0
@@ -1568,6 +1570,14 @@ def get_simulator(stochasticity, cell_model, dt=None, cvode_minstep=0.0):
         dt (float): if not None, cvode will be disabled and fixed timesteps used.
         cvode_minstep (float): minimum time step allowed for a CVODE step.
     """
+    # set smaller tolerance to handle michaelis-mentens term with cvode
+    if os.environ.get("MM_CVODE"):
+        import neuron
+
+        cvode = neuron.h.CVode()
+        cvode.atolscale("cai", 1e-8)
+        cvode.atol(1e-8)
+
     if stochasticity:
         for mechanism in cell_model.mechanisms:
             if not mechanism.deterministic:

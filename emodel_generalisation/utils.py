@@ -19,7 +19,9 @@
 # or send a letter to Creative Commons, 171
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
+import os
 import json
+import logging
 import pickle
 from copy import deepcopy
 from functools import partial
@@ -35,8 +37,11 @@ from matplotlib.backends.backend_pdf import PdfPages
 from scipy.cluster.hierarchy import dendrogram
 from scipy.cluster.hierarchy import linkage
 from scipy.spatial.distance import squareform
+import neuron
 
 FEATURE_FILTER = ["APWaveform", "bAP", "SpikeRec", "IV"]
+
+L = logging.getLogger(__name__)
 
 
 def cluster_matrix(df, distance=False):
@@ -204,3 +209,19 @@ def plot_traces(trace_df, trace_path="traces", pdf_filename="traces.pdf"):
             plt.suptitle(fig.get_label())
             pdf.savefig()
             plt.close()
+
+
+def load_mechanisms():
+    """Load mechanisms if present in TMPDIR."""
+    _TMPDIR = os.environ.get("TMPDIR", None)
+    if _TMPDIR is not None:
+        try:
+            if (Path(_TMPDIR) / "x86_64").exists():
+                if not neuron.load_mechanisms(_TMPDIR):
+                    print("failed loading mechs")
+                    raise Exception("Could not load mod files")
+            else:
+                print(f"mech loaded from {Path(_TMPDIR) / 'x86_64'}")
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            L.debug("Could not load mod files from %s because of %s", _TMPDIR, exc)
+        os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR

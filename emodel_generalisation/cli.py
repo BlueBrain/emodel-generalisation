@@ -34,6 +34,7 @@ from emodel_generalisation.parallel import init_parallel_factory
 from emodel_generalisation.utils import FEATURE_FILTER
 from emodel_generalisation.utils import get_feature_df
 from emodel_generalisation.utils import get_score_df
+from emodel_generalisation.utils import load_mechanisms
 
 L = logging.getLogger(__name__)
 _BASE_PATH = Path(__file__).parent.resolve()
@@ -659,8 +660,8 @@ def adapt(
         )
 
     L.info("Adapting AIS and soma of all cells..")
-    cells_df["ais_scaler"] = 0
-    cells_df["soma_scaler"] = 0
+    cells_df["ais_scaler"] = 0.0
+    cells_df["soma_scaler"] = 0.0
     cells_df["ais_model"] = ""
     cells_df["soma_model"] = ""
 
@@ -748,3 +749,5 @@ def adapt(
             hoc_file.write(hoc)
 
     parallel_factory.shutdown()
+
+load_mechanisms()

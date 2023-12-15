@@ -135,8 +135,10 @@ class IDrest(BPEM_stimulus):
 
         self.amp = kwargs.get("amp", None)
         self.amp_rel = kwargs.get("thresh_perc", 200.0)
+        self.amp_voltage = kwargs.get("amp_voltage", None)
 
         self.holding_current = kwargs.get("holding_current", None)
+        self.holding_voltage = kwargs.get("holding_voltage", None)
         self.threshold_current = None
 
         if self.amp is None and self.amp_rel is None:
@@ -168,13 +170,10 @@ class IDrest(BPEM_stimulus):
         """Run stimulus"""
 
         icomp = self.location.instantiate(sim=sim, icell=icell)
-
         self.iclamp = sim.neuron.h.IClamp(icomp.x, sec=icomp.sec)
         self.iclamp.dur = self.total_duration
-
         self.current_vec = sim.neuron.h.Vector()
         self.time_vec = sim.neuron.h.Vector()
-
         self.time_vec.append(0.0)
         self.current_vec.append(self.holding_current)
 

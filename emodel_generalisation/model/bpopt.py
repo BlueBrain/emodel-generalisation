@@ -19,6 +19,7 @@
 # or send a letter to Creative Commons, 171
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
+import os
 import logging
 
 import numpy as np
@@ -369,6 +370,9 @@ class BPEMProtocol(ephys.protocols.SweepProtocol):
         param_values = {} if param_values is None else param_values
         responses = {} if responses is None else responses
 
+        if os.environ.get("DISABLE_CVODE", False):
+            self.cvode_active = False
+
         return super().run(
             cell_model=cell_model,
             param_values=param_values,
@@ -519,7 +523,6 @@ class ResponseDependencies:
 
         param_values = {} if param_values is None else param_values
         responses = {} if responses is None else responses
-
         if not self.set_dependencies(responses):
             return self.return_none_responses()
 
@@ -564,6 +567,87 @@ class ProtocolWithDependencies(BPEMProtocol, ResponseDependencies):
     def _run(
         self, cell_model, param_values=None, sim=None, isolate=None, timeout=None, responses=None
     ):
+        return BPEMProtocol.run(self, cell_model, param_values, sim, isolate, timeout, responses)
+
+
+class ReboundBurstProtocol(BPEMProtocol):
+
+    """Protocol for rebound bursting of thalamic cells."""
+
+    def __init__(
+        self, name=None, stimulus=None, recordings=None, cvode_active=None, stochasticity=False
+    ):
+        """Constructor"""
+
+        BPEMProtocol.__init__(
+            self,
+            name=name,
+            stimulus=stimulus,
+            recordings=recordings,
+            cvode_active=cvode_active,
+            stochasticity=stochasticity,
+        )
+
+    def get_holding_current_from_voltage(
+        self,
+        voltage,
+        cell_model,
+        param_values=None,
+        sim=None,
+        isolate=None,
+        timeout=None,
+        responses=None,
+    ):
+        """Run bisection search to get holding current that match holding voltage."""
+        # maybe not the best, this is copied from normal holding search
+        target_voltage = eFELFeatureBPEM(
+            "target_voltage",
+            efel_feature_name="steady_state_voltage_stimend",
+            recording_names={"": "target_voltage.soma.v"},
+            exp_mean=voltage,
+            exp_std=1,
+            threshold=-20.0,
+        )
+        hold_prot = SearchHoldingCurrent(
+            "target_voltage",
+            self.stimulus.location,
+            target_voltage=target_voltage,
+            stimulus_duration=2000.0,
+        )
+        if self.stimulus.holding_current is not None:
+            hold_prot.stimulus.delay = 1000
+            hold_prot.stimulus.holding_current = self.stimulus.holding_current
+
+        return hold_prot.run(cell_model, param_values, sim, isolate, timeout, responses)[
+            "bpo_holding_current"
+        ]
+
+    def run(
+        self, cell_model, param_values=None, sim=None, isolate=None, timeout=None, responses=None
+    ):
+        """Run protocol"""
+
+        if self.stimulus.holding_voltage is not None:
+            self.stimulus.holding_current = self.get_holding_current_from_voltage(
+                self.stimulus.holding_voltage,
+                cell_model,
+                param_values,
+                sim,
+                isolate,
+                timeout,
+                responses,
+            )
+
+        if self.stimulus.amp_voltage is not None:
+            self.stimulus.amp = self.get_holding_current_from_voltage(
+                self.stimulus.amp_voltage,
+                cell_model,
+                param_values,
+                sim,
+                isolate,
+                timeout,
+                responses,
+            )
         return BPEMProtocol.run(self, cell_model, param_values, sim, isolate, timeout, responses)
 
 
@@ -771,6 +855,8 @@ class SearchHoldingCurrent(BPEMProtocol):
         """
 
         stimulus_definition = {
+            # if we put larger, and we have spikes before end of delay, Spikecount will fail as it
+            # takes entire traces
             "delay": 0.0,
             "amp": 0.0,
             "thresh_perc": None,
@@ -809,12 +895,13 @@ class SearchHoldingCurrent(BPEMProtocol):
 
         self.max_depth = max_depth
 
+        # start/end are not used by this feature
         self.spike_feature = ephys.efeatures.eFELFeature(
-            name="SearchHoldingCurrent.Spikecount",
+            name=f"{name}.Spikecount",
             efel_feature_name="Spikecount",
-            recording_names={"": f"SearchHoldingCurrent.{location.name}.v"},
-            stim_start=0.0,
-            stim_end=stimulus_duration,
+            recording_names={"": f"{name}.{location.name}.v"},
+            stim_start=0,
+            stim_end=1000,
             exp_mean=1,
             exp_std=0.1,
         )
@@ -828,12 +915,13 @@ class SearchHoldingCurrent(BPEMProtocol):
         response = BPEMProtocol.run(
             self, cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
         )
+
         if response is None or response[self.recording_name] is None:
             return None
 
         if self.no_spikes:
             n_spikes = self.spike_feature.calculate_feature(response)
-            if n_spikes is None or n_spikes > 0:
+            if n_spikes is not None and n_spikes > 0:
                 return None
 
         voltage_base = self.target_voltage.calculate_feature(response)
@@ -1038,12 +1126,13 @@ class SearchThresholdCurrent(ProtocolWithDependencies):
         self.no_spikes = no_spikes
         self.max_depth = max_depth
 
+        # start/end are not used by this feature
         self.spike_feature = ephys.efeatures.eFELFeature(
             name=f"{name}.Spikecount",
             efel_feature_name="Spikecount",
             recording_names={"": f"{name}.{location.name}.v"},
-            stim_start=stimulus_delay,
-            stim_end=stimulus_delay + stimulus_duration,
+            stim_start=0,
+            stim_end=1000,
             exp_mean=1,
             exp_std=0.1,
         )
