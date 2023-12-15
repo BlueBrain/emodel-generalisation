@@ -684,8 +684,8 @@ def adapt(
         )
 
     L.info("Adapting AIS and soma of all cells..")
-    cells_df["ais_scaler"] = 0
-    cells_df["soma_scaler"] = 0
+    cells_df["ais_scaler"] = 0.0
+    cells_df["soma_scaler"] = 0.0
     cells_df["ais_model"] = ""
     cells_df["soma_model"] = ""
 
