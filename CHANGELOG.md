@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.3](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.2..0.2.3)
+
+> 15 December 2023
+
+### Fixes
+
+- Better mech loading (Alexis Arnaudon - [#23](https://github.com/BlueBrain/emodel-generalisation/pull/23))
+
 ## [0.2.2](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.1..0.2.2)
 
 > 7 December 2023
@@ -7,6 +15,10 @@
 ### Fixes
 
 - Load mod files after compile (Alexis Arnaudon - [#20](https://github.com/BlueBrain/emodel-generalisation/pull/20))
+
+### General Changes
+
+- 0.2.2 (Alexis Arnaudon - [#21](https://github.com/BlueBrain/emodel-generalisation/pull/21))
 
 ## [0.2.1](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.0..0.2.1)
 
