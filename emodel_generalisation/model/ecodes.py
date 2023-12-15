@@ -135,6 +135,7 @@ class IDrest(BPEM_stimulus):
 
         self.amp = kwargs.get("amp", None)
         self.amp_rel = kwargs.get("thresh_perc", 200.0)
+        self.amp_voltage = kwargs.get("amp_voltage", None)
 
         self.holding_current = kwargs.get("holding_current", None)
         self.holding_voltage = kwargs.get("holding_voltage", None)

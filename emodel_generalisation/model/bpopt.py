@@ -516,28 +516,6 @@ class ResponseDependencies:
     ):
         raise NotImplementedError("The run code of the sub-classes goes here!")
 
-    def get_holding_current_from_voltage(
-        self, cell_model, param_values=None, sim=None, isolate=None, timeout=None, responses=None
-    ):
-        """Run bisection search to get holding current that match holding voltage."""
-        # maybe not the best, this is copied from normal holding search
-        target_voltage = eFELFeatureBPEM(
-            "target_voltage",
-            efel_feature_name="steady_state_voltage_stimend",
-            recording_names={"": "target_voltage.soma.v"},
-            exp_mean=self.stimulus.holding_voltage,
-            exp_std=1,
-            threshold=-20.0,
-        )
-        hold_prot = SearchHoldingCurrent(
-            "target_voltage",
-            self.stimulus.location,
-            target_voltage=target_voltage,
-            stimulus_duration=2000.0,
-        )
-        responses = hold_prot.run(cell_model, param_values, sim, isolate, timeout, responses)
-        self.stimulus.holding_current = responses["bpo_holding_current"]
-
     def run(
         self, cell_model, param_values=None, sim=None, isolate=None, timeout=None, responses=None
     ):
@@ -548,10 +526,6 @@ class ResponseDependencies:
         if not self.set_dependencies(responses):
             return self.return_none_responses()
 
-        if self.stimulus.holding_voltage is not None:
-            self.get_holding_current_from_voltage(
-                cell_model, param_values, sim, isolate, timeout, responses
-            )
         return self._run(cell_model, param_values, sim, isolate, timeout)
 
 
@@ -593,6 +567,87 @@ class ProtocolWithDependencies(BPEMProtocol, ResponseDependencies):
     def _run(
         self, cell_model, param_values=None, sim=None, isolate=None, timeout=None, responses=None
     ):
+        return BPEMProtocol.run(self, cell_model, param_values, sim, isolate, timeout, responses)
+
+
+class ReboundBurstProtocol(BPEMProtocol):
+
+    """Protocol for rebound bursting of thalamic cells."""
+
+    def __init__(
+        self, name=None, stimulus=None, recordings=None, cvode_active=None, stochasticity=False
+    ):
+        """Constructor"""
+
+        BPEMProtocol.__init__(
+            self,
+            name=name,
+            stimulus=stimulus,
+            recordings=recordings,
+            cvode_active=cvode_active,
+            stochasticity=stochasticity,
+        )
+
+    def get_holding_current_from_voltage(
+        self,
+        voltage,
+        cell_model,
+        param_values=None,
+        sim=None,
+        isolate=None,
+        timeout=None,
+        responses=None,
+    ):
+        """Run bisection search to get holding current that match holding voltage."""
+        # maybe not the best, this is copied from normal holding search
+        target_voltage = eFELFeatureBPEM(
+            "target_voltage",
+            efel_feature_name="steady_state_voltage_stimend",
+            recording_names={"": "target_voltage.soma.v"},
+            exp_mean=voltage,
+            exp_std=1,
+            threshold=-20.0,
+        )
+        hold_prot = SearchHoldingCurrent(
+            "target_voltage",
+            self.stimulus.location,
+            target_voltage=target_voltage,
+            stimulus_duration=2000.0,
+        )
+        if self.stimulus.holding_current is not None:
+            hold_prot.stimulus.delay = 1000
+            hold_prot.stimulus.holding_current = self.stimulus.holding_current
+
+        return hold_prot.run(cell_model, param_values, sim, isolate, timeout, responses)[
+            "bpo_holding_current"
+        ]
+
+    def run(
+        self, cell_model, param_values=None, sim=None, isolate=None, timeout=None, responses=None
+    ):
+        """Run protocol"""
+
+        if self.stimulus.holding_voltage is not None:
+            self.stimulus.holding_current = self.get_holding_current_from_voltage(
+                self.stimulus.holding_voltage,
+                cell_model,
+                param_values,
+                sim,
+                isolate,
+                timeout,
+                responses,
+            )
+
+        if self.stimulus.amp_voltage is not None:
+            self.stimulus.amp = self.get_holding_current_from_voltage(
+                self.stimulus.amp_voltage,
+                cell_model,
+                param_values,
+                sim,
+                isolate,
+                timeout,
+                responses,
+            )
         return BPEMProtocol.run(self, cell_model, param_values, sim, isolate, timeout, responses)
 
 

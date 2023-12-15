@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 protocol_type_to_class = {
     "Protocol": bpopt.BPEMProtocol,
     "ThresholdBasedProtocol": bpopt.ThresholdBasedProtocol,
+    "ReboundBurstProtocol": bpopt.ReboundBurstProtocol,
 }
 
 soma_loc = NrnSeclistCompLocation(name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5)
