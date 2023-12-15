@@ -2,13 +2,10 @@
 import filecmp
 import json
 import logging
-import os
 import shutil
-import subprocess
 from copy import copy
 from pathlib import Path
 
-import neuron
 from tqdm import tqdm
 
 L = logging.getLogger(__name__)
@@ -196,31 +193,3 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
 
     with open(out_config_folder / "final.json", "w") as final_file:
         json.dump(final, final_file, indent=4)
-
-
-def load_mechanisms():
-    """Load mechanisms if present in TMPDIR."""
-    _TMPDIR = os.environ.get("TMPDIR", None)
-    if _TMPDIR is not None:
-        try:
-            if (Path(_TMPDIR) / "x86_64").exists():
-                if not neuron.load_mechanisms(_TMPDIR):
-                    raise Exception("Could not load mod files")
-        except Exception as exc:  # pylint: disable=broad-exception-caught
-            L.debug("Could not load mod files from %s because of %s", _TMPDIR, exc)
-        os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR
-
-
-def compile_mechanisms(mech_path="mechanisms", compiled_mech_path=None):
-    """Compile mechanisms in custom location."""
-    if compiled_mech_path is None:
-        compiled_mech_path = os.environ.get("TMPDIR", ".")
-    cwd = os.getcwd()
-    compiled_mech_path = Path(compiled_mech_path).resolve()
-    compiled_mech_path.mkdir(exist_ok=True)
-    mech_path = Path(mech_path).resolve()
-    os.chdir(compiled_mech_path)
-    subprocess.run(f"nrnivmodl {mech_path}", shell=True, check=True)
-    os.chdir(cwd)
-    # load mechs after compile
-    load_mechanisms()

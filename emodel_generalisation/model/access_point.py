@@ -28,7 +28,6 @@ from pathlib import Path
 from emodel_generalisation.model.evaluation import LEGACY_PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import PRE_PROTOCOLS
 from emodel_generalisation.model.evaluation import FitnessCalculatorConfiguration
-from emodel_generalisation.model.nexus_converter import compile_mechanisms
 from emodel_generalisation.model.nexus_converter import convert_all_config
 
 # pylint: disable=too-many-lines
@@ -890,16 +889,15 @@ class AccessPoint:
         with_seeds=False,
         nexus_config=None,
         mech_path="mechanisms",
-        compiled_mech_path=None,
     ):
         """Init"""
+        self.mech_path = mech_path
         if nexus_config is not None:
             if not Path(emodel_dir).exists():
                 logger.info("Creating local config folder.")
                 convert_all_config(nexus_config, emodel_dir, mech_path=mech_path)
             else:
                 logger.info("We found an existing config folder, we will not convert nexus recipe.")
-            compile_mechanisms(mech_path, compiled_mech_path)
             final_path = Path(emodel_dir) / "final.json"
             recipes_path = Path(emodel_dir) / "recipes.json"
 
