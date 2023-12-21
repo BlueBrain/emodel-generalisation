@@ -55,7 +55,7 @@ logger = logging.getLogger(__name__)
 protocol_type_to_class = {
     "Protocol": bpopt.BPEMProtocol,
     "ThresholdBasedProtocol": bpopt.ThresholdBasedProtocol,
-    "ReboundBurstProtocol": bpopt.ReboundBurstProtocol,
+    "ReboundBurst": bpopt.ReboundBurst,
 }
 
 soma_loc = NrnSeclistCompLocation(name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5)
@@ -613,6 +613,10 @@ class ProtocolConfiguration:
             if ion_variables is not None:
                 for ion in ion_variables:
                     new_rec = recording.copy()
+
+                    # it seems to only work without mech name at the end
+                    if ion.startswith("i"):
+                        ion = ion.split("_")[0]
 
                     if "variable" in recording:
                         new_rec["variable"] = ion

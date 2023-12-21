@@ -570,7 +570,7 @@ class ProtocolWithDependencies(BPEMProtocol, ResponseDependencies):
         return BPEMProtocol.run(self, cell_model, param_values, sim, isolate, timeout, responses)
 
 
-class ReboundBurstProtocol(BPEMProtocol):
+class ReboundBurst(BPEMProtocol):
 
     """Protocol for rebound bursting of thalamic cells."""
 
