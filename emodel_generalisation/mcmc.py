@@ -164,6 +164,8 @@ class MarkovChain:
 
         We do this so that we don't have to unfreeze params if the evaluation crashes neuron.
         """
+        self.access_point.settings = self.access_point.get_settings(self.emodel)
+
         if self._evaluator is None:
             self._evaluator = get_evaluator_from_access_point(
                 self.emodel,

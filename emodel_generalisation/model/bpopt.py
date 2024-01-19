@@ -220,7 +220,12 @@ class eFELFeatureBPEM(eFELFeature):
 
         else:
             feature_values = self.calculate_feature(responses)
-            if (feature_values is None) or (len(feature_values) == 0):
+
+            # ensures no burst is a valid feature
+            if feature_values is None and self.efel_feature_name == "burst_number":
+                feature_values = np.array([0])
+
+            if feature_values is None or len(feature_values) == 0:
                 score = self.max_score
             else:
                 score = (
