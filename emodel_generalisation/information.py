@@ -9,12 +9,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from joblib import Parallel, delayed
+from joblib import Parallel
+from joblib import delayed
 from matplotlib.backends.backend_pdf import PdfPages
 from scipy.stats import pearsonr
 from tqdm import tqdm
 
-from emodel_generalisation import ALL_LABELS, FEATURE_LABELS_LONG, PARAM_LABELS
+from emodel_generalisation import ALL_LABELS
+from emodel_generalisation import FEATURE_LABELS_LONG
+from emodel_generalisation import PARAM_LABELS
 from emodel_generalisation.utils import cluster_matrix
 
 try:
@@ -564,7 +567,7 @@ def plot_pair_correlations(
     if correlation_type != "pearson":
         try:
             setup_jidt()
-        except:  # pylint: disable=broad-except,bare-except
+        except Exception:  # pylint: disable=broad-except,bare-except
             pass
     corr_f = _get_pair_correlation_function(correlation_type)
     signed = correlation_type == "pearson"
