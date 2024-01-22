@@ -166,26 +166,25 @@ class MarkovChain:
         """
         self.access_point.settings = self.access_point.get_settings(self.emodel)
 
-        if self._evaluator is None:
-            self._evaluator = get_evaluator_from_access_point(
-                self.emodel,
-                self.access_point,
-                stochasticity=self.stochasticity,
-                timeout=1e10,
-            )
+        evaluator = get_evaluator_from_access_point(
+            self.emodel,
+            self.access_point,
+            stochasticity=self.stochasticity,
+            timeout=1e10,
+        )
 
         # unfreeze all to be sure
-        for i, _param in enumerate(self._evaluator.params):
-            self._evaluator.params[i].unfreeze()
+        for i, _param in enumerate(evaluator.params):
+            evaluator.params[i].unfreeze()
 
         # freeze params if any in frozen_params
         if self.frozen_params is not None:
             for f_param in self.frozen_params:
-                for i, _param in enumerate(self._evaluator.params):
+                for i, _param in enumerate(evaluator.params):
                     if _param.name == f_param:
-                        self._evaluator.params[i].freeze(self.frozen_params[f_param])
+                        evaluator.params[i].freeze(self.frozen_params[f_param])
 
-        return self._evaluator
+        return evaluator
 
     def _un_normalize_parameters(self, parameters):
         return {
