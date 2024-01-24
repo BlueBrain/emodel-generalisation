@@ -173,7 +173,6 @@ def compute_currents(
         }
 
     # we evaluate currents only for unique morph/emodel pairs
-    print(cells_df.drop_duplicates(["morphology", "emodel"]))
     unique_cells_df = evaluate_currents(
         cells_df.drop_duplicates(["morphology", "emodel"]),
         protocol_config,
@@ -183,7 +182,6 @@ def compute_currents(
         resume=resume,
         only_rin=only_rin,
     )
-    print(unique_cells_df)
 
     cols = ["resting_potential", "input_resistance", "exception"]
     if not only_rin:
