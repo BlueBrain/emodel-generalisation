@@ -491,12 +491,9 @@ def prepare(config_path, local_config_path, mechanisms_path, legacy):
 @click.option("--output-node-path", default="node.h5", type=str)
 @click.option("--config-path", type=str, required=True)
 @click.option("--local-config-path", type=str, default="config")
-@click.option("--legacy", is_flag=True)
-def assign(
-    input_node_path, population_name, output_node_path, config_path, local_config_path, legacy
-):
+def assign(input_node_path, population_name, output_node_path, config_path, local_config_path):
     """Assign emodels to cells in a circuit."""
-    access_point = _get_access_point(config_path, legacy=legacy, local_config=local_config_path)
+    access_point = _get_access_point(config_path, local_config=local_config_path)
     cells_df, _ = _load_circuit(input_node_path, population_name=population_name)
 
     emodel_mappings = defaultdict(lambda: defaultdict(dict))
@@ -649,7 +646,6 @@ def adapt(
     n_placeholders = len(cells_df.emodel.unique()) - len(placeholder_mask)
     n_emodels = len(exemplar_df)
     L.info("We found %s placeholders models out of %s models.", n_placeholders, n_emodels)
-
     with Reuse(local_dir / "exemplar_rho.csv", index=False) as reuse:
         data = reuse(
             evaluate_rho,

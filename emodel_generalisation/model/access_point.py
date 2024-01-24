@@ -534,7 +534,7 @@ class NeuronModelConfiguration:
             )
 
             if any(p == tmp_param for p in self.parameters):
-                logger.warning(
+                logger.debug(
                     "Parameter %s is already at location %s or 'all'. %s",
                     parameter_name,
                     loc,
