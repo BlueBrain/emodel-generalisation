@@ -523,15 +523,15 @@ def test_load_nexus_recipe(tmpdir):
         nexus_config=DATA / "nexus_recipe.json",
         emodel_dir=tmpdir / "config",
     )
-    assert access_point.emodels == ["AAA__GEN_mtype__GEN_etype"]
+    assert access_point.emodels == ["c4de21"]
 
     access_point = AccessPoint(
         nexus_config=DATA / "nexus_recipe.json",
         emodel_dir=tmpdir / "config",
     )
-    assert access_point.emodels == ["AAA__GEN_mtype__GEN_etype"]
+    assert access_point.emodels == ["c4de21"]
 
     assert (tmpdir / "config" / "recipes.json").exists()
     assert (tmpdir / "config" / "final.json").exists()
-    assert (tmpdir / "config" / "parameters" / "AAA__GEN_mtype__GEN_etype.json").exists()
-    assert (tmpdir / "config" / "features" / "AAA__GEN_mtype__GEN_etype.json").exists()
+    assert (tmpdir / "config" / "parameters" / "c4de21.json").exists()
+    assert (tmpdir / "config" / "features" / "c4de21.json").exists()

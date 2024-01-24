@@ -132,21 +132,13 @@ def _add_emodel(
     recipes,
     final,
     emodel_name,
-    # region,
-    # mtype,
-    # etype,
     config,
-    # i,
     out_config_folder,
     mech_path="mechanisms",
     base_path=".",
 ):
     """Add a single emodel."""
-    # emodel_name = _get_emodel_name(region, mtype, etype, i)
     recipes[emodel_name] = _make_recipe_entry(config, emodel_name)
-    # recipes[emodel_name]["etype"] = etype
-    # recipes[emodel_name]["mtype"] = mtype
-    # recipes[emodel_name]["region"] = region
     final[emodel_name] = _make_parameter_entry(config)
 
     params = _make_parameters(config)
@@ -170,6 +162,9 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
     recipes = {}
     final = {}
     for emodel_name, _config in config["library"]["eModel"].items():
+        for entry, path in _config.items():
+            if not Path(path).is_absolute():
+                _config[entry] = Path(config_path).parent / path
         _add_emodel(
             recipes,
             final,
