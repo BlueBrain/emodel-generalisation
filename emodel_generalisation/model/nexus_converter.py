@@ -6,7 +6,7 @@ import shutil
 from copy import copy
 from pathlib import Path
 
-from tqdm import tqdm
+import pandas as pd
 
 L = logging.getLogger(__name__)
 
@@ -131,21 +131,14 @@ def _make_parameter_entry(config):
 def _add_emodel(
     recipes,
     final,
-    region,
-    mtype,
-    etype,
+    emodel_name,
     config,
-    i,
     out_config_folder,
     mech_path="mechanisms",
     base_path=".",
 ):
     """Add a single emodel."""
-    emodel_name = _get_emodel_name(region, mtype, etype, i)
     recipes[emodel_name] = _make_recipe_entry(config, emodel_name)
-    recipes[emodel_name]["etype"] = etype
-    recipes[emodel_name]["mtype"] = mtype
-    recipes[emodel_name]["region"] = region
     final[emodel_name] = _make_parameter_entry(config)
 
     params = _make_parameters(config)
@@ -168,28 +161,34 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
     _prepare(out_config_folder)
     recipes = {}
     final = {}
-    for region, region_config in tqdm(config.items()):
-        for mtype, mtype_config in region_config.items():
-            for etype, etype_config in mtype_config.items():
-                for entry, data in etype_config["eModel"].items():
-                    if not Path(data).is_absolute():
-                        etype_config["eModel"][entry] = Path(config_path).parent / data
-                if etype_config["assignmentAlgorithm"] == "assignOne":
-                    _add_emodel(
-                        recipes,
-                        final,
-                        region,
-                        mtype,
-                        etype,
-                        etype_config["eModel"],
-                        None,
-                        out_config_folder,
-                        mech_path,
-                        Path(config_path).parent,
-                    )
+    for emodel_name, _config in config["library"]["eModel"].items():
+        for entry, path in _config.items():
+            if not Path(path).is_absolute():
+                _config[entry] = Path(config_path).parent / path
+        _add_emodel(
+            recipes,
+            final,
+            emodel_name,
+            _config,
+            out_config_folder,
+            mech_path,
+            Path(config_path).parent,
+        )
 
     with open(out_config_folder / "recipes.json", "w") as recipes_file:
         json.dump(recipes, recipes_file, indent=4)
 
     with open(out_config_folder / "final.json", "w") as final_file:
         json.dump(final, final_file, indent=4)
+
+    data = {"region": [], "etype": [], "mtype": [], "emodel": []}
+    for region, data_region in config["configuration"].items():
+        for mtype, data_mtype in data_region.items():
+            for etype, data_etype in data_mtype.items():
+                data["region"].append(region)
+                data["etype"].append(etype)
+                data["mtype"].append(mtype)
+                data["emodel"].append(data_etype["eModel"])
+
+    etype_emodel_map_df = pd.DataFrame.from_dict(data)
+    etype_emodel_map_df.to_csv(out_config_folder / "etype_emodel_map.csv", index=False)

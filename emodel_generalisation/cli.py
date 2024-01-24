@@ -491,19 +491,24 @@ def prepare(config_path, local_config_path, mechanisms_path, legacy):
 @click.option("--output-node-path", default="node.h5", type=str)
 @click.option("--config-path", type=str, required=True)
 @click.option("--local-config-path", type=str, default="config")
-@click.option("--legacy", is_flag=True)
-def assign(
-    input_node_path, population_name, output_node_path, config_path, local_config_path, legacy
-):
+def assign(input_node_path, population_name, output_node_path, config_path, local_config_path):
     """Assign emodels to cells in a circuit."""
-    access_point = _get_access_point(config_path, legacy=legacy, local_config=local_config_path)
+    access_point = _get_access_point(config_path, local_config=local_config_path)
     cells_df, _ = _load_circuit(input_node_path, population_name=population_name)
 
     emodel_mappings = defaultdict(lambda: defaultdict(dict))
     L.info("Creating emodel mappings...")
-    for emodel in access_point.emodels:
-        recipe = access_point.recipes[emodel]
-        emodel_mappings[recipe["region"]][recipe["etype"]][recipe["mtype"]] = emodel
+    etype_emodel_map = None
+    if (Path(config_path) / "etype_emodel_map.csv").exists():
+        etype_emodel_map = pd.read_csv(Path(config_path) / "etype_emodel_map.csv")
+
+    if etype_emodel_map is not None:
+        for (region, etype, mtype), d in etype_emodel_map.groupby(["region", "etype", "mtype"]):
+            emodel_mappings[region][etype][mtype] = d["emodel"].values[0]  # assumes unique emodel
+    else:
+        for emodel in access_point.emodels:
+            recipe = access_point.recipes[emodel]
+            emodel_mappings[recipe["region"]][recipe["etype"]][recipe["mtype"]] = emodel
 
     def assign_emodel(row):
         """Get emodel name to use in pandas .apply."""
@@ -538,6 +543,8 @@ def assign(
 @click.option("--parallel-lib", default="multiprocessing", type=str)
 @click.option("--resume", is_flag=True)
 @click.option("--sql-tmp-path", default=None, type=str)
+@click.option("--min-scale", default=0.8, type=float)
+@click.option("--max-scale", default=1.2, type=float)
 def adapt(
     input_node_path,
     population_name,
@@ -552,6 +559,8 @@ def adapt(
     parallel_lib,
     resume,
     sql_tmp_path,
+    min_scale,
+    max_scale,
 ):
     """Adapt cells from a circuit with rho factors.
 
@@ -637,7 +646,6 @@ def adapt(
     n_placeholders = len(cells_df.emodel.unique()) - len(placeholder_mask)
     n_emodels = len(exemplar_df)
     L.info("We found %s placeholders models out of %s models.", n_placeholders, n_emodels)
-
     with Reuse(local_dir / "exemplar_rho.csv", index=False) as reuse:
         data = reuse(
             evaluate_rho,
@@ -716,8 +724,8 @@ def adapt(
                     resistance_models[emodel],
                     rhos,
                     parallel_factory=parallel_factory,
-                    min_scale=0.9,
-                    max_scale=1.1,
+                    min_scale=min_scale,
+                    max_scale=max_scale,
                     n_steps=2,
                 )
 

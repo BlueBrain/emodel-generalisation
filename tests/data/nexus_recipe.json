@@ -1,14 +1,21 @@
 {
-  "AAA": {
-    "GEN_mtype": {
-      "GEN_etype": {
-        "assignmentAlgorithm": "assignOne",
-        "eModel": {
+  "library": {
+    "eModel": {
+        "c4de21": {
           "EModel": "nexus_recipes/emodel.json",
           "ExtractionTargetsConfiguration": "nexus_recipes/extraction.json",
           "EModelPipelineSettings": "nexus_recipes/pipeline.json",
           "FitnessCalculatorConfiguration": "nexus_recipes/fitness.json",
           "EModelConfiguration": "nexus_recipes/config.json"
+        }
+    }
+  },
+  "configuration": {
+    "AAA": {
+      "GEN_mtype": {
+        "GEN_etype": {
+          "assignmentAlgorithm": "assignOne",
+          "eModel": "c4de21"
         }
       }
     }
