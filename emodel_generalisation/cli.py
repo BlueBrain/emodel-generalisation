@@ -501,9 +501,17 @@ def assign(
 
     emodel_mappings = defaultdict(lambda: defaultdict(dict))
     L.info("Creating emodel mappings...")
-    for emodel in access_point.emodels:
-        recipe = access_point.recipes[emodel]
-        emodel_mappings[recipe["region"]][recipe["etype"]][recipe["mtype"]] = emodel
+    etype_emodel_map = None
+    if (Path(config_path) / "etype_emodel_map.csv").exists():
+        etype_emodel_map = pd.read_csv(Path(config_path) / "etype_emodel_map.csv")
+
+    if etype_emodel_map is not None:
+        for (region, etype, mtype), d in etype_emodel_map.groupby(["region", "etype", "mtype"]):
+            emodel_mappings[region][etype][mtype] = d["emodel"].values[0]  # assumes unique emodel
+    else:
+        for emodel in access_point.emodels:
+            recipe = access_point.recipes[emodel]
+            emodel_mappings[recipe["region"]][recipe["etype"]][recipe["mtype"]] = emodel
 
     def assign_emodel(row):
         """Get emodel name to use in pandas .apply."""
@@ -538,6 +546,8 @@ def assign(
 @click.option("--parallel-lib", default="multiprocessing", type=str)
 @click.option("--resume", is_flag=True)
 @click.option("--sql-tmp-path", default=None, type=str)
+@click.option("--min-scale", default=0.8, type=float)
+@click.option("--max-scale", default=1.2, type=float)
 def adapt(
     input_node_path,
     population_name,
@@ -552,6 +562,8 @@ def adapt(
     parallel_lib,
     resume,
     sql_tmp_path,
+    min_scale,
+    max_scale,
 ):
     """Adapt cells from a circuit with rho factors.
 
@@ -716,8 +728,8 @@ def adapt(
                     resistance_models[emodel],
                     rhos,
                     parallel_factory=parallel_factory,
-                    min_scale=0.9,
-                    max_scale=1.1,
+                    min_scale=min_scale,
+                    max_scale=max_scale,
                     n_steps=2,
                 )
 
