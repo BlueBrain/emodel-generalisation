@@ -41,6 +41,8 @@ from tqdm import tqdm
 
 from emodel_generalisation import ALL_LABELS
 from emodel_generalisation import PARAM_LABELS
+from emodel_generalisation.information import mi_gaussian
+from emodel_generalisation.information import rsi_gaussian
 from emodel_generalisation.model.access_point import AccessPoint
 from emodel_generalisation.model.evaluation import get_evaluator_from_access_point
 from emodel_generalisation.parallel import evaluate
@@ -1029,36 +1031,6 @@ def plot_feature_distributions(
                 plt.tight_layout()
                 _pdf.savefig()
                 plt.close()
-
-
-def log(x, unit="nats"):
-    """Log function."""
-    if unit == "nats":
-        return np.log(x)
-    if unit == "bits":
-        return np.log2(x)
-    raise Exception("Unknown unit")
-
-
-def mi_gaussian(x):
-    """MI with gaussian approximation."""
-    cov = np.cov(x.T)
-    mi = -log(np.linalg.det(cov)) + log(cov[0][0]) + log(cov[1][1])
-    return 0.5 * mi
-
-
-def rsi_gaussian(x):
-    """RSI calculation with gaussians (assuming first element is y)."""
-    cov = np.cov(x.T)
-    cov_X = cov[1:][:, 1:]
-    dim = len(cov)
-
-    rsi = (dim - 2) * log(cov[0, 0])
-    rsi += sum(log(np.diag(cov_X))) - log(np.linalg.det(cov_X))
-    for i in range(dim - 1):
-        rsi -= log(np.linalg.det(cov[[0, i + 1]][:, [0, i + 1]]))
-    rsi += log(np.linalg.det(cov))
-    return 0.5 * rsi
 
 
 def bin_data(p1, p2, f, n=20, mode="mean", _min1=-1.0, _max1=1.0, _min2=-1.0, _max2=1.0):
