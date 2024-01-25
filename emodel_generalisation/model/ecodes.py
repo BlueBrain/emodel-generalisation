@@ -170,10 +170,13 @@ class IDrest(BPEM_stimulus):
         """Run stimulus"""
 
         icomp = self.location.instantiate(sim=sim, icell=icell)
+
         self.iclamp = sim.neuron.h.IClamp(icomp.x, sec=icomp.sec)
         self.iclamp.dur = self.total_duration
+
         self.current_vec = sim.neuron.h.Vector()
         self.time_vec = sim.neuron.h.Vector()
+
         self.time_vec.append(0.0)
         self.current_vec.append(self.holding_current)
 

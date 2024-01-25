@@ -528,6 +528,7 @@ class ResponseDependencies:
 
         param_values = {} if param_values is None else param_values
         responses = {} if responses is None else responses
+
         if not self.set_dependencies(responses):
             return self.return_none_responses()
 
