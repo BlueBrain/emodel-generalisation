@@ -3,12 +3,10 @@ import filecmp
 import json
 import logging
 import shutil
-
 from copy import copy
 from pathlib import Path
 
 import pandas as pd
-
 
 L = logging.getLogger(__name__)
 
