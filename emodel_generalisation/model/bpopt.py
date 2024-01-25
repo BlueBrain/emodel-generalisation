@@ -19,8 +19,8 @@
 # or send a letter to Creative Commons, 171
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
-import os
 import logging
+import os
 
 import numpy as np
 from bluepyopt import ephys
