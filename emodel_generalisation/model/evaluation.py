@@ -1576,7 +1576,7 @@ def get_simulator(stochasticity, cell_model, dt=None, cvode_minstep=0.0):
     """
     # set smaller tolerance to handle michaelis-mentens term with cvode
     if os.environ.get("MM_CVODE"):
-        import neuron
+        import neuron  # pylint: disable=import-outside-toplevel
 
         cvode = neuron.h.CVode()
         cvode.atolscale("cai", 1e-8)
