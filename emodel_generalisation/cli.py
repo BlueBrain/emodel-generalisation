@@ -298,7 +298,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
                 xticklabels=True,
                 yticklabels=True,
                 ax=plt.gca(),
-                cbar_kws={"label": "# blocker feature", "shrink": 0.5},
+                cbar_kws={"label": "# worst feature", "shrink": 0.5},
             )
             plt.suptitle(f"emodel={emodel}")
             plt.tight_layout()
@@ -369,13 +369,21 @@ def evaluate(
         config_path, final_path, legacy, local_config=local_config_path
     )
     cells_df, _ = _load_circuit(input_path, morphology_path, population_name)
+    # cells_df = cells_df[cells_df.emodel == "bAC_L6BTC"]
+    # cells_df = cells_df[cells_df.mtype == "L23_LBC"].reset_index(drop=True)
+    # cells_df["@dynamics:AIS_scaler"] = 4.0
+    # cells_df["@dynamics:soma_scaler"] = 2.0
 
     if n_cells_per_emodel is not None:
         cells_df = (
             cells_df.groupby(["emodel", "mtype"])
             .sample(n_cells_per_emodel, random_state=42, replace=True)
-            .reset_index()
+            .reset_index(drop=True)
         )
+    # remove category or it fails later sometimes in groupby
+    for col in cells_df.columns:
+        if cells_df[col].dtype == "category":
+            cells_df[col] = cells_df[col].astype("object")
 
     # add data for adapted AIS/soma if available
     exemplar_data_path = Path(local_dir) / "exemplar_data.yaml"
@@ -431,20 +439,53 @@ def evaluate(
                 resume=resume,
                 db_url=sql_tmp_path,
             )
-        cells_score_df = get_score_df(cells_df, filters=feature_filter)
+
         exemplar_df = exemplar_df.set_index("emodel").loc[cells_df.emodel].reset_index()
-        exemplar_score_df = get_score_df(exemplar_df, filters=feature_filter)
 
-        _pass = cells_score_df.copy()
-        for col in cells_score_df.columns:
-            _pass[col] = cells_score_df[col] <= np.maximum(
-                5.0, 5.0 * exemplar_score_df[col].to_list()[0]
-            )
+        pass_dfs = []
+        Path(validation_path).mkdir(parents=True, exist_ok=True)
+        with PdfPages(Path(validation_path) / "mm_features.pdf") as pdf:
+            for emodel in tqdm(cells_df.emodel.unique()):
+                _cells_df = cells_df[cells_df.emodel == emodel]
+                cells_score_df = get_score_df(_cells_df, filters=feature_filter)
+                exemplar_score_df = get_score_df(
+                    exemplar_df[exemplar_df.emodel == emodel], filters=feature_filter
+                )
 
-        pass_df = pd.DataFrame()
-        pass_df["pass"] = _pass.all(axis=1)
-        pass_df["emodel"] = cells_df.emodel
-        pass_df["mtype"] = cells_df.mtype
+                _pass = cells_score_df.copy()
+                for col in cells_score_df.columns:
+                    _pass[col] = cells_score_df[col] <= np.maximum(
+                        5.0, 5.0 * exemplar_score_df[col].to_list()[0]
+                    )
+                _pass = 1 - _pass.copy()  # copy to make it less fragmented
+                _pass["mtype"] = cells_df.mtype
+
+                data = _pass.groupby("mtype").mean()
+                plt.figure(figsize=(10, 15))
+                ax = plt.gca()
+                sns.heatmap(
+                    data.T,
+                    xticklabels=True,
+                    yticklabels=True,
+                    vmin=0.0,
+                    vmax=1.0,
+                    ax=ax,
+                    cbar_kws={"label": "Fraction of failed features", "shrink": 0.5},
+                )
+
+                ax.set_xlabel("mtype")
+                ax.set_ylabel("feature")
+                plt.suptitle(emodel)
+                plt.tight_layout()
+                pdf.savefig()
+                plt.close()
+
+                pass_df = pd.DataFrame()
+                pass_df["pass"] = _pass.all(axis=1)
+                pass_df["emodel"] = emodel
+                pass_df["mtype"] = _cells_df.mtype
+                pass_dfs.append(pass_df)
+        pass_df = pd.concat(pass_dfs)
         mm = pass_df.groupby(["emodel", "mtype"]).mean()
         L.info("Result of model-management: %s", mm)
         mm.to_csv("model_management.csv")

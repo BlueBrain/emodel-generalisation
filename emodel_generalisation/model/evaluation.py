@@ -1917,13 +1917,17 @@ def feature_evaluation(
         record_ions_and_currents=record_ions_and_currents,
     )
 
-    return evaluate(
-        morphs_combos_df,
-        evaluation_function,
-        new_columns=[["features", ""], ["scores", ""], ["trace_data", ""]],
-        resume=resume,
-        parallel_factory=parallel_factory,
-        db_url=db_url,
+    return (
+        evaluate(
+            morphs_combos_df.sample(frac=1.0).reset_index(),
+            evaluation_function,
+            new_columns=[["features", ""], ["scores", ""], ["trace_data", ""]],
+            resume=resume,
+            parallel_factory=parallel_factory,
+            db_url=db_url,
+        )
+        .sort_values(by="index")
+        .set_index("index")
     )
 
 
