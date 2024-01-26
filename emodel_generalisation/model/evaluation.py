@@ -23,6 +23,7 @@ import importlib
 import json
 import logging
 import multiprocessing
+import os
 import pickle
 import sys
 import traceback
@@ -54,6 +55,7 @@ logger = logging.getLogger(__name__)
 protocol_type_to_class = {
     "Protocol": bpopt.BPEMProtocol,
     "ThresholdBasedProtocol": bpopt.ThresholdBasedProtocol,
+    "ReboundBurst": bpopt.ReboundBurst,
 }
 
 soma_loc = NrnSeclistCompLocation(name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5)
@@ -238,7 +240,7 @@ def _define_morphology(
     Returns:
         bluepyopt.ephys.morphologies.NrnFileMorphology: a morphology object
     """
-    if not morph_modifiers:
+    if not morph_modifiers or morph_modifiers is None:
         morph_modifiers = [modifiers.replace_axon_with_taper]
         logger.debug("No morphology modifiers provided, replace_axon_with_taper will be used.")
     else:
@@ -611,6 +613,10 @@ class ProtocolConfiguration:
             if ion_variables is not None:
                 for ion in ion_variables:
                     new_rec = recording.copy()
+
+                    # it seems to only work without mech name at the end
+                    if ion.startswith("i"):
+                        ion = ion.split("_")[0]
 
                     if "variable" in recording:
                         new_rec["variable"] = ion
@@ -1008,7 +1014,7 @@ class FitnessCalculatorConfiguration:
         self.rin_step_delay = 500.0
         self.rin_step_duration = 500.0
         self.rin_step_amp = -0.02
-        self.rin_totduration = 1000.0
+        self.rin_totduration = self.rin_step_delay + self.rin_step_duration
         self.search_holding_duration = 500.0
         self.search_threshold_step_delay = 500.0
         self.search_threshold_step_duration = 2000.0
@@ -1568,6 +1574,14 @@ def get_simulator(stochasticity, cell_model, dt=None, cvode_minstep=0.0):
         dt (float): if not None, cvode will be disabled and fixed timesteps used.
         cvode_minstep (float): minimum time step allowed for a CVODE step.
     """
+    # set smaller tolerance to handle michaelis-mentens term with cvode
+    if os.environ.get("MM_CVODE"):
+        import neuron  # pylint: disable=import-outside-toplevel
+
+        cvode = neuron.h.CVode()
+        cvode.atolscale("cai", 1e-8)
+        cvode.atol(1e-8)
+
     if stochasticity:
         for mechanism in cell_model.mechanisms:
             if not mechanism.deterministic:
@@ -1903,13 +1917,17 @@ def feature_evaluation(
         record_ions_and_currents=record_ions_and_currents,
     )
 
-    return evaluate(
-        morphs_combos_df,
-        evaluation_function,
-        new_columns=[["features", ""], ["scores", ""], ["trace_data", ""]],
-        resume=resume,
-        parallel_factory=parallel_factory,
-        db_url=db_url,
+    return (
+        evaluate(
+            morphs_combos_df.sample(frac=1.0).reset_index(),
+            evaluation_function,
+            new_columns=[["features", ""], ["scores", ""], ["trace_data", ""]],
+            resume=resume,
+            parallel_factory=parallel_factory,
+            db_url=db_url,
+        )
+        .sort_values(by="index")
+        .set_index("index")
     )
 
 
