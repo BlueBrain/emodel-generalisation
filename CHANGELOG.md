@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.4](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.3..0.2.4)
+
+> 26 January 2024
+
+### New Features
+
+- Handle thalamus protocols (Alexis Arnaudon - [#22](https://github.com/BlueBrain/emodel-generalisation/pull/22))
+- Add info theory module (Alexis Arnaudon - [#28](https://github.com/BlueBrain/emodel-generalisation/pull/28))
+- Better config handling for combos (Alexis Arnaudon - [#30](https://github.com/BlueBrain/emodel-generalisation/pull/30))
+
 ## [0.2.3](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.2..0.2.3)
 
 > 15 December 2023
@@ -7,6 +17,10 @@
 ### Fixes
 
 - Better mech loading (Alexis Arnaudon - [#23](https://github.com/BlueBrain/emodel-generalisation/pull/23))
+
+### General Changes
+
+- 0.2.3 (Alexis Arnaudon - [#26](https://github.com/BlueBrain/emodel-generalisation/pull/26))
 
 ## [0.2.2](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.1..0.2.2)
 
