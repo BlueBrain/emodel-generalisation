@@ -540,8 +540,9 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
     emodel_mappings = defaultdict(lambda: defaultdict(dict))
     L.info("Creating emodel mappings...")
     etype_emodel_map = None
-    if (Path(config_path) / "etype_emodel_map.csv").exists():
-        etype_emodel_map = pd.read_csv(Path(config_path) / "etype_emodel_map.csv")
+    _config_path = config_path if config_path.is_dir() else local_config_path
+    if (Path(_config_path) / "etype_emodel_map.csv").exists():
+        etype_emodel_map = pd.read_csv(Path(_config_path) / "etype_emodel_map.csv")
 
     if etype_emodel_map is not None:
         for (region, etype, mtype), d in etype_emodel_map.groupby(["region", "etype", "mtype"]):
