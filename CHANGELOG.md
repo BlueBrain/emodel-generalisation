@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.4](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.3..0.2.4)
+## [0.2.5](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.3..0.2.5)
 
 > 5 February 2024
 
