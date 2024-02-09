@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.6](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.6)
+
+> 9 February 2024
+
+### Fixes
+
+- Make sure param in final works (Alexis Arnaudon - [#36](https://github.com/BlueBrain/emodel-generalisation/pull/36))
+
 ## [0.2.5](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.3..0.2.5)
 
 > 5 February 2024
@@ -17,6 +25,11 @@
 ### Chores And Housekeeping
 
 - 0.2.4 (Alexis Arnaudon - [#31](https://github.com/BlueBrain/emodel-generalisation/pull/31))
+
+### General Changes
+
+- 0.2.5 (Alexis Arnaudon - [#34](https://github.com/BlueBrain/emodel-generalisation/pull/34))
+- Release: 0.2.4 (Alexis Arnaudon - [#33](https://github.com/BlueBrain/emodel-generalisation/pull/33))
 
 ## [0.2.3](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.2..0.2.3)
 
