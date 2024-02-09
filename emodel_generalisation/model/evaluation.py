@@ -539,7 +539,6 @@ def _define_protocols(
 
 
 class ProtocolConfiguration:
-
     """Container for the definition of a protocol"""
 
     def __init__(
@@ -857,7 +856,6 @@ def _set_morphology_dependent_locations(stimulus, cell):
 
 
 class EFeatureConfiguration:
-
     """Container for the definition of an EFeature"""
 
     def __init__(
@@ -956,7 +954,6 @@ class EFeatureConfiguration:
 
 
 class FitnessCalculatorConfiguration:
-
     """The goal of this class is to store the results of an efeature extraction (efeatures
     and protocols) or to contain the results of a previous extraction retrieved from an access
     point. This object is used for the creation of the fitness calculator.
@@ -1943,8 +1940,10 @@ def get_emodel_data(access_point, combo, morphology_path, morph_modifiers):
         model_configuration=model_configuration,
         morph_modifiers=modifiers.get_synth_modifiers(combo, morph_modifiers=morph_modifiers),
     )
-
-    emodel_params = access_point.final[combo["emodel"]]["params"]
+    if "params" in access_point.final[combo["emodel"]]:
+        emodel_params = access_point.final[combo["emodel"]]["params"]
+    else:
+        emodel_params = access_point.final[combo["emodel"]]["parameters"]
     return cell, fitness_calculator_configuration, emodel_params
 
 
