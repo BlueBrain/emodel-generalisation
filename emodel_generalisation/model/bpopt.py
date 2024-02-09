@@ -33,7 +33,6 @@ logger = logging.getLogger(__name__)
 
 
 class eFELFeatureBPEM(eFELFeature):
-
     """eFEL feature extra"""
 
     SERIALIZED_FIELDS = (
@@ -318,7 +317,6 @@ def check_recordings(recordings, icell, sim):
 
 
 class BPEMProtocol(ephys.protocols.SweepProtocol):
-
     """Base protocol"""
 
     def __init__(
@@ -479,7 +477,6 @@ class FixedDtRecordingCustom(LooseDtRecordingCustom):
 
 
 class ResponseDependencies:
-
     """To add to a protocol to specify that it depends on the responses of other protocols"""
 
     def __init__(self, dependencies=None):
@@ -536,7 +533,6 @@ class ResponseDependencies:
 
 
 class ProtocolWithDependencies(BPEMProtocol, ResponseDependencies):
-
     """To add to a protocol to specify that it depends on the responses of other protocols"""
 
     def __init__(
@@ -577,7 +573,6 @@ class ProtocolWithDependencies(BPEMProtocol, ResponseDependencies):
 
 
 class ReboundBurst(BPEMProtocol):
-
     """Protocol for rebound bursting of thalamic cells."""
 
     def __init__(
@@ -603,6 +598,7 @@ class ReboundBurst(BPEMProtocol):
         isolate=None,
         timeout=None,
         responses=None,
+        max_depth=10,
     ):
         """Run bisection search to get holding current that match holding voltage."""
         # maybe not the best, this is copied from normal holding search
@@ -619,6 +615,7 @@ class ReboundBurst(BPEMProtocol):
             self.stimulus.location,
             target_voltage=target_voltage,
             stimulus_duration=2000.0,
+            max_depth=max_depth,
         )
         if self.stimulus.holding_current is not None:
             hold_prot.stimulus.delay = 1000
@@ -642,6 +639,7 @@ class ReboundBurst(BPEMProtocol):
                 isolate,
                 timeout,
                 responses,
+                max_depth=20,
             )
 
         if self.stimulus.amp_voltage is not None:
@@ -653,12 +651,12 @@ class ReboundBurst(BPEMProtocol):
                 isolate,
                 timeout,
                 responses,
+                max_depth=10,
             )
         return BPEMProtocol.run(self, cell_model, param_values, sim, isolate, timeout, responses)
 
 
 class ThresholdBasedProtocol(ProtocolWithDependencies):
-
     """Protocol having rheobase-rescaling capabilities. When using ThresholdBasedProtocol,
     the current amplitude and step amplitude of the stimulus will be ignored and replaced by
     values obtained from the holding current and rheobase of the cell model respectively."""
@@ -695,7 +693,6 @@ class ThresholdBasedProtocol(ProtocolWithDependencies):
 
 
 class RMPProtocol(BPEMProtocol):
-
     """Protocol consisting of a step of amplitude zero"""
 
     def __init__(self, name, location, target_voltage, stimulus_duration=500.0):
@@ -756,7 +753,6 @@ class RMPProtocol(BPEMProtocol):
 
 
 class RinProtocol(ProtocolWithDependencies):
-
     """Protocol used to find the input resistance of a model"""
 
     def __init__(
@@ -1054,7 +1050,6 @@ class SearchHoldingCurrent(BPEMProtocol):
 
 
 class SearchThresholdCurrent(ProtocolWithDependencies):
-
     """Protocol used to find the threshold current (rheobase) of a model"""
 
     def __init__(
@@ -1267,7 +1262,6 @@ class SearchThresholdCurrent(ProtocolWithDependencies):
 
 
 class ProtocolRunner(ephys.protocols.Protocol):
-
     """Meta-protocol in charge of running the other protocols in the correct order"""
 
     def __init__(self, protocols, name="ProtocolRunner"):
