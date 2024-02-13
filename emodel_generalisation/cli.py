@@ -1,4 +1,5 @@
 """Cli app."""
+
 import json
 import logging
 import os
@@ -814,7 +815,11 @@ def adapt(
         )
 
         hoc = cell_model.create_hoc(
-            access_point.final[emodel]["params"],
+            (
+                access_point.final[emodel]["params"]
+                if "params" in access_point.final[emodel]
+                else access_point.final[emodel]["parameters"]
+            ),
             template=template_path.name,
             template_dir=template_path.parent,
         )
