@@ -1,12 +1,17 @@
 # Changelog
 
-## [0.2.6](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.6)
+## [0.2.7](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.7)
 
-> 9 February 2024
+> 13 February 2024
 
 ### Fixes
 
+- One more params/parameters (Alexis Arnaudon - [#38](https://github.com/BlueBrain/emodel-generalisation/pull/38))
 - Make sure param in final works (Alexis Arnaudon - [#36](https://github.com/BlueBrain/emodel-generalisation/pull/36))
+
+### General Changes
+
+- Release 0.2.6 (Alexis Arnaudon - [#37](https://github.com/BlueBrain/emodel-generalisation/pull/37))
 
 ## [0.2.5](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.3..0.2.5)
 
