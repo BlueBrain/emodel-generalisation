@@ -190,9 +190,8 @@ def compute_currents(
     if len(failed_cells) > 0:
         L.info("%s failed cells, we retry with fixed timesteps:", len(failed_cells))
         L.info(cells_df.loc[failed_cells])
-        print(cells_df.loc[failed_cells])
         protocol_config["deterministic"] = False
-        uniqu_cells_df.loc[failed_cells] = evaluate_currents(
+        unique_cells_df.loc[failed_cells] = evaluate_currents(
             unique_cells_df.loc[failed_cells],
             protocol_config,
             hoc_path,
@@ -203,13 +202,12 @@ def compute_currents(
         )
 
         failed_cells = unique_cells_df[
-            uniqe_cells_df["input_resistance"].isna() | (unique_cells_df["input_resistance"] < 0)
+            unique_cells_df["input_resistance"].isna() | (unique_cells_df["input_resistance"] < 0)
         ].index
         if len(failed_cells) > 0:
-            print("still %s failed cells (we drop):", len(failed_cells))
-            print(unique_cells_df.loc[failed_cells])
+            L.info("still %s failed cells (we drop):", len(failed_cells))
+            L.info(unique_cells_df.loc[failed_cells])
             unique_cells_df.loc[failed_cells, "mtype"] = None
-
 
     cols = ["resting_potential", "input_resistance", "exception"]
     if not only_rin:
@@ -225,7 +223,6 @@ def compute_currents(
         ):
             for col in cols:
                 cells_df.loc[data.index, col] = unique_cells_df.loc[entry, col]
-
 
     cols_rename = {col: f"@dynamics:{col}" for col in cols if col != "exception"}
 
@@ -255,7 +252,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 
     L.info("Plotting summary figure...")
     scores = get_score_df(cells_df, filters=feature_filter)
-    cells_df["cost"] = np.clip(scores.max(1), 0, clip)
+    cells_df["cost"] = np.clip(scores.max(axis=1), 0, clip)
     _df = cells_df[["emodel", "mtype", "cost"]].groupby(["emodel", "mtype"]).mean().reset_index()
     plot_df = _df.pivot(index="emodel", columns="mtype", values="cost")
     plt.figure(figsize=(10, 6))
@@ -364,10 +361,6 @@ def evaluate(
         config_path, final_path, legacy, local_config=local_config_path
     )
     cells_df, _ = _load_circuit(input_path, morphology_path, population_name)
-    # cells_df = cells_df[cells_df.emodel == "bAC_L6BTC"]
-    # cells_df = cells_df[cells_df.mtype == "L23_LBC"].reset_index(drop=True)
-    # cells_df["@dynamics:AIS_scaler"] = 4.0
-    # cells_df["@dynamics:soma_scaler"] = 2.0
 
     if n_cells_per_emodel is not None:
         cells_df = (
@@ -406,7 +399,10 @@ def evaluate(
         else:
             L.info("Nothing to compute, only placeholder models found.")
             return
-
+    # cells_df = cells_df[cells_df.emodel=='bAC']
+    # cells_df = cells_df[cells_df.mtype=='L23_BP']
+    # cells_df['ais_scaler'] = 0.8
+    # cells_df['soma_scaler'] = 0.8
     with Reuse(output_path, index=False) as reuse:
         cells_df = reuse(
             feature_evaluation,
@@ -444,6 +440,8 @@ def evaluate(
             feature_filter.append("ohmic_input_resistance_vb_ssse")
             feature_filter.append("AHP_depth_abs")
             feature_filter.append("AHP_depth")
+            feature_filter.append("RMPProtocol")
+            feature_filter.append("SearchHoldingCurrent")
         else:
             feature_filter = json.loads(feature_filter)
 
