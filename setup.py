@@ -50,6 +50,7 @@ reqs = [
     "sqlalchemy-utils>=0.37.2",
     "bluecellulab>=1.7.6",
     "voxcell>=3.1.5",
+    "efel>=5.5.5",
 ]
 
 doc_reqs = [
