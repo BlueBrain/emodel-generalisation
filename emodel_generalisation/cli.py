@@ -399,10 +399,7 @@ def evaluate(
         else:
             L.info("Nothing to compute, only placeholder models found.")
             return
-    # cells_df = cells_df[cells_df.emodel=='bAC']
-    # cells_df = cells_df[cells_df.mtype=='L23_BP']
-    # cells_df['ais_scaler'] = 0.8
-    # cells_df['soma_scaler'] = 0.8
+
     with Reuse(output_path, index=False) as reuse:
         cells_df = reuse(
             feature_evaluation,
