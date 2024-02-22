@@ -29,11 +29,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from bluepyparallel import evaluate
 from matplotlib.backends.backend_pdf import PdfPages
 from numpy.polynomial import Polynomial
 from scipy.signal import cspline2d
-
-from bluepyparallel import evaluate
 
 from emodel_generalisation.model.evaluation import evaluate_ais_rin
 from emodel_generalisation.model.evaluation import evaluate_rho

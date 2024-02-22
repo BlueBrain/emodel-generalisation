@@ -42,12 +42,12 @@ from bluepyopt.ephys.morphologies import NrnFileMorphology
 from bluepyopt.ephys.objectives import SingletonObjective
 from bluepyopt.ephys.objectivescalculators import ObjectivesCalculator
 from bluepyopt.ephys.simulators import NrnSimulator
+from bluepyparallel import evaluate
+from bluepyparallel.parallel import NestedPool
 
 from emodel_generalisation.model import bpopt
 from emodel_generalisation.model import modifiers
 from emodel_generalisation.model.ecodes import eCodes
-from bluepyparallel import evaluate
-from bluepyparallel.parallel import NestedPool
 
 # pylint: disable=too-many-lines
 

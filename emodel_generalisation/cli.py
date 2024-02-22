@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
+from bluepyparallel import init_parallel_factory
 from datareuse import Reuse
 from matplotlib.backends.backend_pdf import PdfPages
 from morphio import Morphology
@@ -32,7 +33,6 @@ from emodel_generalisation.model.evaluation import evaluate_rho
 from emodel_generalisation.model.evaluation import evaluate_rho_axon
 from emodel_generalisation.model.evaluation import feature_evaluation
 from emodel_generalisation.model.modifiers import get_replace_axon_hoc
-from bluepyparallel import init_parallel_factory
 from emodel_generalisation.utils import FEATURE_FILTER
 from emodel_generalisation.utils import get_feature_df
 from emodel_generalisation.utils import get_score_df

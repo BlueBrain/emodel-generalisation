@@ -6,7 +6,6 @@ from pathlib import Path
 
 import bluecellulab
 import efel
-
 from bluepyparallel.evaluator import evaluate
 from bluepyparallel.parallel import NestedPool
 
