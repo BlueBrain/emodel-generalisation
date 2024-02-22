@@ -46,8 +46,8 @@ from bluepyopt.ephys.simulators import NrnSimulator
 from emodel_generalisation.model import bpopt
 from emodel_generalisation.model import modifiers
 from emodel_generalisation.model.ecodes import eCodes
-from emodel_generalisation.parallel import evaluate
-from emodel_generalisation.parallel.parallel import NestedPool
+from bluepyparallel import evaluate
+from bluepyparallel.parallel import NestedPool
 
 # pylint: disable=too-many-lines
 

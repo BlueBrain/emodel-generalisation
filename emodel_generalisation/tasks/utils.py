@@ -26,7 +26,7 @@ import luigi
 from luigi_tools.target import OutputLocalTarget
 
 from emodel_generalisation.model.access_point import AccessPoint
-from emodel_generalisation.parallel import init_parallel_factory
+from bluepyparallel import init_parallel_factory
 
 
 class EmodelAPIConfig(luigi.Config):

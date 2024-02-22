@@ -38,7 +38,7 @@ from neurom import NeuriteType
 from neurom import view
 from tqdm import tqdm
 
-from emodel_generalisation.parallel.evaluator import evaluate
+from bluepyparallel.evaluator import evaluate
 
 
 def create_combos_df(

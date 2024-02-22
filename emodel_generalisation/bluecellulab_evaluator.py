@@ -7,8 +7,8 @@ from pathlib import Path
 import bluecellulab
 import efel
 
-from emodel_generalisation.parallel.evaluator import evaluate
-from emodel_generalisation.parallel.parallel import NestedPool
+from bluepyparallel.evaluator import evaluate
+from bluepyparallel.parallel import NestedPool
 
 logger = logging.getLogger(__name__)
 AXON_LOC = "self.axonal[1](0.5)._ref_v"

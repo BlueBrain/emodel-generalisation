@@ -45,8 +45,8 @@ from emodel_generalisation.information import mi_gaussian
 from emodel_generalisation.information import rsi_gaussian
 from emodel_generalisation.model.access_point import AccessPoint
 from emodel_generalisation.model.evaluation import get_evaluator_from_access_point
-from emodel_generalisation.parallel import evaluate
-from emodel_generalisation.parallel import init_parallel_factory
+from bluepyparallel import evaluate
+from bluepyparallel import init_parallel_factory
 from emodel_generalisation.utils import cluster_matrix
 
 # pylint: disable=too-many-lines,too-many-locals
