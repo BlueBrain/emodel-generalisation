@@ -310,10 +310,14 @@ def isolate_axon(sim=None, icell=None):
         sim.neuron.h.delete_section(sec=section)
     for section in icell.apical:
         sim.neuron.h.delete_section(sec=section)
-    for section in icell.soma:
-        sim.neuron.h.delete_section(sec=section)
+    # for section in icell.soma:
+    #    sim.neuron.h.delete_section(sec=section)
     for section in icell.myelin:
         sim.neuron.h.delete_section(sec=section)
+
+    for section in icell.soma:
+        section.diam = ZERO
+        section.L = ZERO
 
 
 def get_synth_modifiers(combo, morph_modifiers=None):

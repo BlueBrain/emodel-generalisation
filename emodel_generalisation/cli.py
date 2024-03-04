@@ -646,7 +646,12 @@ def adapt(
         morphology = Morphology(path)
         orig_lens = next(extract_ais_path_distances([morphology]))
         orig_diams = next(extract_ais_diameters([morphology]))
+
         diams = np.interp(np.linspace(0, 60, 10), orig_lens, orig_diams)
+
+        if os.environ.get("EMODEL_EXEMPLAR_DIAMS", False):
+            diams = 1.0 + 0.0 * diams
+
         return diams.tolist()
 
     def _get_exemplar_data(exemplar_df):
@@ -739,13 +744,17 @@ def adapt(
     cells_df["ais_model"] = ""
     cells_df["soma_model"] = ""
 
-    def _adapt():
+    for col in cells_df.columns:
+        if cells_df[col].dtype == "category":
+            cells_df[col] = cells_df[col].astype("object")
+
+    def _adapt(cells_df):
         """Adapt AIS/soma scales to match the rho factors."""
         for emodel in tqdm(exemplar_df.emodel, disable=os.environ.get("NO_PROGRESS", False)):
             mask = cells_df["emodel"] == emodel
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:
-                L.info("Adapting a non placeholder model...")
+                L.info("Adapting a non placeholder model %s", emodel)
 
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) == 1:
                     raise ValueError(
@@ -780,7 +789,18 @@ def adapt(
         return cells_df
 
     with Reuse(local_dir / "adapt_df.csv") as reuse:
-        cells_df = reuse(_adapt)
+        unique_cells_df = reuse(_adapt, cells_df.drop_duplicates(["morphology", "emodel"]))
+
+    # we populate the full circuit with duplicates if any
+    if len(cells_df) == len(unique_cells_df):
+        cells_df = unique_cells_df
+    else:
+        unique_cells_df = unique_cells_df.set_index(["morphology", "emodel"])
+        for entry, data in tqdm(
+            cells_df.groupby(["morphology", "emodel"]), disable=os.environ.get("NO_PROGRESS", False)
+        ):
+            for col in unique_cells_df.columns:
+                cells_df.loc[data.index, col] = unique_cells_df.loc[entry, col]
 
     # finally save a node.h5 file
     L.info("Saving sonata file...")

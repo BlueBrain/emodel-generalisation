@@ -1211,9 +1211,9 @@ class FitnessCalculatorConfiguration:
         if "extra_recordings" in protocol:
             for protocol_def in protocol["extra_recordings"]:
                 recordings.append(protocol_def)
-                protocol_def[
-                    "name"
-                ] = f"{protocol_name}.{protocol_def['name']}.{protocol_def['var']}"
+                protocol_def["name"] = (
+                    f"{protocol_name}.{protocol_def['name']}.{protocol_def['var']}"
+                )
 
         stimulus = deepcopy(protocol["stimuli"]["step"])
         if "holding" in protocol["stimuli"]:
@@ -1806,11 +1806,9 @@ def _single_feature_evaluation(
             ]:
                 evaluator.fitness_protocols["main_protocol"].protocols.pop(prot)
 
-                evaluator.fitness_protocols[
-                    "main_protocol"
-                ].execution_order = evaluator.fitness_protocols[
-                    "main_protocol"
-                ].compute_execution_order()
+                evaluator.fitness_protocols["main_protocol"].execution_order = (
+                    evaluator.fitness_protocols["main_protocol"].compute_execution_order()
+                )
 
     evaluator.cell_model.unfreeze(params)
     responses = evaluator.run_protocols(evaluator.fitness_protocols.values(), params)
