@@ -240,7 +240,6 @@ def _define_morphology(
     Returns:
         bluepyopt.ephys.morphologies.NrnFileMorphology: a morphology object
     """
-    print(morph_modifiers)
     if not morph_modifiers or morph_modifiers is None:
         morph_modifiers = [modifiers.replace_axon_with_taper]
         logger.debug("No morphology modifiers provided, replace_axon_with_taper will be used.")
