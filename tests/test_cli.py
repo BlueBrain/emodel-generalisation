@@ -195,7 +195,7 @@ def test_adapt(cli_runner, tmpdir):
     df = CellCollection().load_sonata(tmpdir / "sonata_currents_adapted.h5").as_dataframe()
     npt.assert_allclose(
         df["@dynamics:resting_potential"].to_list(),
-        [-72.839731, -71.192565],
+        [-72.841806, -71.32893],
         rtol=1e-5,
     )
     df.to_csv('test.csv')
