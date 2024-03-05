@@ -439,6 +439,7 @@ def evaluate(
             feature_filter.append("AHP_depth")
             feature_filter.append("RMPProtocol")
             feature_filter.append("SearchHoldingCurrent")
+            feature_filter.append("APWaveform")
         else:
             feature_filter = json.loads(feature_filter)
 

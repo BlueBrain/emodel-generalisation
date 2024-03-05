@@ -240,6 +240,7 @@ def _define_morphology(
     Returns:
         bluepyopt.ephys.morphologies.NrnFileMorphology: a morphology object
     """
+    print(morph_modifiers)
     if not morph_modifiers or morph_modifiers is None:
         morph_modifiers = [modifiers.replace_axon_with_taper]
         logger.debug("No morphology modifiers provided, replace_axon_with_taper will be used.")
@@ -468,7 +469,7 @@ def _define_holding_protocol(
             name="SearchHoldingCurrent",
             location=soma_loc if not ais_recording else ais_loc,
             target_voltage=target_voltage,
-            strict_bounds=strict_bounds,
+            strict_bounds=True,#strict_bounds,
             max_depth=max_depth,
             stimulus_duration=stimulus_duration,
         )
@@ -1510,7 +1511,7 @@ def _define_threshold_based_main_protocol(
     efeatures = _define_efeatures(
         fitness_calculator_configuration, include_validation_protocols, protocols, efel_settings
     )
-
+    strict_holding_bounds = True
     # Create the special protocols
     protocols.update(
         {

@@ -478,3 +478,39 @@ def get_replace_axon_hoc(params):
     """ % tuple(
         params
     )
+
+
+def replace_axon_constant(sim=None, icell=None, diam=1.0, L_target=45):
+    """Simple version with constant diameter axon """
+    nseg0 = 5  # number of segments for each of the two axon sections
+    nseg_total = nseg0 * 2
+
+    for section in icell.axonal:
+        sim.neuron.h.delete_section(sec=section)
+
+    #  new axon array
+    sim.neuron.h.execute("create axon[2]", icell)
+
+    count = 0
+    for i, section in enumerate(icell.axon):
+        section.nseg = nseg_total // 2
+        section.L = L_target / 2
+
+        for seg in section:
+            seg.diam = diam
+            count += 1
+
+        icell.axonal.append(sec=section)
+        icell.all.append(sec=section)
+
+    # childsec.connect(parentsec, parentx, childx)
+    icell.axon[0].connect(icell.soma[0], 1.0, 0.0)
+    icell.axon[1].connect(icell.axon[0], 1.0, 0.0)
+
+    sim.neuron.h.execute("create myelin[1]", icell)
+    icell.myelinated.append(sec=icell.myelin[0])
+    icell.all.append(sec=icell.myelin[0])
+    icell.myelin[0].nseg = 5
+    icell.myelin[0].L = 1000
+    icell.myelin[0].diam = diam
+    icell.myelin[0].connect(icell.axon[1], 1.0, 0.0)
