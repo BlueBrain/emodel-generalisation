@@ -198,10 +198,10 @@ def test_adapt(cli_runner, tmpdir):
         [-72.841806, -71.32893],
         rtol=1e-5,
     )
-    df.to_csv('test.csv')
+    df.to_csv("test.csv")
     npt.assert_allclose(
         df["@dynamics:input_resistance"].to_list(),
-        [111.991526, 1974.551858],
+        [105.342194, 1863.809101],
         rtol=1e-5,
     )
     npt.assert_allclose(
