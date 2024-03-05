@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from bluepyparallel import evaluate
 from matplotlib.backends.backend_pdf import PdfPages
 from numpy.polynomial import Polynomial
 from scipy.signal import cspline2d
@@ -41,7 +42,6 @@ from emodel_generalisation.model.evaluation import feature_evaluation
 from emodel_generalisation.model.evaluation import rin_evaluation
 from emodel_generalisation.model.modifiers import remove_axon
 from emodel_generalisation.model.modifiers import remove_soma
-from emodel_generalisation.parallel import evaluate
 from emodel_generalisation.utils import FEATURE_FILTER
 from emodel_generalisation.utils import get_scores
 

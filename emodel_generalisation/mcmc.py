@@ -31,6 +31,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from bluepyparallel import evaluate
+from bluepyparallel import init_parallel_factory
 from matplotlib.backends.backend_pdf import PdfPages
 from mpl_toolkits import axisartist
 from scipy.spatial import distance_matrix
@@ -45,8 +47,6 @@ from emodel_generalisation.information import mi_gaussian
 from emodel_generalisation.information import rsi_gaussian
 from emodel_generalisation.model.access_point import AccessPoint
 from emodel_generalisation.model.evaluation import get_evaluator_from_access_point
-from emodel_generalisation.parallel import evaluate
-from emodel_generalisation.parallel import init_parallel_factory
 from emodel_generalisation.utils import cluster_matrix
 
 # pylint: disable=too-many-lines,too-many-locals

@@ -27,6 +27,7 @@ import neurom as nm
 import numpy as np
 import pandas as pd
 import yaml
+from bluepyparallel.evaluator import evaluate
 from diameter_synthesis import build_diameters
 from diameter_synthesis import build_models
 from diameter_synthesis.main import plot_models
@@ -37,8 +38,6 @@ from morphio.mut import Morphology
 from neurom import NeuriteType
 from neurom import view
 from tqdm import tqdm
-
-from emodel_generalisation.parallel.evaluator import evaluate
 
 
 def create_combos_df(

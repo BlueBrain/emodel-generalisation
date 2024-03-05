@@ -23,7 +23,6 @@ def test_compute_currents(cli_runner, tmpdir):
             "--morphology-path", str(DATA / "morphologies"),
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
             "--hoc-path", str(DATA / "hoc"),
-            "--parallel-lib", None,
         ],
     )
     # fmt: on
@@ -53,7 +52,6 @@ def test_compute_currents(cli_runner, tmpdir):
             "--morphology-path", str(DATA / "morphologies"),
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
             "--hoc-path", str(DATA / "hoc"),
-            "--parallel-lib", None,
             "--only-rin",
         ],
     )
@@ -79,7 +77,6 @@ def test_evaluate(cli_runner, tmpdir):
             "--morphology-path", str(DATA / "morphologies"),
             "--config-path", str(DATA / "config"),
             "--final-path", str(DATA / "final.json"),
-            "--parallel-lib", None,
             "--evaluate-all",
         ],
     )
@@ -125,7 +122,6 @@ def test_adapt(cli_runner, tmpdir):
             "--final-path", str(DATA / "final.json"),
             "--local-dir", str(tmpdir / 'local'),
             "--output-hoc-path", str(tmpdir / "hoc"),
-            "--parallel-lib", None,
             "--min-scale", 0.9,
             "--max-scale", 1.1,
         ],
@@ -153,7 +149,6 @@ def test_adapt(cli_runner, tmpdir):
             "--config-path", str(DATA / "config"),
             "--local-dir", str(tmpdir / 'local'),
             "--final-path", str(DATA / "final.json"),
-            "--parallel-lib", None,
         ],
     )
     # fmt: on
@@ -192,7 +187,6 @@ def test_adapt(cli_runner, tmpdir):
             "--morphology-path", str(DATA / "morphologies"),
             "--protocol-config-path", str(DATA / "protocol_config.yaml"),
             "--hoc-path", str(tmpdir / "hoc"),
-            "--parallel-lib", None,
         ],
     )
     # fmt: on
@@ -204,6 +198,7 @@ def test_adapt(cli_runner, tmpdir):
         [-72.841806, -71.32893],
         rtol=1e-5,
     )
+    df.to_csv("test.csv")
     npt.assert_allclose(
         df["@dynamics:input_resistance"].to_list(),
         [105.342194, 1863.809101],
