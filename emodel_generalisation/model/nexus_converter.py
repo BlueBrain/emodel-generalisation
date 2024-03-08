@@ -28,20 +28,27 @@ def _get_emodel_name(region, mtype, etype, i=None):
     return base_name
 
 
-def _make_recipe_entry(config, emodel_name):
-    emodelsettings = load_json(config["pipeline_settings"])
-    return {
+def _make_recipe_entry(config):
+    recipe = {
         "morph_path": config["morphology"]["path"],
         "morphology": config["morphology"]["name"],
-        "params": f"parameters/{emodel_name}.json",
-        "features": f"features/{emodel_name}.json",
+        "params": config["params"]["bounds"],
+        "features": config["features"],
         "morph_modifiers": [],  # to update
-        "pipeline_settings": {
+    }
+
+    if "pipeline_settings" in recipe:
+        emodelsettings = load_json(config["pipeline_settings"])
+        recipe["pipeline_settings"] = {
             "efel_settings": emodelsettings["efel_settings"],
             "name_rmp_protocol": emodelsettings["name_rmp_protocol"],
             "name_Rin_protocol": emodelsettings["name_Rin_protocol"],
-        },
-    }
+        }
+    else:
+        recipe["pipeline_settings"] = None
+
+    return recipe
+
 
 
 def _prepare(out_folder):
@@ -76,29 +83,6 @@ def _make_mechanisms(mechanisms: list, mech_path="mechanisms", base_path="."):
                 shutil.copy(path, mech_path / Path(mech["path"]).name)
 
 
-def _make_parameters(emodel_configuration: dict) -> dict:
-    """Convert parameter entry."""
-    entry = {"mechanisms": {}, "distributions": {}, "parameters": {}}
-
-    for mech in emodel_configuration["mechanisms"]:
-        if mech["location"] not in entry["mechanisms"]:
-            entry["mechanisms"][mech["location"]] = {"mech": []}
-        entry["mechanisms"][mech["location"]]["mech"].append(mech["name"])
-
-    for distr in emodel_configuration["distributions"]:
-        entry["distributions"][distr["name"]] = {"fun": distr["function"]}
-        if "parameters" in distr:
-            entry["distributions"][distr["name"]]["parameters"] = distr["parameters"]
-
-    for param in emodel_configuration["parameters"]:
-        if param["location"] not in entry["parameters"]:
-            entry["parameters"][param["location"]] = []
-        entry["parameters"][param["location"]].append(
-            {"name": param["name"], "val": param["value"]}
-        )
-    return entry
-
-
 def _make_parameter_entry(emodel_values):
     """Convert model parameters data.
 
@@ -114,7 +98,7 @@ def _add_emodel(
     mech_path="mechanisms",
     base_path=".",
 ):
-    final = _make_parameter_entry(load_json(config["params"]["values"]))
+    final = _make_parameter_entry(config["params"]["values"])
     recipe = _make_recipe_entry(config, emodel_name)
 
     emodel_configuration = load_json(config["params"]["bounds"])
