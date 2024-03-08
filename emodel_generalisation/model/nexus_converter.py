@@ -29,15 +29,17 @@ def _get_emodel_name(region, mtype, etype, i=None):
 
 
 def _make_recipe_entry(config):
+    morph_file = Path(config["morphology"])
+
     recipe = {
-        "morph_path": config["morphology"]["path"],
-        "morphology": config["morphology"]["name"],
+        "morph_path": str(morph_file.parent),
+        "morphology": morph_file.name,
         "params": config["params"]["bounds"],
         "features": config["features"],
         "morph_modifiers": [],  # to update
     }
 
-    if "pipeline_settings" in recipe:
+    if "pipeline_settings" in config:
         emodelsettings = load_json(config["pipeline_settings"])
         recipe["pipeline_settings"] = {
             "efel_settings": emodelsettings["efel_settings"],
@@ -48,7 +50,6 @@ def _make_recipe_entry(config):
         recipe["pipeline_settings"] = None
 
     return recipe
-
 
 
 def _prepare(out_folder):
@@ -98,21 +99,15 @@ def _add_emodel(
     mech_path="mechanisms",
     base_path=".",
 ):
-    final = _make_parameter_entry(config["params"]["values"])
-    recipe = _make_recipe_entry(config, emodel_name)
+    final = _make_parameter_entry(load_json(config["params"]["values"]))
+    recipe = _make_recipe_entry(config)
 
     emodel_configuration = load_json(config["params"]["bounds"])
-    params = _make_parameters(emodel_configuration)
     _make_mechanisms(
         mechanisms=emodel_configuration["mechanisms"],
         mech_path=mech_path,
         base_path=base_path,
     )
-    write_json(filepath=out_config_folder / recipe["params"], data=params, indent=4)
-
-    features = load_json(config["features"])
-    write_json(filepath=out_config_folder / recipe["features"], data=features, indent=4)
-
     return final, recipe
 
 
