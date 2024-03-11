@@ -55,8 +55,6 @@ def _make_recipe_entry(config):
 def _prepare(out_folder):
     """Prepare folder structure."""
     out_folder.mkdir(exist_ok=True)
-    (out_folder / "parameters").mkdir(exist_ok=True)
-    (out_folder / "features").mkdir(exist_ok=True)
 
 
 def _make_mechanisms(mechanisms: list, mech_path="mechanisms", base_path="."):
@@ -99,10 +97,13 @@ def _add_emodel(
     mech_path="mechanisms",
     base_path=".",
 ):
-    final = _make_parameter_entry(load_json(config["params"]["values"]))
+    param_values_path = config["params"]["values"]
+    param_bounds_path = config["params"]["bounds"]
+
+    final = _make_parameter_entry(load_json(param_values_path))
     recipe = _make_recipe_entry(config)
 
-    emodel_configuration = load_json(config["params"]["bounds"])
+    emodel_configuration = load_json(param_bounds_path)
     _make_mechanisms(
         mechanisms=emodel_configuration["mechanisms"],
         mech_path=mech_path,
@@ -120,9 +121,11 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
 
     final = {}
     recipes = {}
-    for name, emodel_config_path in configuration["library"]["eModel"].items():
+    for name, emodel_config in configuration["library"]["eModel"].items():
+        emodel_config = _resolve_paths(emodel_config, Path(config_path).parent)
+
         final[name], recipes[name] = _add_emodel(
-            config=load_json(emodel_config_path),
+            emodel_config,
             emodel_name=name,
             out_config_folder=out_config_folder,
             mech_path=mech_path,
@@ -143,3 +146,15 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
 
     etype_emodel_map_df = pd.DataFrame.from_dict(data)
     etype_emodel_map_df.to_csv(out_config_folder / "etype_emodel_map.csv", index=False)
+
+
+def _resolve_paths(emodel_config: dict, base_dir: Path) -> dict:
+    """Resolve relative paths with respect to the base dir."""
+    new_config = {}
+    for k, v in emodel_config.items():
+        if isinstance(v, dict):
+            new_config[k] = _resolve_paths(v, base_dir)
+        else:
+            # if v is absolute, concatenation drops the prefix
+            new_config[k] = str(base_dir / v)
+    return new_config
