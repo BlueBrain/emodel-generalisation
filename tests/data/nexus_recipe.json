@@ -1,14 +1,16 @@
 {
   "library": {
-    "eModel": {
-        "c4de21": {
-          "EModel": "nexus_recipes/emodel.json",
-          "ExtractionTargetsConfiguration": "nexus_recipes/extraction.json",
-          "EModelPipelineSettings": "nexus_recipes/pipeline.json",
-          "FitnessCalculatorConfiguration": "nexus_recipes/fitness.json",
-          "EModelConfiguration": "nexus_recipes/config.json"
-        }
-    }
+	"eModel": {
+		"c4de21": {
+		   "morphology": "nexus_recipes/foo.swc",
+		   "params": {
+			"values": "nexus_recipes/emodel.json",
+			"bounds": "nexus_recipes/emodelconfiguration.json"
+		    },
+		    "features": "nexus_recipes/fitness.json",
+		    "pipeline_settings": "nexus_recipes/pipeline.json"
+		}
+	}
   },
   "configuration": {
     "AAA": {

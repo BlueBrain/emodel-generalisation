@@ -1,12 +1,14 @@
 """Convert nexus generate models to local AccessPoint config folder."""
 import filecmp
-import json
 import logging
 import shutil
 from copy import copy
 from pathlib import Path
 
 import pandas as pd
+
+from emodel_generalisation.utils import load_json
+from emodel_generalisation.utils import write_json
 
 L = logging.getLogger(__name__)
 
@@ -26,43 +28,36 @@ def _get_emodel_name(region, mtype, etype, i=None):
     return base_name
 
 
-def _make_recipe_entry(config, emodel_name):
-    with open(config["EModelPipelineSettings"]) as emodelsettings_file:
-        emodelsettings = json.load(emodelsettings_file)
+def _make_recipe_entry(config):
+    morph_file = Path(config["morphology"])
 
-    with open(config["EModelConfiguration"]) as emodelconfig_file:
-        emodelconfig = json.load(emodelconfig_file)
-
-    path = Path(emodelconfig["morphology"].get("path"))
-    return {
-        "morph_path": str(path.parent),
-        "morphology": str(path.name),
-        "params": f"parameters/{emodel_name}.json",
-        "features": f"features/{emodel_name}.json",
+    recipe = {
+        "morph_path": str(morph_file.parent),
+        "morphology": morph_file.name,
+        "params": config["params"]["bounds"],
+        "features": config.get("features", None),
         "morph_modifiers": [],  # to update
-        "pipeline_settings": {
+    }
+
+    if config["pipeline_settings"] is not None:
+        emodelsettings = load_json(config["pipeline_settings"])
+        recipe["pipeline_settings"] = {
             "efel_settings": emodelsettings["efel_settings"],
             "name_rmp_protocol": emodelsettings["name_rmp_protocol"],
             "name_Rin_protocol": emodelsettings["name_Rin_protocol"],
-        },
-    }
+        }
+    else:
+        recipe["pipeline_settings"] = None
+
+    return recipe
 
 
-def _prepare(out_folder):
-    """Prepare folder structure."""
-    out_folder.mkdir(exist_ok=True)
-    (out_folder / "parameters").mkdir(exist_ok=True)
-    (out_folder / "features").mkdir(exist_ok=True)
-
-
-def _make_mechanism(config, mech_path="mechanisms", base_path="."):
+def _make_mechanisms(mechanisms: list, mech_path="mechanisms", base_path="."):
     """Copy mechanisms locally in a mechanisms folder."""
     mech_path = Path(mech_path)
     mech_path.mkdir(exist_ok=True, parents=True)
-    with open(config["EModelConfiguration"]) as emodelconfig_file:
-        emodelconfig = json.load(emodelconfig_file)
 
-    for mech in emodelconfig["mechanisms"]:
+    for mech in mechanisms:
         if mech["path"] is not None:
             local_mech_path = mech_path / Path(mech["path"]).name
 
@@ -82,107 +77,59 @@ def _make_mechanism(config, mech_path="mechanisms", base_path="."):
                 shutil.copy(path, mech_path / Path(mech["path"]).name)
 
 
-def _make_parameters(config):
-    """Convert parameter entry."""
-    entry = {"mechanisms": {}, "distributions": {}, "parameters": {}}
-    with open(config["EModelConfiguration"]) as emodelconfig_file:
-        emodelconfig = json.load(emodelconfig_file)
-
-    for mech in emodelconfig["mechanisms"]:
-        if mech["location"] not in entry["mechanisms"]:
-            entry["mechanisms"][mech["location"]] = {"mech": []}
-        entry["mechanisms"][mech["location"]]["mech"].append(mech["name"])
-
-    for distr in emodelconfig["distributions"]:
-        entry["distributions"][distr["name"]] = {"fun": distr["function"]}
-        if "parameters" in distr:
-            entry["distributions"][distr["name"]]["parameters"] = distr["parameters"]
-
-    for param in emodelconfig["parameters"]:
-        if param["location"] not in entry["parameters"]:
-            entry["parameters"][param["location"]] = []
-        entry["parameters"][param["location"]].append(
-            {"name": param["name"], "val": param["value"]}
-        )
-    return entry
-
-
-def _make_features(config):
-    """Convert features entry."""
-    with open(config["FitnessCalculatorConfiguration"]) as fitnessconf_file:
-        fitnessconf = json.load(fitnessconf_file)
-    return fitnessconf
-
-
-def _make_parameter_entry(config):
+def _make_parameter_entry(emodel_values):
     """Convert model parameters data.
 
     Only the parameters are considered, the others are not needed.
     """
-    with open(config["EModel"]) as emodel_file:
-        emodel = json.load(emodel_file)
-
-    entry = {"params": {}}
-    for param in emodel["parameter"]:
-        entry["params"][param["name"]] = param["value"]
-    return entry
+    return {"params": {param["name"]: param["value"] for param in emodel_values["parameter"]}}
 
 
 def _add_emodel(
-    recipes,
-    final,
-    emodel_name,
     config,
-    out_config_folder,
     mech_path="mechanisms",
     base_path=".",
 ):
-    """Add a single emodel."""
-    recipes[emodel_name] = _make_recipe_entry(config, emodel_name)
-    final[emodel_name] = _make_parameter_entry(config)
+    param_values_path = config["params"]["values"]
+    param_bounds_path = config["params"]["bounds"]
 
-    params = _make_parameters(config)
-    _make_mechanism(config, mech_path, base_path)
+    final = _make_parameter_entry(load_json(param_values_path))
+    recipe = _make_recipe_entry(config)
 
-    with open(out_config_folder / recipes[emodel_name]["params"], "w") as param_file:
-        json.dump(params, param_file, indent=4)
-
-    features = _make_features(config)
-    with open(out_config_folder / recipes[emodel_name]["features"], "w") as feat_file:
-        json.dump(features, feat_file, indent=4)
+    emodel_configuration = load_json(param_bounds_path)
+    _make_mechanisms(
+        mechanisms=emodel_configuration["mechanisms"],
+        mech_path=mech_path,
+        base_path=base_path,
+    )
+    return final, recipe
 
 
 def convert_all_config(config_path, out_config_folder="config", mech_path="mechanisms"):
     """Convert a nexus config_json file into a local config folder loadable via AccessPoint."""
-    with open(config_path) as config_file:
-        config = json.load(config_file)
+    configuration = load_json(config_path)
 
     out_config_folder = Path(out_config_folder)
-    _prepare(out_config_folder)
-    recipes = {}
+    out_config_folder.mkdir(exist_ok=True)
+
+    base_config_dir = Path(config_path).parent
+
     final = {}
-    for emodel_name, _config in config["library"]["eModel"].items():
-        for entry, path in _config.items():
-            if not Path(path).is_absolute():
-                _config[entry] = Path(config_path).parent / path
-        _add_emodel(
-            recipes,
-            final,
-            emodel_name,
-            _config,
-            out_config_folder,
-            mech_path,
-            Path(config_path).parent,
+    recipes = {}
+    for name, emodel_config in configuration["library"]["eModel"].items():
+        emodel_config = _resolve_paths(emodel_config, base_config_dir)
+
+        final[name], recipes[name] = _add_emodel(
+            emodel_config,
+            mech_path=mech_path,
+            base_path=base_config_dir,
         )
 
-    with open(out_config_folder / "recipes.json", "w") as recipes_file:
-        json.dump(recipes, recipes_file, indent=4)
-
-    with open(out_config_folder / "final.json", "w") as final_file:
-        json.dump(final, final_file, indent=4)
+    write_json(filepath=out_config_folder / "recipes.json", data=recipes, indent=4)
+    write_json(filepath=out_config_folder / "final.json", data=final, indent=4)
 
     data = {"region": [], "etype": [], "mtype": [], "emodel": []}
-    for region, data_region in config["configuration"].items():
+    for region, data_region in configuration["configuration"].items():
         for mtype, data_mtype in data_region.items():
             for etype, data_etype in data_mtype.items():
                 data["region"].append(region)
@@ -192,3 +139,15 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
 
     etype_emodel_map_df = pd.DataFrame.from_dict(data)
     etype_emodel_map_df.to_csv(out_config_folder / "etype_emodel_map.csv", index=False)
+
+
+def _resolve_paths(emodel_config: dict, base_dir: Path) -> dict:
+    """Resolve relative paths with respect to the base dir."""
+    new_config = {}
+    for k, v in emodel_config.items():
+        if isinstance(v, dict):
+            new_config[k] = _resolve_paths(v, base_dir)
+        else:
+            # if v is absolute, concatenation drops the prefix
+            new_config[k] = str(base_dir / v)
+    return new_config

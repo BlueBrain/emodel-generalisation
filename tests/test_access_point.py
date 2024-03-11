@@ -522,6 +522,7 @@ def test_load_nexus_recipe(tmpdir):
     access_point = AccessPoint(
         nexus_config=DATA / "nexus_recipe.json",
         emodel_dir=tmpdir / "config",
+        mech_path=tmpdir / "mechanisms",
     )
     assert access_point.emodels == ["c4de21"]
 
@@ -531,7 +532,25 @@ def test_load_nexus_recipe(tmpdir):
     )
     assert access_point.emodels == ["c4de21"]
 
-    assert (tmpdir / "config" / "recipes.json").exists()
-    assert (tmpdir / "config" / "final.json").exists()
-    assert (tmpdir / "config" / "parameters" / "c4de21.json").exists()
-    assert (tmpdir / "config" / "features" / "c4de21.json").exists()
+    assert access_point.recipes == {
+        "c4de21": {
+            "morph_path": str(DATA / "nexus_recipes"),
+            "morphology": "foo.swc",
+            "params": str(DATA / "nexus_recipes" / "emodelconfiguration.json"),
+            "features": str(DATA / "nexus_recipes" / "fitness.json"),
+            "morph_modifiers": [],
+            "pipeline_settings": {
+                "efel_settings": {
+                    "strict_stiminterval": True,
+                    "Threshold": -20.0,
+                    "interp_step": 0.025,
+                },
+                "name_rmp_protocol": "IV_0",
+                "name_Rin_protocol": "IV_-40",
+            },
+        }
+    }
+    assert access_point.get_morphologies("c4de21") == {
+        "name": "foo",
+        "path": str(DATA / "nexus_recipes" / "foo.swc"),
+    }

@@ -204,3 +204,13 @@ def plot_traces(trace_df, trace_path="traces", pdf_filename="traces.pdf"):
             plt.suptitle(fig.get_label())
             pdf.savefig()
             plt.close()
+
+
+def load_json(filepath, **kwargs):
+    """Load from JSON file."""
+    return json.loads(Path(filepath).read_bytes(), **kwargs)
+
+
+def write_json(filepath, data, **kwargs):
+    """Write json file."""
+    Path(filepath).write_text(json.dumps(data, **kwargs), encoding="utf-8")
