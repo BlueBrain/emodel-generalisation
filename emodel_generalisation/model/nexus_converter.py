@@ -35,11 +35,11 @@ def _make_recipe_entry(config):
         "morph_path": str(morph_file.parent),
         "morphology": morph_file.name,
         "params": config["params"]["bounds"],
-        "features": config["features"],
+        "features": config.get("features", None),
         "morph_modifiers": [],  # to update
     }
 
-    if "pipeline_settings" in config:
+    if config["pipeline_settings"] is not None:
         emodelsettings = load_json(config["pipeline_settings"])
         recipe["pipeline_settings"] = {
             "efel_settings": emodelsettings["efel_settings"],
