@@ -52,11 +52,6 @@ def _make_recipe_entry(config):
     return recipe
 
 
-def _prepare(out_folder):
-    """Prepare folder structure."""
-    out_folder.mkdir(exist_ok=True)
-
-
 def _make_mechanisms(mechanisms: list, mech_path="mechanisms", base_path="."):
     """Copy mechanisms locally in a mechanisms folder."""
     mech_path = Path(mech_path)
@@ -92,8 +87,6 @@ def _make_parameter_entry(emodel_values):
 
 def _add_emodel(
     config,
-    emodel_name,
-    out_config_folder,
     mech_path="mechanisms",
     base_path=".",
 ):
@@ -117,19 +110,19 @@ def convert_all_config(config_path, out_config_folder="config", mech_path="mecha
     configuration = load_json(config_path)
 
     out_config_folder = Path(out_config_folder)
-    _prepare(out_config_folder)
+    out_config_folder.mkdir(exist_ok=True)
+
+    base_config_dir = Path(config_path).parent
 
     final = {}
     recipes = {}
     for name, emodel_config in configuration["library"]["eModel"].items():
-        emodel_config = _resolve_paths(emodel_config, Path(config_path).parent)
+        emodel_config = _resolve_paths(emodel_config, base_config_dir)
 
         final[name], recipes[name] = _add_emodel(
             emodel_config,
-            emodel_name=name,
-            out_config_folder=out_config_folder,
             mech_path=mech_path,
-            base_path=Path(config_path).parent,
+            base_path=base_config_dir,
         )
 
     write_json(filepath=out_config_folder / "recipes.json", data=recipes, indent=4)
