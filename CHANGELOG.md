@@ -1,8 +1,13 @@
 # Changelog
 
-## [0.2.8](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.8)
+## [0.2.9](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.9)
 
-> 16 February 2024
+> 11 March 2024
+
+### New Features
+
+- Migrate to simplified emodel recipe (Eleftherios Zisis - [#44](https://github.com/BlueBrain/emodel-generalisation/pull/44))
+- Use BluePyParallel (Alexis Arnaudon - [#42](https://github.com/BlueBrain/emodel-generalisation/pull/42))
 
 ### Fixes
 
@@ -12,6 +17,7 @@
 
 ### General Changes
 
+- 0.2.8 (Alexis Arnaudon - [#41](https://github.com/BlueBrain/emodel-generalisation/pull/41))
 - 0.2.7 (Alexis Arnaudon - [#39](https://github.com/BlueBrain/emodel-generalisation/pull/39))
 - Release 0.2.6 (Alexis Arnaudon - [#37](https://github.com/BlueBrain/emodel-generalisation/pull/37))
 
