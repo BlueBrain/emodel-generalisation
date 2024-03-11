@@ -1091,7 +1091,6 @@ class GenerateMoreModels(WorkflowTask):
         exemplar_data = yaml.safe_load(self.input()["exemplar"].open())
 
         for mtype in exemplar_data["paths"].keys():
-            print(mtype)
             if mtype != "all":
                 target_rhos = {"rho": {}, "rho_axon": {}}
                 if self.with_parameter_model:

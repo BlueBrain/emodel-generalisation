@@ -468,7 +468,7 @@ def _define_holding_protocol(
             name="SearchHoldingCurrent",
             location=soma_loc if not ais_recording else ais_loc,
             target_voltage=target_voltage,
-            strict_bounds=strict_bounds,
+            strict_bounds=True,#strict_bounds,
             max_depth=max_depth,
             stimulus_duration=stimulus_duration,
         )
@@ -1211,9 +1211,9 @@ class FitnessCalculatorConfiguration:
         if "extra_recordings" in protocol:
             for protocol_def in protocol["extra_recordings"]:
                 recordings.append(protocol_def)
-                protocol_def[
-                    "name"
-                ] = f"{protocol_name}.{protocol_def['name']}.{protocol_def['var']}"
+                protocol_def["name"] = (
+                    f"{protocol_name}.{protocol_def['name']}.{protocol_def['var']}"
+                )
 
         stimulus = deepcopy(protocol["stimuli"]["step"])
         if "holding" in protocol["stimuli"]:
@@ -1510,7 +1510,7 @@ def _define_threshold_based_main_protocol(
     efeatures = _define_efeatures(
         fitness_calculator_configuration, include_validation_protocols, protocols, efel_settings
     )
-
+    strict_holding_bounds = True
     # Create the special protocols
     protocols.update(
         {
@@ -1806,11 +1806,9 @@ def _single_feature_evaluation(
             ]:
                 evaluator.fitness_protocols["main_protocol"].protocols.pop(prot)
 
-                evaluator.fitness_protocols[
-                    "main_protocol"
-                ].execution_order = evaluator.fitness_protocols[
-                    "main_protocol"
-                ].compute_execution_order()
+                evaluator.fitness_protocols["main_protocol"].execution_order = (
+                    evaluator.fitness_protocols["main_protocol"].compute_execution_order()
+                )
 
     evaluator.cell_model.unfreeze(params)
     responses = evaluator.run_protocols(evaluator.fitness_protocols.values(), params)
