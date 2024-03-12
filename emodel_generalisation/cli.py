@@ -411,8 +411,14 @@ def evaluate(
         )
 
     if with_model_management:
-        exemplar_df = pd.DataFrame()
-        for gid, emodel in enumerate(cells_df.emodel.unique()):
+        exemplar_df = pd.DataFrame(
+            {
+                "emodel": pd.Series(dtype=str),
+                "path": pd.Series(dtype=str),
+                "name": pd.Series(dtype=str),
+            }
+        )
+        for gid, emodel in enumerate(cells_df.emodel.unique):
             morph = access_point.get_morphologies(emodel)
             exemplar_df.loc[gid, "emodel"] = emodel
             exemplar_df.loc[gid, "path"] = morph["path"]
@@ -628,7 +634,17 @@ def adapt(
 
     L.info("Extracting exemplar data...")
 
-    exemplar_df = pd.DataFrame()
+    exemplar_df = pd.DataFrame(
+        {
+            "emodel": pd.Series(dtype=str),
+            "path": pd.Series(dtype=str),
+            "name": pd.Series(dtype=str),
+            "ais_model": pd.Series(dtype=str),
+            "soma_model": pd.Series(dtype=str),
+            "soma_scaler": pd.Series(dtype=float),
+            "ais_scaler": pd.Series(dtype=float),
+        }
+    )
     for gid, emodel in enumerate(cells_df.emodel.unique()):
         if emodel != "no_emodel":
             morph = access_point.get_morphologies(emodel)

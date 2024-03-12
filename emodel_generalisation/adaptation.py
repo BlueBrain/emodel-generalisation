@@ -71,13 +71,10 @@ def build_resistance_models(
     """Build resistance model of AIS/soma."""
     scales = get_scales(scales_params)
 
-    df = pd.DataFrame()
-    i = 0
-    for emodel in emodels:
-        for scale in scales:
-            df.loc[i, "emodel"] = emodel
-            df.loc[i, f"{key}_scaler"] = scale
-            i += 1
+    df = pd.DataFrame(
+        [(emodel, scale) for emodel in emodels for scale in scales],
+        columns=["emodel", f"{key}_scaler"],
+    )
     df["path"] = exemplar_data["paths"]["all"]
     df[f"{key}_model"] = json.dumps(exemplar_data[key])
 
