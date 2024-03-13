@@ -43,7 +43,7 @@ reqs = [
     "xgboost>=1.7.5,<2",
     "pyyaml>=6",
     "datareuse>=0.0.3",
-    "bluepyparallel>=0.2.1",
+    "bluepyparallel>=0.2.2",
     "bluecellulab>=1.7.6,<=2.3.1",
     "voxcell>=3.1.5",
     "efel>=5.5.5",

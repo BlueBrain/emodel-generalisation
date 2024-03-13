@@ -1,5 +1,7 @@
 """Compute the threshold and holding current using bluecellulab, adapted from BluePyThresh."""
+
 import logging
+import os
 from copy import copy
 from multiprocessing.context import TimeoutError  # pylint: disable=redefined-builtin
 from pathlib import Path
@@ -325,4 +327,5 @@ def evaluate_currents(
             "timeout": timeout,
             "only_rin": only_rin,
         },
+        progress_bar=os.environ.get("NO_PROGRESS", False),
     )
