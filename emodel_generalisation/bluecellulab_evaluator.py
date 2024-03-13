@@ -1,7 +1,7 @@
 """Compute the threshold and holding current using bluecellulab, adapted from BluePyThresh."""
 
-import os
 import logging
+import os
 from copy import copy
 from multiprocessing.context import TimeoutError  # pylint: disable=redefined-builtin
 from pathlib import Path
