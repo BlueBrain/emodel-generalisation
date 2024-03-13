@@ -113,7 +113,8 @@ class eFELFeatureBPEM(eFELFeature):
 
         if feature_value is None:
             return self.max_score
-
+        if self.efel_feature_name == "peak_voltage":
+            print(feature_value, self.exp_mean, self.exp_std)
         return abs(feature_value - self.exp_mean) / self.exp_std
 
     def _construct_efel_trace(self, responses):
