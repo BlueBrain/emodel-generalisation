@@ -1,8 +1,8 @@
 # Changelog
 
-## [0.2.9](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.9)
+## [0.2.10](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.10)
 
-> 11 March 2024
+> 13 March 2024
 
 ### New Features
 
@@ -11,12 +11,15 @@
 
 ### Fixes
 
+- Fix NO_PROGRESS (Alexis Arnaudon - [#47](https://github.com/BlueBrain/emodel-generalisation/pull/47))
 - More fixing (Alexis Arnaudon - [#40](https://github.com/BlueBrain/emodel-generalisation/pull/40))
 - One more params/parameters (Alexis Arnaudon - [#38](https://github.com/BlueBrain/emodel-generalisation/pull/38))
 - Make sure param in final works (Alexis Arnaudon - [#36](https://github.com/BlueBrain/emodel-generalisation/pull/36))
 
 ### General Changes
 
+- Fix dataframe dtype assignment warnings (Eleftherios Zisis - [#46](https://github.com/BlueBrain/emodel-generalisation/pull/46))
+- 0.2.9 (Alexis Arnaudon - [#45](https://github.com/BlueBrain/emodel-generalisation/pull/45))
 - 0.2.8 (Alexis Arnaudon - [#41](https://github.com/BlueBrain/emodel-generalisation/pull/41))
 - 0.2.7 (Alexis Arnaudon - [#39](https://github.com/BlueBrain/emodel-generalisation/pull/39))
 - Release 0.2.6 (Alexis Arnaudon - [#37](https://github.com/BlueBrain/emodel-generalisation/pull/37))
