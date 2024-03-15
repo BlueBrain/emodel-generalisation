@@ -616,6 +616,7 @@ class ReboundBurst(BPEMProtocol):
             target_voltage=target_voltage,
             stimulus_duration=2000.0,
             max_depth=max_depth,
+            depth_strict=True,
         )
         if self.stimulus.holding_current is not None:
             hold_prot.stimulus.delay = 1000
@@ -624,6 +625,9 @@ class ReboundBurst(BPEMProtocol):
         return hold_prot.run(cell_model, param_values, sim, isolate, timeout, responses)[
             "bpo_holding_current"
         ]
+
+    def return_none_responses(self):
+        return {k.name: None for k in self.recordings}
 
     def run(
         self, cell_model, param_values=None, sim=None, isolate=None, timeout=None, responses=None
@@ -642,6 +646,9 @@ class ReboundBurst(BPEMProtocol):
                 max_depth=20,
             )
 
+            if self.stimulus.holding_current is None:
+                return self.return_none_responses()
+
         if self.stimulus.amp_voltage is not None:
             self.stimulus.amp = self.get_holding_current_from_voltage(
                 self.stimulus.amp_voltage,
@@ -653,6 +660,10 @@ class ReboundBurst(BPEMProtocol):
                 responses,
                 max_depth=10,
             )
+
+            if self.stimulus.amp is None:
+                return self.return_none_responses()
+
         return BPEMProtocol.run(self, cell_model, param_values, sim, isolate, timeout, responses)
 
 
@@ -838,6 +849,7 @@ class SearchHoldingCurrent(BPEMProtocol):
         strict_bounds=True,
         max_depth=7,
         no_spikes=True,
+        depth_strict=False,
     ):
         """Constructor
 
@@ -887,6 +899,7 @@ class SearchHoldingCurrent(BPEMProtocol):
         self.lower_bound = lower_bound
         self.strict_bounds = strict_bounds
         self.no_spikes = no_spikes
+        self.depth_strict = depth_strict
 
         self.target_voltage = target_voltage
         self.holding_voltage = self.target_voltage.exp_mean
@@ -912,7 +925,6 @@ class SearchHoldingCurrent(BPEMProtocol):
         self, holding_current, cell_model, param_values, sim, isolate, timeout=None
     ):
         """Calculate voltage base for a certain holding current"""
-
         self.stimuli[0].amp = holding_current
         response = BPEMProtocol.run(
             self, cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
@@ -1020,6 +1032,8 @@ class SearchHoldingCurrent(BPEMProtocol):
                 "Exiting search due to reaching max_depth. The required voltage precision "
                 "was not reached."
             )
+            if self.depth_strict:
+                return None
             return lower_bound
 
         if voltage is not None and abs(voltage - self.holding_voltage) < self.voltage_precision:
