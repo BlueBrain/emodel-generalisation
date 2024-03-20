@@ -1,4 +1,5 @@
 """Compute the threshold and holding current using bluecellulab, adapted from BluePyThresh."""
+
 import logging
 from copy import copy
 from multiprocessing.context import TimeoutError  # pylint: disable=redefined-builtin
@@ -93,17 +94,15 @@ def calculate_threshold_current(cell, config, holding_current):
     )
 
 
-def binsearch_threshold_current(cell, config, holding_current, min_current, max_current):
+def binsearch_threshold_current(cell, config, holding_current, min_current, max_current, depth=0):
     """Binary search for threshold currents"""
     mid_current = (min_current + max_current) / 2
 
     if abs(max_current - min_current) < config["threshold_current_precision"]:
-        spike_count = run_spike_sim(
-            cell,
-            config,
-            holding_current,
-            max_current,
-        )
+        return max_current
+
+    if depth > config.get("max_depth", 20):
+        logger.info('Max depth reached, returning %s', max_current)
         return max_current
 
     spike_count = run_spike_sim(
@@ -113,9 +112,13 @@ def binsearch_threshold_current(cell, config, holding_current, min_current, max_
         mid_current,
     )
     if spike_count == 0:
-        return binsearch_threshold_current(cell, config, holding_current, mid_current, max_current)
+        return binsearch_threshold_current(
+            cell, config, holding_current, mid_current, max_current, depth=depth + 1
+        )
 
-    return binsearch_threshold_current(cell, config, holding_current, min_current, mid_current)
+    return binsearch_threshold_current(
+        cell, config, holding_current, min_current, mid_current, depth=depth + 1
+    )
 
 
 def run_spike_sim(cell, config, holding_current, step_current):

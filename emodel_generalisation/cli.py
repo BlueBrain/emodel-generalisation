@@ -418,7 +418,7 @@ def evaluate(
                 "name": pd.Series(dtype=str),
             }
         )
-        for gid, emodel in enumerate(cells_df.emodel.unique):
+        for gid, emodel in enumerate(cells_df.emodel.unique()):
             morph = access_point.get_morphologies(emodel)
             exemplar_df.loc[gid, "emodel"] = emodel
             exemplar_df.loc[gid, "path"] = morph["path"]
