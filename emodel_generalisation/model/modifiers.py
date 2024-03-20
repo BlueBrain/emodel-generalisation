@@ -398,7 +398,12 @@ def replace_axon_justAIS(sim=None, icell=None, diam=1.0, L_target=45):
 def get_replace_axon_hoc(params):
     """Get replace_axon hoc string."""
     return """
-    proc replace_axon(){ local nSec, count, area, ais_scale, soma_scale localobj diams
+    proc replace_axon(){ local nSec, i1, i2, i3, count, area, ais_scale, soma_scale localobj diams
+
+        access axon[0]
+        axon[0] i1 = v(0.0001) // used when serializing sections prior to sim start
+        axon[1] i2 = v(0.0001) // used when serializing sections prior to sim start
+        axon[2] i3 = v(0.0001) // used when serializing sections prior to sim start
 
         L_target = 60  // length of stub axon
         nseg0 = 5  // number of segments for each of the two axon sections
@@ -455,6 +460,13 @@ def get_replace_axon_hoc(params):
 
             all.append()
             axonal.append()
+
+            if (i == 0) {
+                v(0.0001) = i1
+            } else {
+                v(0.0001) = i2
+            }
+
         }
 
         nSecAxonal = 2
@@ -466,6 +478,7 @@ def get_replace_axon_hoc(params):
                 L = 1000
                 diam = diams.x[count-1]
                 nseg = 5
+                v(0.0001) = i3
                 all.append()
                 myelinated.append()
         }
