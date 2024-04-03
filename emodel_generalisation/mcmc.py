@@ -46,7 +46,8 @@ from emodel_generalisation import PARAM_LABELS
 from emodel_generalisation.information import mi_gaussian
 from emodel_generalisation.information import rsi_gaussian
 from emodel_generalisation.model.access_point import AccessPoint
-from emodel_generalisation.model.evaluation import get_evaluator_from_access_point
+from emodel_generalisation.model.evaluation import create_cell_model
+from emodel_generalisation.model.evaluation import single_feature_evaluation
 from emodel_generalisation.utils import cluster_matrix
 
 # pylint: disable=too-many-lines,too-many-locals
@@ -98,14 +99,23 @@ class MarkovChain:
         self.access_point = access_point
 
         self._evaluator = None
-        evaluator = self.get_evaluator()
-        self.param_names = [param.name for param in evaluator.params if not param.frozen]
+
+        cell_model = create_cell_model(
+            name=self.emodel,
+            model_configuration=self.access_point.get_configuration(self.emodel),
+            morph_modifiers=access_point.get_settings(emodel).get("morph_modifiers", None),
+        )
+        self.param_names = [param.name for param in cell_model.params.values() if not param.frozen]
 
         self.lbounds = {
-            param.name: param.lower_bound for param in evaluator.params if not param.frozen
+            param.name: param.lower_bound
+            for param in cell_model.params.values()
+            if not param.frozen
         }
         self.ubounds = {
-            param.name: param.upper_bound for param in evaluator.params if not param.frozen
+            param.name: param.upper_bound
+            for param in cell_model.params.values()
+            if not param.frozen
         }
         self.bounds = {
             "center": {p: 0.5 * (self.ubounds[p] + self.lbounds[p]) for p in self.param_names},
@@ -124,7 +134,8 @@ class MarkovChain:
             p: v for p, v in self.initial_parameters.items() if p in self.param_names
         }
 
-        self.feature_names = [obj.name for obj in evaluator.fitness_calculator.objectives]
+        fitness_calculator_configuration = access_point.get_calculator_configuration(self.emodel)
+        self.feature_names = [obj.name for obj in fitness_calculator_configuration.efeatures]
 
         _cols = [("parameters", param) for param in self.param_names]
         _cols += [("normalized_parameters", param) for param in self.param_names]
@@ -159,33 +170,6 @@ class MarkovChain:
         normed_params = {p: np.random.uniform(-1.0, 1.0) for p in self.param_names}
         return self._un_normalize_parameters(normed_params)
 
-    def get_evaluator(self):
-        """Get the evaluator.
-
-        We do this so that we don't have to unfreeze params if the evaluation crashes neuron.
-        """
-        self.access_point.settings = self.access_point.get_settings(self.emodel)
-
-        evaluator = get_evaluator_from_access_point(
-            self.emodel,
-            self.access_point,
-            stochasticity=self.stochasticity,
-            timeout=1e10,
-        )
-
-        # unfreeze all to be sure
-        for i, _param in enumerate(evaluator.params):
-            evaluator.params[i].unfreeze()
-
-        # freeze params if any in frozen_params
-        if self.frozen_params is not None:
-            for f_param in self.frozen_params:
-                for i, _param in enumerate(evaluator.params):
-                    if _param.name == f_param:
-                        evaluator.params[i].freeze(self.frozen_params[f_param])
-
-        return evaluator
-
     def _un_normalize_parameters(self, parameters):
         return {
             p: v * self.bounds["width"][p] + self.bounds["center"][p] for p, v in parameters.items()
@@ -213,21 +197,13 @@ class MarkovChain:
         return {p: np.around(v, self.float_precision) for p, v in parameters.items()}
 
     def _evaluate(self, parameters):
-        """Run evaluation."""
-        evaluator = self.get_evaluator()
-        parameters = self._round_parameters(parameters)
-        responses = evaluator.run_protocols(evaluator.fitness_protocols.values(), parameters)
-        scores = evaluator.fitness_calculator.calculate_scores(responses)
-        values = evaluator.fitness_calculator.calculate_values(responses)
-
-        for f, val in values.items():
-            if isinstance(val, np.ndarray) and len(val) > 0:
-                try:
-                    values[f] = np.nanmean(val)
-                except (AttributeError, TypeError):
-                    values[f] = None
-            else:
-                values[f] = None
+        """Evaluate a model using internal evaluator."""
+        data = single_feature_evaluation(
+            {"emodel": self.emodel, "new_parameters": json.dumps(parameters)},
+            access_point=self.access_point,
+        )
+        scores = json.loads(data["scores"])
+        values = json.loads(data["features"])
 
         cost = eval(self.cost_type)(self.weights.get(f, 1.0) * scores[f] for f in scores)
         probability = self._probability_distribution(cost)
@@ -316,7 +292,6 @@ class MarkovChain:
             file=self.csv_file,
             flush=True,
         )
-        # self.result_df.to_csv(self.result_df_path, index=False)
 
     def run(self, depth=0):
         """Run the MCMC."""

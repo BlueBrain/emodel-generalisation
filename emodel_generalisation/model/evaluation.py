@@ -1788,10 +1788,17 @@ def _single_feature_evaluation(
         timeout=10000,
         record_ions_and_currents=record_ions_and_currents,
     )
-    if "params" in access_point.final[combo["emodel"]]:
-        params = access_point.final[combo["emodel"]]["params"]
+    if combo["emodel"] in access_point.final:
+        if "params" in access_point.final[combo["emodel"]]:
+            params = access_point.final[combo["emodel"]]["params"]
+        else:
+            params = access_point.final[combo["emodel"]]["parameters"]
     else:
-        params = access_point.final[combo["emodel"]]["parameters"]
+        if "new_parameters" not in combo:
+            raise ValueError(
+                "No entry found in final, and no new_parameters in combo, we stop here"
+            )
+        params = {}
 
     if "new_parameters" in combo:
         params.update(json.loads(combo["new_parameters"]))
