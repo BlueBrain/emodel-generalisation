@@ -7,6 +7,7 @@ from multiprocessing.context import TimeoutError  # pylint: disable=redefined-bu
 from pathlib import Path
 
 import bluecellulab
+from bluecellulab.simulation.neuron_globals import NeuronGlobals
 import efel
 from bluepyparallel.evaluator import evaluate
 from bluepyparallel.parallel import NestedPool
@@ -129,10 +130,12 @@ def run_spike_sim(cell, config, holding_current, step_current):
         cell.add_recordings(["neuron.h._ref_t", AXON_LOC], dt=cell.record_dt)
 
     sim = bluecellulab.Simulation()
+    ng = NeuronGlobals.get_instance()
+    ng.v_init = config["v_init"]
+
     sim.run(
         config["step_stop"],
         celsius=config["celsius"],
-        v_init=config["v_init"],
         cvode=config.get("deterministic", True),
         dt=config.get("dt", 0.025),
     )
