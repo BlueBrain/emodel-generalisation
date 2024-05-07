@@ -7,8 +7,8 @@ from multiprocessing.context import TimeoutError  # pylint: disable=redefined-bu
 from pathlib import Path
 
 import bluecellulab
-from bluecellulab.simulation.neuron_globals import NeuronGlobals
 import efel
+from bluecellulab.simulation.neuron_globals import NeuronGlobals
 from bluepyparallel.evaluator import evaluate
 from bluepyparallel.parallel import NestedPool
 
