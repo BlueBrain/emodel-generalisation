@@ -681,6 +681,7 @@ def save_selected_emodels(df, emodel_ids, emodel="cADpyr_L5TPC", final_path="sel
         final[_emodel]["params"] = params.to_dict()
         final[_emodel]["score"] = float(df.loc[gid, "cost"].to_list()[0])
         final[_emodel]["fitness"] = df.loc[gid, "scores"].to_dict()
+        final[_emodel]["features"] = df.loc[gid, "features"].to_dict()
         final[_emodel]["emodel"] = _emodel
     with open(final_path, "w") as f:
         json.dump(final, f, indent=4)
@@ -1095,6 +1096,7 @@ def plot_corner(
     fig = plt.figure(figsize=(5 + 0.5 * n_params, 5 + 0.5 * n_params))
     gs = fig.add_gridspec(n_params, n_params, hspace=0.1, wspace=0.1)
     im = None
+    # pylint: disable=too-many-nested-blocks
     for i, param1 in enumerate(params):
         _param1 = PARAM_LABELS.get(param1, param1)
         for j, param2 in enumerate(params):
@@ -1114,13 +1116,20 @@ def plot_corner(
                     ax, m[i][j], vmin, vmax, rev=feature is not None, cmap=cmap, normalize=normalize
                 )
                 if highlights is not None:
-                    for _i, _ in zip(*highlights):
+                    if isinstance(highlights, pd.DataFrame):
                         plt.scatter(
-                            df.loc[_i, ("normalized_parameters", param2)],
-                            df.loc[_i, ("normalized_parameters", param1)],
-                            c="g",
-                            s=50,
+                            highlights.loc[:, ("normalized_parameters", param2)],
+                            highlights.loc[:, ("normalized_parameters", param1)],
+                            c=highlights.loc[:, "color"],
                         )
+                    else:
+                        for _i, _ in zip(*highlights):
+                            plt.scatter(
+                                df.loc[_i, ("normalized_parameters", param2)],
+                                df.loc[_i, ("normalized_parameters", param1)],
+                                c="k",
+                                s=50,
+                            )
                 ax.set_xlim(-1, 1)
                 ax.set_ylim(-1, 1)
             else:

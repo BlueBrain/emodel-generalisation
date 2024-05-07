@@ -44,12 +44,13 @@ reqs = [
     "pyyaml>=6",
     "datareuse>=0.0.3",
     "bluepyparallel>=0.2.2",
-    "bluecellulab>=1.7.6,<=2.3.1",
+    "bluecellulab>=2.6.11",
     "voxcell>=3.1.5",
     "efel>=5.5.5",
 ]
 
 doc_reqs = [
+    "docutils<0.21",  # Temporary fix for m2r2
     "m2r2",
     "sphinx",
     "sphinx-bluebrain-theme",

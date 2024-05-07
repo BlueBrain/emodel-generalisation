@@ -20,6 +20,7 @@ from morphio import Morphology
 from tqdm import tqdm
 from voxcell import CellCollection
 
+from emodel_generalisation import load_mechanisms
 from emodel_generalisation.adaptation import adapt_soma_ais
 from emodel_generalisation.adaptation import build_all_resistance_models
 from emodel_generalisation.bluecellulab_evaluator import evaluate_currents
@@ -118,6 +119,7 @@ def cli(verbose, no_progress):
 @click.option("--sql-tmp-path", default=None, type=str)
 @click.option("--debug-csv-path", default=None, type=str)
 @click.option("--only-rin", is_flag=True)
+@click.option("--mech-path", default=None, type=str)
 def compute_currents(
     input_path,
     population_name,
@@ -130,6 +132,7 @@ def compute_currents(
     sql_tmp_path,
     debug_csv_path,
     only_rin,
+    mech_path,
 ):
     """For each cell, compute the holding, thresholds currents as well as Rin/RMP.
 
@@ -147,6 +150,7 @@ def compute_currents(
     if resume and sql_tmp_path is not None:
         raise Exception("If --sql-tmp-path is not set, --resume cannot work")
 
+    load_mechanisms(mech_path)
     parallel_factory = init_parallel_factory(parallel_lib)
     cells_df, input_cells = _load_circuit(input_path, morphology_path, population_name)
 
@@ -335,6 +339,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--validation-path", default="analysis_plot", type=str)
 @click.option("--with-model-management", is_flag=True)
 @click.option("--evaluate-all", is_flag=True)
+@click.option("--mech-path", default=None, type=str)
 def evaluate(
     input_path,
     population_name,
@@ -354,8 +359,10 @@ def evaluate(
     validation_path,
     with_model_management,
     evaluate_all,
+    mech_path,
 ):
     """Evaluate models from a circuit."""
+    load_mechanisms(mech_path)
     parallel_factory = init_parallel_factory(parallel_lib)
     access_point = _get_access_point(
         config_path, final_path, legacy, local_config=local_config_path
@@ -593,6 +600,7 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
 @click.option("--sql-tmp-path", default=None, type=str)
 @click.option("--min-scale", default=0.8, type=float)
 @click.option("--max-scale", default=1.2, type=float)
+@click.option("--mech-path", default=None, type=str)
 def adapt(
     input_node_path,
     population_name,
@@ -609,6 +617,7 @@ def adapt(
     sql_tmp_path,
     min_scale,
     max_scale,
+    mech_path,
 ):
     """Adapt cells from a circuit with rho factors.
 
@@ -622,6 +631,7 @@ def adapt(
         5. save circuit with @dynamics:AIS_scaler and @dynamics:soma_scaler entries
         6. create hoc files with corresponding replace_axon
     """
+    load_mechanisms(mech_path)
     parallel_factory = init_parallel_factory(parallel_lib)
     access_point = _get_access_point(
         config_path, final_path, legacy, local_config=local_config_path

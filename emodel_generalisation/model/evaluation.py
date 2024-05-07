@@ -871,6 +871,7 @@ class EFeatureConfiguration:
         std=None,
         sample_size=None,
         default_std_value=1e-3,
+        weight=1.0,  # pylint: disable=unused-argument
     ):
         """Init.
 
@@ -1788,7 +1789,7 @@ def _single_feature_evaluation(
         timeout=10000,
         record_ions_and_currents=record_ions_and_currents,
     )
-    if combo["emodel"] in access_point.final:
+    if access_point.final is not None and combo["emodel"] in access_point.final:
         if "params" in access_point.final[combo["emodel"]]:
             params = access_point.final[combo["emodel"]]["params"]
         else:
@@ -1929,7 +1930,7 @@ def feature_evaluation(
             resume=resume,
             parallel_factory=parallel_factory,
             db_url=db_url,
-            progress_bar=os.environ.get("NO_PROGRESS", False),
+            progress_bar=not os.environ.get("NO_PROGRESS", False),
         )
         .sort_values(by="index")
         .set_index("index")
@@ -2041,7 +2042,7 @@ def evaluate_rin_no_soma(
         resume=resume,
         parallel_factory=parallel_factory,
         db_url=db_url,
-        progress_bar=os.environ.get("NO_PROGRESS", False),
+        progress_bar=not os.environ.get("NO_PROGRESS", False),
     )
 
 
@@ -2084,7 +2085,7 @@ def evaluate_soma_rin(
         resume=resume,
         parallel_factory=parallel_factory,
         db_url=db_url,
-        progress_bar=os.environ.get("NO_PROGRESS", False),
+        progress_bar=not os.environ.get("NO_PROGRESS", False),
     )
 
 
@@ -2127,7 +2128,7 @@ def evaluate_ais_rin(
         resume=resume,
         parallel_factory=parallel_factory,
         db_url=db_url,
-        progress_bar=os.environ.get("NO_PROGRESS", False),
+        progress_bar=not os.environ.get("NO_PROGRESS", False),
     )
 
 
@@ -2168,7 +2169,7 @@ def evaluate_somadend_rin(
         resume=resume,
         parallel_factory=parallel_factory,
         db_url=db_url,
-        progress_bar=os.environ.get("NO_PROGRESS", False),
+        progress_bar=not os.environ.get("NO_PROGRESS", False),
     )
 
 
