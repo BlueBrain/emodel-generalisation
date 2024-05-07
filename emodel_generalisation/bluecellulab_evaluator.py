@@ -132,10 +132,10 @@ def run_spike_sim(cell, config, holding_current, step_current):
     sim = bluecellulab.Simulation()
     ng = NeuronGlobals.get_instance()
     ng.v_init = config["v_init"]
+    ng.temperature = config["celsius"]
 
     sim.run(
         config["step_stop"],
-        celsius=config["celsius"],
         cvode=config.get("deterministic", True),
         dt=config.get("dt", 0.025),
     )
@@ -194,11 +194,14 @@ def calculate_rmp_and_rin(cell, config):
     )
     if config["rin"]["with_ttx"]:
         cell.enable_ttx()
+
     sim = bluecellulab.Simulation()
+    ng = NeuronGlobals.get_instance()
+    ng.v_init = config["v_init"]
+    ng.temperature = config["celsius"]
+
     sim.run(
         config["rin"]["step_stop"],
-        celsius=config["celsius"],
-        v_init=config["v_init"],
         cvode=config.get("deterministic", True),
         dt=config.get("dt", 0.025),
     )
@@ -236,12 +239,10 @@ def calculate_holding_current(cell, config):
     vclamp.amp1 = config["holding_voltage"]
 
     simulation = bluecellulab.Simulation()
-    simulation.run(
-        1000,
-        cvode=config.get("deterministic", True),
-        v_init=config["v_init"],
-        dt=config.get("dt", 0.025),
-    )
+    ng = NeuronGlobals.get_instance()
+    ng.v_init = config["v_init"]
+
+    simulation.run(1000, cvode=config.get("deterministic", True), dt=config.get("dt", 0.025))
 
     return vclamp.i
 
