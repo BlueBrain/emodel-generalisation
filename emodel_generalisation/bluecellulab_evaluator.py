@@ -327,5 +327,5 @@ def evaluate_currents(
             "timeout": timeout,
             "only_rin": only_rin,
         },
-        progress_bar=os.environ.get("NO_PROGRESS", False),
+        progress_bar=not os.environ.get("NO_PROGRESS", False),
     )

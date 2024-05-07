@@ -191,17 +191,18 @@ ALL_LABELS = PARAM_LABELS.copy()
 ALL_LABELS.update(FEATURE_LABELS_LONG)
 
 
-def load_mechanisms():
+def load_mechanisms(mech_path=None):
     """Load mechanisms if present in TMPDIR."""
-    _MOD_PATH = os.environ.get("EMODEL_GENERALISATION_MOD_LIBRARY_PATH", None)
-    if _MOD_PATH is not None:
+    if mech_path is None:
+        mech_path = os.environ.get("EMODEL_GENERALISATION_MOD_LIBRARY_PATH", None)
+    if mech_path is not None:
         try:
-            if (Path(_MOD_PATH) / "x86_64").exists():
-                if not neuron.load_mechanisms(_MOD_PATH):
+            if (Path(mech_path) / "x86_64").exists():
+                if not neuron.load_mechanisms(mech_path):
                     raise Exception("Could not load mod files")
-                logging.info("Mechanisms loaded from %s", _MOD_PATH)
+                logging.info("Mechanisms loaded from %s", mech_path)
         except Exception as exc:  # pylint: disable=broad-exception-caught
-            logging.debug("Could not load mod files from %s because of %s", _MOD_PATH, exc)
+            logging.debug("Could not load mod files from %s because of %s", mech_path, exc)
 
 
 _TMPDIR = os.environ.get("TMPDIR", False)
@@ -209,5 +210,3 @@ if _TMPDIR:
     os.environ["DASK_TEMPORARY_DIRECTORY"] = _TMPDIR
 
 os.environ["NEURON_MODULE_OPTIONS"] = "-nogui"
-
-load_mechanisms()
