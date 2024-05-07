@@ -1096,6 +1096,7 @@ def plot_corner(
     fig = plt.figure(figsize=(5 + 0.5 * n_params, 5 + 0.5 * n_params))
     gs = fig.add_gridspec(n_params, n_params, hspace=0.1, wspace=0.1)
     im = None
+    # pylint: disable=too-many-nested-blocks
     for i, param1 in enumerate(params):
         _param1 = PARAM_LABELS.get(param1, param1)
         for j, param2 in enumerate(params):

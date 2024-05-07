@@ -20,8 +20,8 @@ from morphio import Morphology
 from tqdm import tqdm
 from voxcell import CellCollection
 
-from emodel_generalisation.adaptation import adapt_soma_ais
 from emodel_generalisation import load_mechanisms
+from emodel_generalisation.adaptation import adapt_soma_ais
 from emodel_generalisation.adaptation import build_all_resistance_models
 from emodel_generalisation.bluecellulab_evaluator import evaluate_currents
 from emodel_generalisation.exemplars import extract_ais_diameters
@@ -359,6 +359,7 @@ def evaluate(
     validation_path,
     with_model_management,
     evaluate_all,
+    mech_path,
 ):
     """Evaluate models from a circuit."""
     load_mechanisms(mech_path)

@@ -871,7 +871,7 @@ class EFeatureConfiguration:
         std=None,
         sample_size=None,
         default_std_value=1e-3,
-        weight=1.0
+        weight=1.0,  # pylint: disable=unused-argument
     ):
         """Init.
 
