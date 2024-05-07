@@ -339,6 +339,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--validation-path", default="analysis_plot", type=str)
 @click.option("--with-model-management", is_flag=True)
 @click.option("--evaluate-all", is_flag=True)
+@click.option("--mech-path", default=None, type=str)
 def evaluate(
     input_path,
     population_name,
@@ -360,6 +361,7 @@ def evaluate(
     evaluate_all,
 ):
     """Evaluate models from a circuit."""
+    load_mechanisms(mech_path)
     parallel_factory = init_parallel_factory(parallel_lib)
     access_point = _get_access_point(
         config_path, final_path, legacy, local_config=local_config_path
