@@ -218,13 +218,21 @@ def calculate_rmp_and_rin(cell, config):
         "stim_end": [config["rin"]["step_stop"]],
         "stimulus_current": [config["rin"]["step_amp"]],
     }
-    features = efel.getFeatureValues([trace], ["voltage_base", "ohmic_input_resistance_vb_ssse"])[0]
-    rmp = None
+    features = efel.getFeatureValues(
+        [trace], ["spike_count", "voltage_base", "ohmic_input_resistance_vb_ssse"]
+    )[0]
+
+    rmp = 0
     if features["voltage_base"] is not None:
         rmp = features["voltage_base"][0]
-    rin = None
+
+    rin = -1.0
     if features["ohmic_input_resistance_vb_ssse"] is not None:
         rin = features["ohmic_input_resistance_vb_ssse"][0]
+
+    if features["spike_count"] > 0:
+        logger.warning("SPIKES!", rmp, rin)
+        return 0.0, -1.0
     return rmp, rin
 
 
@@ -289,12 +297,12 @@ def _isolated_current_evaluation(*args, **kwargs):
     res = isolate(_current_evaluation, timeout=timeout)(*args, **kwargs)
     if res is None:
         res = {
-            "resting_potential": None,
-            "input_resistance": None,
+            "resting_potential": 0.0,
+            "input_resistance": -1.0,
         }
         if not kwargs.get("only_rin", False):
-            res["holding_current"] = None
-            res["threshold_current"] = None
+            res["holding_current"] = 0.0
+            res["threshold_current"] = 0.0
 
     return res
 
