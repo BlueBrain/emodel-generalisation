@@ -133,7 +133,7 @@ class IDrest(BPEM_stimulus):
             location(Location): location of stimulus
         """
 
-        self.amp = kwargs.get("amp", None)
+        self.amp = kwargs.get("amp", 0.0)
         self.amp_rel = kwargs.get("thresh_perc", 200.0)
         self.amp_voltage = kwargs.get("amp_voltage", None)
 

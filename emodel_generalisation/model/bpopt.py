@@ -617,6 +617,7 @@ class ReboundBurst(BPEMProtocol):
             target_voltage=target_voltage,
             stimulus_duration=2000.0,
             max_depth=max_depth,
+            strict_bounds=False,
         )
         if self.stimulus.holding_current is not None:
             hold_prot.stimulus.delay = 1000
