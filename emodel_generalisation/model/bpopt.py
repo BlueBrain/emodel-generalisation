@@ -113,8 +113,6 @@ class eFELFeatureBPEM(eFELFeature):
 
         if feature_value is None:
             return self.max_score
-        if self.efel_feature_name == "peak_voltage":
-            print(feature_value, self.exp_mean, self.exp_std)
         return abs(feature_value - self.exp_mean) / self.exp_std
 
     def _construct_efel_trace(self, responses):
@@ -622,7 +620,6 @@ class ReboundBurst(BPEMProtocol):
         if self.stimulus.holding_current is not None:
             hold_prot.stimulus.delay = 1000
             hold_prot.stimulus.holding_current = self.stimulus.holding_current
-
         return hold_prot.run(cell_model, param_values, sim, isolate, timeout, responses)[
             "bpo_holding_current"
         ]
@@ -633,6 +630,7 @@ class ReboundBurst(BPEMProtocol):
         """Run protocol"""
 
         if self.stimulus.holding_voltage is not None:
+            self.stimulus.holding_current = None
             self.stimulus.holding_current = self.get_holding_current_from_voltage(
                 self.stimulus.holding_voltage,
                 cell_model,
@@ -901,11 +899,11 @@ class SearchHoldingCurrent(BPEMProtocol):
 
         # start/end are not used by this feature
         self.spike_feature = ephys.efeatures.eFELFeature(
-            name=f"{name}.Spikecount",
-            efel_feature_name="Spikecount",
+            name=f"{name}.spike_count_stimint",
+            efel_feature_name="spike_count_stimint",
             recording_names={"": f"{name}.{location.name}.v"},
-            stim_start=0,
-            stim_end=1000,
+            stim_start=500,  # discard begining to allow for a couple of initial APs
+            stim_end=2000,
             exp_mean=1,
             exp_std=0.1,
         )
