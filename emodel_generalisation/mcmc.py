@@ -52,8 +52,6 @@ from emodel_generalisation.utils import cluster_matrix
 
 # pylint: disable=too-many-lines,too-many-locals
 
-matplotlib.use("Agg")
-
 
 class MarkovChain:
     """Class to setup and run a markov chain on emodel parameter space."""

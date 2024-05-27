@@ -45,8 +45,6 @@ from emodel_generalisation.model.modifiers import remove_soma
 from emodel_generalisation.utils import FEATURE_FILTER
 from emodel_generalisation.utils import get_scores
 
-matplotlib.use("Agg")
-
 
 def get_scales(scales_params, with_unity=False):
     """Create scale array from parameters."""
