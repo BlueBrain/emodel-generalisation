@@ -340,6 +340,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--with-model-management", is_flag=True)
 @click.option("--evaluate-all", is_flag=True)
 @click.option("--mech-path", default=None, type=str)
+@click.option("--no-reuse", is_flag=True)
 def evaluate(
     input_path,
     population_name,
@@ -360,6 +361,7 @@ def evaluate(
     with_model_management,
     evaluate_all,
     mech_path,
+    no_reuse,
 ):
     """Evaluate models from a circuit."""
     load_mechanisms(mech_path)
@@ -407,7 +409,7 @@ def evaluate(
             L.info("Nothing to compute, only placeholder models found.")
             return
 
-    with Reuse(output_path, index=False) as reuse:
+    with Reuse(output_path, index=False, disable=no_reuse) as reuse:
         cells_df = reuse(
             feature_evaluation,
             cells_df,
@@ -431,7 +433,9 @@ def evaluate(
             exemplar_df.loc[gid, "path"] = morph["path"]
             exemplar_df.loc[gid, "name"] = morph["name"]
 
-        with Reuse(str(Path(output_path).with_suffix("")) + "_exemplar.csv") as reuse:
+        with Reuse(
+            str(Path(output_path).with_suffix("")) + "_exemplar.csv", disable=no_reuse
+        ) as reuse:
             exemplar_df = reuse(
                 feature_evaluation,
                 exemplar_df,
@@ -601,6 +605,7 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
 @click.option("--min-scale", default=0.8, type=float)
 @click.option("--max-scale", default=1.2, type=float)
 @click.option("--mech-path", default=None, type=str)
+@click.option("--no-reuse", is_flag=True)
 def adapt(
     input_node_path,
     population_name,
@@ -618,6 +623,7 @@ def adapt(
     min_scale,
     max_scale,
     mech_path,
+    no_reuse,
 ):
     """Adapt cells from a circuit with rho factors.
 
@@ -697,7 +703,7 @@ def adapt(
 
         return dict(exemplar_data)
 
-    with Reuse(local_dir / "exemplar_data.yaml") as reuse:
+    with Reuse(local_dir / "exemplar_data.yaml", disable=no_reuse) as reuse:
         exemplar_data = reuse(_get_exemplar_data, exemplar_df)
 
     L.info("Compute exemplar rho factors...")
@@ -714,7 +720,7 @@ def adapt(
     n_placeholders = len(cells_df.emodel.unique()) - len(placeholder_mask)
     n_emodels = len(exemplar_df)
     L.info("We found %s placeholders models out of %s models.", n_placeholders, n_emodels)
-    with Reuse(local_dir / "exemplar_rho.csv", index=False) as reuse:
+    with Reuse(local_dir / "exemplar_rho.csv", index=False, disable=no_reuse) as reuse:
         data = reuse(
             evaluate_rho,
             exemplar_df.loc[placeholder_mask],
@@ -728,7 +734,7 @@ def adapt(
                 exemplar_df[col] = None
             exemplar_df.loc[placeholder_mask, col] = data[col].to_list()
 
-    with Reuse(local_dir / "exemplar_rho_axon.csv", index=False) as reuse:
+    with Reuse(local_dir / "exemplar_rho_axon.csv", index=False, disable=no_reuse) as reuse:
         data = reuse(
             evaluate_rho_axon,
             exemplar_df.loc[placeholder_mask],
@@ -754,7 +760,7 @@ def adapt(
             )
         return models
 
-    with Reuse(local_dir / "resistance_models.yaml") as reuse:
+    with Reuse(local_dir / "resistance_models.yaml", disable=no_reuse) as reuse:
         resistance_models = reuse(
             _get_resistance_models, exemplar_df.loc[placeholder_mask], exemplar_data, scales_params
         )
@@ -805,7 +811,7 @@ def adapt(
 
         return cells_df
 
-    with Reuse(local_dir / "adapt_df.csv") as reuse:
+    with Reuse(local_dir / "adapt_df.csv", disable=no_reuse) as reuse:
         cells_df = reuse(_adapt)
 
     # finally save a node.h5 file
