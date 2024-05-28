@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable=fixme,invalid-name,len-as-condition,no-else-return,eval-used,unspecified-encoding,empty-docstring,broad-exception-raised,wrong-import-position,pointless-string-statement
+disable=fixme,invalid-name,len-as-condition,no-else-return,eval-used,unspecified-encoding,empty-docstring,broad-exception-raised,wrong-import-position,pointless-string-statement,possibly-used-before-assignment
 
 [FORMAT]
 # Regexp for a line that is allowed to be longer than the limit.
