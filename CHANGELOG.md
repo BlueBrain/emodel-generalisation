@@ -1,16 +1,19 @@
 # Changelog
 
-## [0.2.10](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.10)
+## [0.2.11](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.11)
 
-> 13 March 2024
+> 28 May 2024
 
 ### New Features
 
+- --no-reuse in cli (Alexis Arnaudon - [#52](https://github.com/BlueBrain/emodel-generalisation/pull/52))
 - Migrate to simplified emodel recipe (Eleftherios Zisis - [#44](https://github.com/BlueBrain/emodel-generalisation/pull/44))
 - Use BluePyParallel (Alexis Arnaudon - [#42](https://github.com/BlueBrain/emodel-generalisation/pull/42))
 
 ### Fixes
 
+- Better handling of mechanism loading in cli (Alexis Arnaudon - [#50](https://github.com/BlueBrain/emodel-generalisation/pull/50))
+- Use main evaluator in mcmc for consistency (Alexis Arnaudon - [#49](https://github.com/BlueBrain/emodel-generalisation/pull/49))
 - Fix NO_PROGRESS (Alexis Arnaudon - [#47](https://github.com/BlueBrain/emodel-generalisation/pull/47))
 - More fixing (Alexis Arnaudon - [#40](https://github.com/BlueBrain/emodel-generalisation/pull/40))
 - One more params/parameters (Alexis Arnaudon - [#38](https://github.com/BlueBrain/emodel-generalisation/pull/38))
@@ -18,6 +21,7 @@
 
 ### General Changes
 
+- 0.2.10 (Alexis Arnaudon - [#48](https://github.com/BlueBrain/emodel-generalisation/pull/48))
 - Fix dataframe dtype assignment warnings (Eleftherios Zisis - [#46](https://github.com/BlueBrain/emodel-generalisation/pull/46))
 - 0.2.9 (Alexis Arnaudon - [#45](https://github.com/BlueBrain/emodel-generalisation/pull/45))
 - 0.2.8 (Alexis Arnaudon - [#41](https://github.com/BlueBrain/emodel-generalisation/pull/41))
