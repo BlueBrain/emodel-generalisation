@@ -153,6 +153,9 @@ def compute_currents(
     load_mechanisms(mech_path)
     parallel_factory = init_parallel_factory(parallel_lib)
     cells_df, input_cells = _load_circuit(input_path, morphology_path, population_name)
+    cells_df = cells_df.loc[96577:96578]
+    #cells_df = cells_df[cells_df.emodel == "cADpyr_L2IPC"]
+    cells_df = cells_df.head(1)
 
     if protocol_config_path is not None:
         with open(protocol_config_path, "r") as prot_file:
