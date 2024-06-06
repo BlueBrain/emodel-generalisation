@@ -188,10 +188,11 @@ def set_cell_deterministic(cell, deterministic):
 
 def calculate_rmp_and_rin(cell, config):
     """Calculate rmp and input resistance from rmp."""
-    cell.add_step(0, config["rin"]["step_stop"], 0)
-    cell.add_step(
-        config["rin"]["step_start"], config["rin"]["step_stop"], config["rin"]["step_amp"]
-    )
+    cell.add_step(200, 1800, 0.4)
+    #cell.add_step(0, config["rin"]["step_stop"], 0)
+    #cell.add_step(
+    #    config["rin"]["step_start"], config["rin"]["step_stop"], 0.01,#config["rin"]["step_amp"]
+    #)
     if config["rin"]["with_ttx"]:
         cell.enable_ttx()
 
@@ -199,15 +200,23 @@ def calculate_rmp_and_rin(cell, config):
     ng = NeuronGlobals.get_instance()
     ng.v_init = config["v_init"]
     ng.temperature = config["celsius"]
+    cell.add_recording("self.soma(0.5)._ref_nai")
 
     sim.run(
-        config["rin"]["step_stop"],
+        2000,#config["rin"]["step_stop"],
         cvode=config.get("deterministic", True),
         dt=config.get("dt", 0.025),
     )
 
     time = cell.get_time()
     voltage = cell.get_soma_voltage()
+    na = cell.get_recording("self.soma(0.5)._ref_nai")
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.plot(time, voltage)
+    plt.twinx()
+    plt.plot(time, na, c='r')
+    plt.savefig('test.pdf')
 
     efel.reset()
     efel.setIntSetting("strict_stiminterval", True)
