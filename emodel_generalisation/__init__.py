@@ -195,12 +195,21 @@ def load_mechanisms(mech_path=None):
     """Load mechanisms if present in TMPDIR."""
     if mech_path is None:
         mech_path = os.environ.get("EMODEL_GENERALISATION_MOD_LIBRARY_PATH", None)
+
+    # needed to use neurodamus module
+    if mech_path is None:
+        mech_path = os.environ.get("BLUECELLULAB_MOD_LIBRARY_PATH", None)
+
     if mech_path is not None:
         try:
             if (Path(mech_path) / "x86_64").exists():
                 if not neuron.load_mechanisms(mech_path):
                     raise Exception("Could not load mod files")
                 logging.info("Mechanisms loaded from %s", mech_path)
+            elif mech_path.endswith(".so"):
+                neuron.h.nrn_load_dll(mech_path)
+                logging.info("Mechanisms loaded from %s", mech_path)
+
         except Exception as exc:  # pylint: disable=broad-exception-caught
             logging.debug("Could not load mod files from %s because of %s", mech_path, exc)
 
