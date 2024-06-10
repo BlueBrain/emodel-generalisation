@@ -153,9 +153,6 @@ def compute_currents(
     load_mechanisms(mech_path)
     parallel_factory = init_parallel_factory(parallel_lib)
     cells_df, input_cells = _load_circuit(input_path, morphology_path, population_name)
-    cells_df = cells_df.loc[96577:96578]
-    #cells_df = cells_df[cells_df.emodel == "cADpyr_L2IPC"]
-    cells_df = cells_df.head(1)
 
     if protocol_config_path is not None:
         with open(protocol_config_path, "r") as prot_file:
@@ -780,7 +777,7 @@ def adapt(
             mask = cells_df["emodel"] == emodel
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:
-                L.info("Adapting a non placeholder model...")
+                L.info("Adapting the non placeholder model %s...", emodel)
 
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) == 1:
                     raise ValueError(
@@ -795,16 +792,18 @@ def adapt(
                     .set_index("emodel")
                     .to_dict()
                 )
-                cells_df.loc[mask] = adapt_soma_ais(
-                    cells_df.loc[mask],
-                    access_point,
-                    resistance_models[emodel],
-                    rhos,
-                    parallel_factory=parallel_factory,
-                    min_scale=min_scale,
-                    max_scale=max_scale,
-                    n_steps=2,
-                )
+                with Reuse(local_dir / f"adapt_df_{emodel}.csv", disable=no_reuse) as reuse:
+                    cells_df.loc[mask] = reuse(
+                        adapt_soma_ais,
+                        cells_df.loc[mask],
+                        access_point,
+                        resistance_models[emodel],
+                        rhos,
+                        parallel_factory=parallel_factory,
+                        min_scale=min_scale,
+                        max_scale=max_scale,
+                        n_steps=2,
+                    )
 
             else:
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) > 1:
