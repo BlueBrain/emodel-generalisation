@@ -44,6 +44,7 @@ from emodel_generalisation.model.modifiers import remove_axon
 from emodel_generalisation.model.modifiers import remove_soma
 from emodel_generalisation.utils import FEATURE_FILTER
 from emodel_generalisation.utils import get_scores
+from emodel_generalisation.utils import isolate
 
 
 def get_scales(scales_params, with_unity=False):
@@ -143,7 +144,7 @@ def _adapt_combo(combo, models, rhos, key="soma", min_scale=0.01, max_scale=10):
     return {f"{key}_scaler": np.clip(scale, min_scale, max_scale)}
 
 
-def _adapt_single_soma_ais(
+def __adapt_single_soma_ais(
     combo,
     access_point=None,
     models=None,
@@ -195,6 +196,15 @@ def _adapt_single_soma_ais(
             )
 
     return {k: combo[k] for k in ["soma_scaler", "ais_scaler"]}
+
+
+def _adapt_single_soma_ais(*args, **kwargs):
+    timeout = kwargs.pop("timeout", 5 * 60)
+    res = isolate(__adapt_single_soma_ais, timeout=timeout)(*args, **kwargs)
+    if res is None:
+        print("timeout", args, kwargs)
+        return {k: 1.0 for k in ["soma_scaler", "ais_scaler"]}
+    return res
 
 
 def make_evaluation_df(combos_df, emodels, exemplar_data, rhos=None):
