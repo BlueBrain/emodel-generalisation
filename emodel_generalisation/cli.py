@@ -765,6 +765,11 @@ def adapt(
             _get_resistance_models, exemplar_df.loc[placeholder_mask], exemplar_data, scales_params
         )
 
+    # needed for internal reuse
+    for col in cells_df.columns:
+        if cells_df[col].dtype == "category":
+            cells_df[col] = cells_df[col].astype("object")
+
     L.info("Adapting AIS and soma of all cells..")
     cells_df["ais_scaler"] = 0.0
     cells_df["soma_scaler"] = 0.0
@@ -792,7 +797,9 @@ def adapt(
                     .set_index("emodel")
                     .to_dict()
                 )
-                with Reuse(local_dir / f"adapt_df_{emodel}.csv", disable=no_reuse) as reuse:
+                with Reuse(
+                    local_dir / f"adapt_df_{emodel}.csv", disable=no_reuse, index_col=0
+                ) as reuse:
                     cells_df.loc[mask] = reuse(
                         adapt_soma_ais,
                         cells_df.loc[mask],
@@ -803,7 +810,7 @@ def adapt(
                         min_scale=min_scale,
                         max_scale=max_scale,
                         n_steps=2,
-                    )
+                    ).drop(columns=["exception"])
 
             else:
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) > 1:
