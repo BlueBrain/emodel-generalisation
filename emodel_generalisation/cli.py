@@ -765,6 +765,11 @@ def adapt(
             _get_resistance_models, exemplar_df.loc[placeholder_mask], exemplar_data, scales_params
         )
 
+    # needed for internal reuse
+    for col in cells_df.columns:
+        if cells_df[col].dtype == "category":
+            cells_df[col] = cells_df[col].astype("object")
+
     L.info("Adapting AIS and soma of all cells..")
     cells_df["ais_scaler"] = 0.0
     cells_df["soma_scaler"] = 0.0
@@ -777,7 +782,7 @@ def adapt(
             mask = cells_df["emodel"] == emodel
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:
-                L.info("Adapting a non placeholder model...")
+                L.info("Adapting the non placeholder model %s...", emodel)
 
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) == 1:
                     raise ValueError(
@@ -792,16 +797,20 @@ def adapt(
                     .set_index("emodel")
                     .to_dict()
                 )
-                cells_df.loc[mask] = adapt_soma_ais(
-                    cells_df.loc[mask],
-                    access_point,
-                    resistance_models[emodel],
-                    rhos,
-                    parallel_factory=parallel_factory,
-                    min_scale=min_scale,
-                    max_scale=max_scale,
-                    n_steps=2,
-                )
+                with Reuse(
+                    local_dir / f"adapt_df_{emodel}.csv", disable=no_reuse, index_col=0
+                ) as reuse:
+                    cells_df.loc[mask] = reuse(
+                        adapt_soma_ais,
+                        cells_df.loc[mask],
+                        access_point,
+                        resistance_models[emodel],
+                        rhos,
+                        parallel_factory=parallel_factory,
+                        min_scale=min_scale,
+                        max_scale=max_scale,
+                        n_steps=2,
+                    ).drop(columns=["exception"])
 
             else:
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) > 1:
