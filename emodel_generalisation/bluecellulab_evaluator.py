@@ -42,7 +42,7 @@ def calculate_threshold_current(cell, config, holding_current):
     if max_current_spike_count < 1:
         logger.debug("Cell is not firing at max current, we multiply by 2")
         config["min_threshold_current"] = copy(config["max_threshold_current"])
-        config["max_threshold_current"] *= 2.0
+        config["max_threshold_current"] *= 1.2
         return calculate_threshold_current(cell, config, holding_current)
 
     return binsearch_threshold_current(
@@ -57,7 +57,6 @@ def calculate_threshold_current(cell, config, holding_current):
 def binsearch_threshold_current(cell, config, holding_current, min_current, max_current):
     """Binary search for threshold currents"""
     mid_current = (min_current + max_current) / 2
-
     if abs(max_current - min_current) < config["threshold_current_precision"]:
         spike_count = run_spike_sim(
             cell,

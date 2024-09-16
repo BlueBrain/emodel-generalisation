@@ -26,7 +26,7 @@ import traceback
 from functools import partial
 from pathlib import Path
 
-import matplotlib
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -1058,6 +1058,8 @@ def plot_corner(
     cmap="gnuplot",
     normalize=False,
     highlights=None,
+    sort_params=True,
+    with_pearson=False,
 ):
     """Make a corner plot which consists of scatter plots of all pairs.
 
@@ -1065,9 +1067,10 @@ def plot_corner(
         feature (str): name of feature for coloring heatmap
         filename (str): name of figure for corner plot
     """
-    params = np.array(sorted(df.normalized_parameters.columns.to_list()))
+    params = np.array(df.normalized_parameters.columns.to_list())
     _params = np.array([PARAM_LABELS.get(p, p) for p in params])
-    params = params[np.argsort(_params)]
+    if sort_params:
+        params = params[np.argsort(_params)]
     n_params = len(params)
 
     # get feature data
@@ -1094,6 +1097,10 @@ def plot_corner(
     fig = plt.figure(figsize=(5 + 0.5 * n_params, 5 + 0.5 * n_params))
     gs = fig.add_gridspec(n_params, n_params, hspace=0.1, wspace=0.1)
     im = None
+    if with_pearson:
+        _cmap = plt.get_cmap("coolwarm")
+        norm = mpl.colors.Normalize(vmin=-0.8, vmax=0.8)
+        pearson_colors = mpl.cm.ScalarMappable(norm=norm, cmap=_cmap)
     # pylint: disable=too-many-nested-blocks
     for i, param1 in enumerate(params):
         _param1 = PARAM_LABELS.get(param1, param1)
@@ -1110,6 +1117,13 @@ def plot_corner(
                 ax.set_frame_on(False)
             elif j < i:
                 ax.set_frame_on(True)
+                if with_pearson:
+                    pearson = pearsonr(
+                        df[("normalized_parameters", param1)].to_numpy(),
+                        df[("normalized_parameters", param2)].to_numpy(),
+                    )
+                    ax.spines[:].set_color(pearson_colors.to_rgba(pearson[0]))
+                    ax.spines[:].set(lw=3.0)
                 im = _plot_2d_data(
                     ax, m[i][j], vmin, vmax, rev=feature is not None, cmap=cmap, normalize=normalize
                 )

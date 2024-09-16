@@ -164,7 +164,7 @@ def compute_currents(
             "step_stop": 2000.0,
             "threshold_current_precision": 0.001,
             "min_threshold_current": 0.0,
-            "max_threshold_current": 0.2,
+            "max_threshold_current": 0.1,
             "spike_at_ais": False,  # does not work with placeholder
             "deterministic": True,
             "celsius": 34.0,
@@ -427,7 +427,7 @@ def evaluate(
                 "name": pd.Series(dtype=str),
             }
         )
-        for gid, emodel in enumerate(cells_df.emodel.unique):
+        for gid, emodel in enumerate(cells_df.emodel.unique()):
             morph = access_point.get_morphologies(emodel)
             exemplar_df.loc[gid, "emodel"] = emodel
             exemplar_df.loc[gid, "path"] = morph["path"]
