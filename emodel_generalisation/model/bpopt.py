@@ -832,7 +832,7 @@ class SearchHoldingCurrent(BPEMProtocol):
         location,
         target_voltage=None,
         voltage_precision=0.1,
-        stimulus_duration=500.0,
+        stimulus_duration=1000.0,
         upper_bound=0.2,
         lower_bound=-0.2,
         strict_bounds=True,
@@ -912,7 +912,6 @@ class SearchHoldingCurrent(BPEMProtocol):
         self, holding_current, cell_model, param_values, sim, isolate, timeout=None
     ):
         """Calculate voltage base for a certain holding current"""
-
         self.stimuli[0].amp = holding_current
         response = BPEMProtocol.run(
             self, cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
@@ -1102,7 +1101,6 @@ class SearchThresholdCurrent(ProtocolWithDependencies):
             "totduration": stimulus_totduration,
             "holding_current": None,
         }
-
         self.recording_name = f"{name}.{location.name}.v"
         stimulus = eCodes["step"](location=location, **stimulus_definition)
         recordings = [

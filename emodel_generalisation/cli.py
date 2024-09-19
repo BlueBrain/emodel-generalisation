@@ -755,8 +755,13 @@ def adapt(
         """We fit the scale/Rin relation for AIS and soma."""
         models = {}
         for emodel in exemplar_df.emodel:
+            Path(f"local/{emodel}").mkdir(parents=True, exist_ok=True)
             models[emodel] = build_all_resistance_models(
-                access_point, [emodel], exemplar_data[emodel], scales_params
+                access_point,
+                [emodel],
+                exemplar_data[emodel],
+                scales_params,
+                fig_path=Path(f"local/{emodel}"),
             )
         return models
 

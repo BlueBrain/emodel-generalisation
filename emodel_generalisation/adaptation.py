@@ -84,7 +84,6 @@ def build_resistance_models(
 
     # it seems dask does not quite work on this (to investigate, but multiprocessing is fast enough)
     df = func(df, access_point, parallel_factory="multiprocessing")
-
     models = {}
     for emodel in emodels:
         _df = df[df.emodel == emodel]
@@ -93,13 +92,16 @@ def build_resistance_models(
         if len(rin[rin < 0]) == 0:
             try:
                 coeffs, extra = Polynomial.fit(np.log10(scaler), np.log10(rin), 3, full=True)
-                if extra[0] < rcond_min:
-                    models[emodel] = {
-                        "resistance": {"polyfit_params": coeffs.convert().coef.tolist()},
-                        "shape": exemplar_data[key],
-                    }
+                if extra[0] > rcond_min:
+                    print(f"resistance fit for {key} of {emodel} is not so good")
+                models[emodel] = {
+                    "resistance": {"polyfit_params": coeffs.convert().coef.tolist()},
+                    "shape": exemplar_data[key],
+                }
             except (np.linalg.LinAlgError, TypeError):
                 print(f"fail to fit emodel {emodel}")
+        else:
+            print(f"resistance fit for {key} of {emodel} has negative rin")
     return df[df.emodel.isin(models)], models
 
 

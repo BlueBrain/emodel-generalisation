@@ -451,7 +451,7 @@ def _define_Rin_protocol(
 
 
 def _define_holding_protocol(
-    efeatures, strict_bounds=False, ais_recording=False, max_depth=7, stimulus_duration=500.0
+    efeatures, strict_bounds=False, ais_recording=False, max_depth=7, stimulus_duration=1000.0
 ):
     """Define the search holding current protocol"""
     target_voltage = None
@@ -1013,7 +1013,7 @@ class FitnessCalculatorConfiguration:
         self.rin_step_duration = 500.0
         self.rin_step_amp = -0.02
         self.rin_totduration = self.rin_step_delay + self.rin_step_duration
-        self.search_holding_duration = 500.0
+        self.search_holding_duration = 1000.0
         self.search_threshold_step_delay = 500.0
         self.search_threshold_step_duration = 2000.0
         self.search_threshold_totduration = 3000.0
