@@ -206,12 +206,15 @@ def compute_currents(
         )
 
         failed_cells = unique_cells_df[
-            unique_cells_df["input_resistance"].isna() | (unique_cells_df["input_resistance"] < 0)
+            unique_cells_df["input_resistance"].isna() | (unique_cells_df["input_resistance"] <= 0)
         ].index
         if len(failed_cells) > 0:
-            L.info("still %s failed cells (we drop):", len(failed_cells))
+            L.info("still %s failed cells (we set default values):", len(failed_cells))
             L.info(unique_cells_df.loc[failed_cells])
-            unique_cells_df.loc[failed_cells, "mtype"] = None
+            unique_cells_df.loc[failed_cells, "@dynamics:holding_current"] = 0.0
+            unique_cells_df.loc[failed_cells, "@dynamics:threshold_current"] = 0.0
+            unique_cells_df.loc[failed_cells, "@dynamics:input_resistance"] = 0.0
+            unique_cells_df.loc[failed_cells, "@dynamics:resting_potential"] = -80.0
 
     cols = ["resting_potential", "input_resistance", "exception"]
     if not only_rin:

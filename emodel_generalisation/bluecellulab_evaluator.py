@@ -57,7 +57,7 @@ def calculate_threshold_current(cell, config, holding_current):
 def binsearch_threshold_current(cell, config, holding_current, min_current, max_current):
     """Binary search for threshold currents"""
     mid_current = (min_current + max_current) / 2
-    if abs(max_current - min_current) < config["threshold_current_precision"]:
+    if abs(max_current - min_current) < config.get("threshold_current_precision", 0.001):
         spike_count = run_spike_sim(
             cell,
             config,

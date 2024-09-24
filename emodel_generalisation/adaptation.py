@@ -201,7 +201,7 @@ def __adapt_single_soma_ais(
 
 
 def _adapt_single_soma_ais(*args, **kwargs):
-    timeout = kwargs.pop("timeout", 5 * 60)
+    timeout = kwargs.pop("timeout", 30 * 60)
     res = isolate(__adapt_single_soma_ais, timeout=timeout)(*args, **kwargs)
     if res is None:
         print("timeout", args, kwargs)
