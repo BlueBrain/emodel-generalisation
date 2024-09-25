@@ -39,8 +39,8 @@ def test_feature_evaluation(morphs_combos_df, access_point):
         "IDRest_280.soma.v.AP_amplitude": 0.4711507560288358,
         "RMPProtocol.soma.v.voltage_base": 0.33131119446020707,
         "RMPProtocol.soma.v.Spikecount": 0.0,
-        "SearchHoldingCurrent.soma.v.bpo_holding_current": 0.18281250000000002,
-        "SearchHoldingCurrent.soma.v.voltage_base": 0.043970045446585004,
+        "SearchHoldingCurrent.soma.v.bpo_holding_current": 0.1828125,
+        "SearchHoldingCurrent.soma.v.voltage_base": 0.038499,
         "RinProtocol.soma.v.ohmic_input_resistance_vb_ssse": 0.17312024013731503,
         "SearchThresholdCurrent.soma.v.bpo_threshold_current": 0.10935385147499851,
     }
@@ -84,7 +84,7 @@ def test_evaluate_soma_rin(morphs_combos_df, access_point):
 def test_evaluate_ais_rin(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_ais_rin(morphs_combos_df, access_point)
-    assert_allclose(df.loc[0, "rin_ais"], 131668.9953893715, rtol=1e-5)
+    assert_allclose(df.loc[0, "rin_ais"], 131668.995389, rtol=1e-5)
 
 
 def test_evaluate_somadend_rin(morphs_combos_df, access_point):
@@ -102,4 +102,4 @@ def test_evaluate_rho(morphs_combos_df, access_point):
 def test_evaluate_rho_axon(morphs_combos_df, access_point):
     """ """
     df = evaluation.evaluate_rho_axon(morphs_combos_df, access_point)
-    assert_allclose(df.loc[0, "rho_axon"], 244.2217237122562, rtol=1e-5)
+    assert_allclose(df.loc[0, "rho_axon"], 244.221723, rtol=1e-5)

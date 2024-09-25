@@ -25,12 +25,14 @@ from copy import deepcopy
 from functools import partial
 from hashlib import sha256
 from itertools import cycle
+from multiprocessing.context import TimeoutError  # pylint: disable=redefined-builtin
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from bluepyopt.ephys.responses import TimeVoltageResponse
+from bluepyparallel.parallel import NestedPool
 from matplotlib.backends.backend_pdf import PdfPages
 from scipy.cluster.hierarchy import dendrogram
 from scipy.cluster.hierarchy import linkage
@@ -94,14 +96,14 @@ def get_scores(morphs_combos_df, features_to_ignore=None, features_to_keep=None,
         morphs_combos_df.apply(filter_features, axis=1)
 
     morphs_combos_df.loc[:, "median_score"] = morphs_combos_df["scores"].apply(
-        lambda score: np.clip(np.median(list(score.values())), 0, clip)
-        if isinstance(score, dict)
-        else np.nan
+        lambda score: (
+            np.clip(np.median(list(score.values())), 0, clip) if isinstance(score, dict) else np.nan
+        )
     )
     morphs_combos_df.loc[:, "max_score"] = morphs_combos_df["scores"].apply(
-        lambda score: np.clip(np.max(list(score.values())), 0, clip)
-        if isinstance(score, dict)
-        else np.nan
+        lambda score: (
+            np.clip(np.max(list(score.values())), 0, clip) if isinstance(score, dict) else np.nan
+        )
     )
     morphs_combos_df.loc[:, "cost"] = morphs_combos_df["scores"].apply(
         lambda score: np.max(list(score.values())) if isinstance(score, dict) else np.nan
@@ -112,9 +114,9 @@ def get_scores(morphs_combos_df, features_to_ignore=None, features_to_keep=None,
 def get_feature_df(df, filters=None):
     """Get feature df from complete df."""
     feature_df = df["features"].apply(
-        lambda json_str: pd.Series(json.loads(json_str))
-        if isinstance(json_str, str)
-        else pd.Series(dtype=float)
+        lambda json_str: (
+            pd.Series(json.loads(json_str)) if isinstance(json_str, str) else pd.Series(dtype=float)
+        )
     )
     if filters is not None:
         feature_df = feature_df.drop(
@@ -129,9 +131,11 @@ def get_feature_df(df, filters=None):
 def get_score_df(df, filters=None):
     """Get score df from complete df."""
     score_df = df["scores"].apply(
-        lambda json_str: pd.Series(json.loads(json_str))
-        if isinstance(json_str, str)
-        else lambda json_str: pd.Series(json_str, dtype=float)
+        lambda json_str: (
+            pd.Series(json.loads(json_str))
+            if isinstance(json_str, str)
+            else lambda json_str: pd.Series(json_str, dtype=float)
+        )
     )
     if filters is not None:
         score_df = score_df.drop(
@@ -214,3 +218,44 @@ def load_json(filepath, **kwargs):
 def write_json(filepath, data, **kwargs):
     """Write json file."""
     Path(filepath).write_text(json.dumps(data, **kwargs), encoding="utf-8")
+
+
+def isolate(func, timeout=None):
+    """Isolate a generic function for independent NEURON instances.
+
+    It must be used in conjunction with NestedPool.
+
+    Example:
+
+    .. code-block:: python
+
+        def _to_be_isolated(morphology_path, point):
+            cell = nrnhines.get_NRN_cell(morphology_path)
+            return nrnhines.point_to_section_end(cell.icell.all, point)
+
+        def _isolated(morph_data):
+            return nrnhines.isolate(_to_be_isolated)(*morph_data)
+
+        with nrnhines.NestedPool(processes=n_workers) as pool:
+            result = pool.imap_unordered(_isolated, data)
+
+
+    Args:
+        func (function): function to isolate
+
+    Returns:
+        the isolated function
+
+    Note: it does not work as decorator.
+    """
+
+    def func_isolated(*args, **kwargs):
+        with NestedPool(1, maxtasksperchild=1) as pool:
+            res = pool.apply_async(func, args, kwargs)
+            try:
+                out = res.get(timeout=timeout)
+            except TimeoutError:  # pragma: no cover
+                out = None
+        return out
+
+    return func_isolated

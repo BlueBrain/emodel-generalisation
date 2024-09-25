@@ -3,58 +3,17 @@
 import logging
 import os
 from copy import copy
-from multiprocessing.context import TimeoutError  # pylint: disable=redefined-builtin
 from pathlib import Path
 
 import bluecellulab
 import efel
 from bluecellulab.simulation.neuron_globals import NeuronGlobals
 from bluepyparallel.evaluator import evaluate
-from bluepyparallel.parallel import NestedPool
+
+from emodel_generalisation.utils import isolate
 
 logger = logging.getLogger(__name__)
 AXON_LOC = "self.axonal[1](0.5)._ref_v"
-
-
-def isolate(func, timeout=None):
-    """Isolate a generic function for independent NEURON instances.
-
-    It must be used in conjunction with NestedPool.
-
-    Example:
-
-    .. code-block:: python
-
-        def _to_be_isolated(morphology_path, point):
-            cell = nrnhines.get_NRN_cell(morphology_path)
-            return nrnhines.point_to_section_end(cell.icell.all, point)
-
-        def _isolated(morph_data):
-            return nrnhines.isolate(_to_be_isolated)(*morph_data)
-
-        with nrnhines.NestedPool(processes=n_workers) as pool:
-            result = pool.imap_unordered(_isolated, data)
-
-
-    Args:
-        func (function): function to isolate
-
-    Returns:
-        the isolated function
-
-    Note: it does not work as decorator.
-    """
-
-    def func_isolated(*args, **kwargs):
-        with NestedPool(1, maxtasksperchild=1) as pool:
-            res = pool.apply_async(func, args, kwargs)
-            try:
-                out = res.get(timeout=timeout)
-            except TimeoutError:  # pragma: no cover
-                out = None
-        return out
-
-    return func_isolated
 
 
 def calculate_threshold_current(cell, config, holding_current):
@@ -84,7 +43,7 @@ def calculate_threshold_current(cell, config, holding_current):
     if max_current_spike_count < 1:
         logger.debug("Cell is not firing at max current, we multiply by 2")
         config["min_threshold_current"] = copy(config["max_threshold_current"])
-        config["max_threshold_current"] *= 2.0
+        config["max_threshold_current"] *= 1.2
         return calculate_threshold_current(cell, config, holding_current)
 
     return binsearch_threshold_current(
@@ -99,8 +58,7 @@ def calculate_threshold_current(cell, config, holding_current):
 def binsearch_threshold_current(cell, config, holding_current, min_current, max_current):
     """Binary search for threshold currents"""
     mid_current = (min_current + max_current) / 2
-
-    if abs(max_current - min_current) < config["threshold_current_precision"]:
+    if abs(max_current - min_current) < config.get("threshold_current_precision", 0.001):
         spike_count = run_spike_sim(
             cell,
             config,
@@ -218,13 +176,21 @@ def calculate_rmp_and_rin(cell, config):
         "stim_end": [config["rin"]["step_stop"]],
         "stimulus_current": [config["rin"]["step_amp"]],
     }
-    features = efel.getFeatureValues([trace], ["voltage_base", "ohmic_input_resistance_vb_ssse"])[0]
-    rmp = None
+    features = efel.getFeatureValues(
+        [trace], ["spike_count", "voltage_base", "ohmic_input_resistance_vb_ssse"]
+    )[0]
+
+    rmp = 0
     if features["voltage_base"] is not None:
         rmp = features["voltage_base"][0]
-    rin = None
+
+    rin = -1.0
     if features["ohmic_input_resistance_vb_ssse"] is not None:
         rin = features["ohmic_input_resistance_vb_ssse"][0]
+
+    if features["spike_count"] > 0:
+        logger.warning("SPIKES! %s, %s", rmp, rin)
+        return 0.0, -1.0
     return rmp, rin
 
 
@@ -289,12 +255,12 @@ def _isolated_current_evaluation(*args, **kwargs):
     res = isolate(_current_evaluation, timeout=timeout)(*args, **kwargs)
     if res is None:
         res = {
-            "resting_potential": None,
-            "input_resistance": None,
+            "resting_potential": 0.0,
+            "input_resistance": -1.0,
         }
         if not kwargs.get("only_rin", False):
-            res["holding_current"] = None
-            res["threshold_current"] = None
+            res["holding_current"] = 0.0
+            res["threshold_current"] = 0.0
 
     return res
 

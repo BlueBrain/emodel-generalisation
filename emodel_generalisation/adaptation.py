@@ -24,7 +24,6 @@ import json
 from functools import partial
 from pathlib import Path
 
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -44,8 +43,7 @@ from emodel_generalisation.model.modifiers import remove_axon
 from emodel_generalisation.model.modifiers import remove_soma
 from emodel_generalisation.utils import FEATURE_FILTER
 from emodel_generalisation.utils import get_scores
-
-matplotlib.use("Agg")
+from emodel_generalisation.utils import isolate
 
 
 def get_scales(scales_params, with_unity=False):
@@ -85,7 +83,6 @@ def build_resistance_models(
 
     # it seems dask does not quite work on this (to investigate, but multiprocessing is fast enough)
     df = func(df, access_point, parallel_factory="multiprocessing")
-
     models = {}
     for emodel in emodels:
         _df = df[df.emodel == emodel]
@@ -94,13 +91,16 @@ def build_resistance_models(
         if len(rin[rin < 0]) == 0:
             try:
                 coeffs, extra = Polynomial.fit(np.log10(scaler), np.log10(rin), 3, full=True)
-                if extra[0] < rcond_min:
-                    models[emodel] = {
-                        "resistance": {"polyfit_params": coeffs.convert().coef.tolist()},
-                        "shape": exemplar_data[key],
-                    }
+                if extra[0] > rcond_min:
+                    print(f"resistance fit for {key} of {emodel} is not so good")
+                models[emodel] = {
+                    "resistance": {"polyfit_params": coeffs.convert().coef.tolist()},
+                    "shape": exemplar_data[key],
+                }
             except (np.linalg.LinAlgError, TypeError):
                 print(f"fail to fit emodel {emodel}")
+        else:
+            print(f"resistance fit for {key} of {emodel} has negative rin")
     return df[df.emodel.isin(models)], models
 
 
@@ -145,7 +145,7 @@ def _adapt_combo(combo, models, rhos, key="soma", min_scale=0.01, max_scale=10):
     return {f"{key}_scaler": np.clip(scale, min_scale, max_scale)}
 
 
-def _adapt_single_soma_ais(
+def __adapt_single_soma_ais(
     combo,
     access_point=None,
     models=None,
@@ -197,6 +197,15 @@ def _adapt_single_soma_ais(
             )
 
     return {k: combo[k] for k in ["soma_scaler", "ais_scaler"]}
+
+
+def _adapt_single_soma_ais(*args, **kwargs):
+    timeout = kwargs.pop("timeout", 30 * 60)
+    res = isolate(__adapt_single_soma_ais, timeout=timeout)(*args, **kwargs)
+    if res is None:
+        print("timeout", args, kwargs)
+        return {k: 1.0 for k in ["soma_scaler", "ais_scaler"]}
+    return res
 
 
 def make_evaluation_df(combos_df, emodels, exemplar_data, rhos=None):

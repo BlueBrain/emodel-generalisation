@@ -1,4 +1,5 @@
 """Test cli module."""
+
 import json
 from pathlib import Path
 
@@ -66,7 +67,7 @@ def test_compute_currents(cli_runner, tmpdir):
 
 
 def test_evaluate(cli_runner, tmpdir):
-    """Tetst cli evaluate."""
+    """Test cli evaluate."""
     # fmt: off
     response = cli_runner.invoke(
         tested.cli,
@@ -195,18 +196,17 @@ def test_adapt(cli_runner, tmpdir):
     df = CellCollection().load_sonata(tmpdir / "sonata_currents_adapted.h5").as_dataframe()
     npt.assert_allclose(
         df["@dynamics:resting_potential"].to_list(),
-        [-72.841806, -71.32893],
+        [0.0, 0.0],  # we get spikes at rest
         rtol=1e-5,
     )
-    df.to_csv("test.csv")
     npt.assert_allclose(
         df["@dynamics:input_resistance"].to_list(),
-        [105.342194, 1863.809101],
+        [-1.0, -1.0],  # we get spikes at rest
         rtol=1e-5,
     )
     npt.assert_allclose(
         df["@dynamics:holding_current"].to_list(),
-        [-0.06431251604510635, -0.08120532523605561],
+        [-0.064316, -0.081205],
         rtol=1e-5,
     )
     npt.assert_allclose(

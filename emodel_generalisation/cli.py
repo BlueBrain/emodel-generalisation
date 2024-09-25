@@ -164,7 +164,7 @@ def compute_currents(
             "step_stop": 2000.0,
             "threshold_current_precision": 0.001,
             "min_threshold_current": 0.0,
-            "max_threshold_current": 0.2,
+            "max_threshold_current": 0.1,
             "spike_at_ais": False,  # does not work with placeholder
             "deterministic": True,
             "celsius": 34.0,
@@ -206,12 +206,15 @@ def compute_currents(
         )
 
         failed_cells = unique_cells_df[
-            unique_cells_df["input_resistance"].isna() | (unique_cells_df["input_resistance"] < 0)
+            unique_cells_df["input_resistance"].isna() | (unique_cells_df["input_resistance"] <= 0)
         ].index
         if len(failed_cells) > 0:
-            L.info("still %s failed cells (we drop):", len(failed_cells))
+            L.info("still %s failed cells (we set default values):", len(failed_cells))
             L.info(unique_cells_df.loc[failed_cells])
-            unique_cells_df.loc[failed_cells, "mtype"] = None
+            unique_cells_df.loc[failed_cells, "@dynamics:holding_current"] = 0.0
+            unique_cells_df.loc[failed_cells, "@dynamics:threshold_current"] = 0.0
+            unique_cells_df.loc[failed_cells, "@dynamics:input_resistance"] = 0.0
+            unique_cells_df.loc[failed_cells, "@dynamics:resting_potential"] = -80.0
 
     cols = ["resting_potential", "input_resistance", "exception"]
     if not only_rin:
@@ -427,7 +430,7 @@ def evaluate(
                 "name": pd.Series(dtype=str),
             }
         )
-        for gid, emodel in enumerate(cells_df.emodel.unique):
+        for gid, emodel in enumerate(cells_df.emodel.unique()):
             morph = access_point.get_morphologies(emodel)
             exemplar_df.loc[gid, "emodel"] = emodel
             exemplar_df.loc[gid, "path"] = morph["path"]
@@ -755,8 +758,13 @@ def adapt(
         """We fit the scale/Rin relation for AIS and soma."""
         models = {}
         for emodel in exemplar_df.emodel:
+            Path(f"local/{emodel}").mkdir(parents=True, exist_ok=True)
             models[emodel] = build_all_resistance_models(
-                access_point, [emodel], exemplar_data[emodel], scales_params
+                access_point,
+                [emodel],
+                exemplar_data[emodel],
+                scales_params,
+                fig_path=Path(f"local/{emodel}"),
             )
         return models
 
@@ -764,6 +772,11 @@ def adapt(
         resistance_models = reuse(
             _get_resistance_models, exemplar_df.loc[placeholder_mask], exemplar_data, scales_params
         )
+
+    # needed for internal reuse
+    for col in cells_df.columns:
+        if cells_df[col].dtype == "category":
+            cells_df[col] = cells_df[col].astype("object")
 
     L.info("Adapting AIS and soma of all cells..")
     cells_df["ais_scaler"] = 0.0
@@ -777,7 +790,7 @@ def adapt(
             mask = cells_df["emodel"] == emodel
 
             if emodel in exemplar_data and not exemplar_data[emodel]["placeholder"]:
-                L.info("Adapting a non placeholder model...")
+                L.info("Adapting the non placeholder model %s...", emodel)
 
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) == 1:
                     raise ValueError(
@@ -792,16 +805,20 @@ def adapt(
                     .set_index("emodel")
                     .to_dict()
                 )
-                cells_df.loc[mask] = adapt_soma_ais(
-                    cells_df.loc[mask],
-                    access_point,
-                    resistance_models[emodel],
-                    rhos,
-                    parallel_factory=parallel_factory,
-                    min_scale=min_scale,
-                    max_scale=max_scale,
-                    n_steps=2,
-                )
+                with Reuse(
+                    local_dir / f"adapt_df_{emodel}.csv", disable=no_reuse, index_col=0
+                ) as reuse:
+                    cells_df.loc[mask] = reuse(
+                        adapt_soma_ais,
+                        cells_df.loc[mask],
+                        access_point,
+                        resistance_models[emodel],
+                        rhos,
+                        parallel_factory=parallel_factory,
+                        min_scale=min_scale,
+                        max_scale=max_scale,
+                        n_steps=2,
+                    ).drop(columns=["exception"])
 
             else:
                 if len(Morphology(cells_df[mask].head(1)["path"].tolist()[0]).root_sections) > 1:
