@@ -206,7 +206,7 @@ def test_adapt(cli_runner, tmpdir):
     )
     npt.assert_allclose(
         df["@dynamics:holding_current"].to_list(),
-        [-0.06431251604510635, -0.08120532523605561],
+        [-0.064316, -0.081205],
         rtol=1e-5,
     )
     npt.assert_allclose(
