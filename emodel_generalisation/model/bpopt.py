@@ -902,7 +902,7 @@ class SearchHoldingCurrent(BPEMProtocol):
             name=f"{name}.spike_count_stimint",
             efel_feature_name="spike_count_stimint",
             recording_names={"": f"{name}.{location.name}.v"},
-            stim_start=500,  # discard begining to allow for a couple of initial APs
+            stim_start=500,  # discard beginning to allow for a couple of initial APs
             stim_end=2000,
             exp_mean=1,
             exp_std=0.1,

@@ -9,6 +9,7 @@ import bluecellulab
 import efel
 from bluecellulab.simulation.neuron_globals import NeuronGlobals
 from bluepyparallel.evaluator import evaluate
+
 from emodel_generalisation.utils import isolate
 
 logger = logging.getLogger(__name__)

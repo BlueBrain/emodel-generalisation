@@ -66,7 +66,7 @@ def test_compute_currents(cli_runner, tmpdir):
 
 
 def test_evaluate(cli_runner, tmpdir):
-    """Tetst cli evaluate."""
+    """Test cli evaluate."""
     # fmt: off
     response = cli_runner.invoke(
         tested.cli,

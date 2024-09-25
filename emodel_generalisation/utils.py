@@ -25,14 +25,14 @@ from copy import deepcopy
 from functools import partial
 from hashlib import sha256
 from itertools import cycle
-from pathlib import Path
 from multiprocessing.context import TimeoutError  # pylint: disable=redefined-builtin
-from bluepyparallel.parallel import NestedPool
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from bluepyopt.ephys.responses import TimeVoltageResponse
+from bluepyparallel.parallel import NestedPool
 from matplotlib.backends.backend_pdf import PdfPages
 from scipy.cluster.hierarchy import dendrogram
 from scipy.cluster.hierarchy import linkage
