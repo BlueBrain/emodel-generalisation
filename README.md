@@ -6,7 +6,7 @@ Generalisation of neuronal electrical models on a morphological population with 
 
 This code accompanies the paper:
 
-[Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. iScience, 2023.](https://www.cell.com/iscience/fulltext/S2589-0042\(23\)02299-X)
+[Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. iScience, 2023.](https://www.cell.com/iscience/fulltext/S2589-0042%2823%2902299-X)
 
 ## Installation
 
@@ -48,7 +48,7 @@ We provide several examples of the main functionalities of the ```emodel-general
 
 ## Citation
 
-When you use the ``emodel-generalisation`` code or method for your research, we ask you to [cite](https://www.cell.com/iscience/fulltext/S2589-0042\(23\)02299-X):
+When you use the ``emodel-generalisation`` code or method for your research, we ask you to [cite](https://www.cell.com/iscience/fulltext/S2589-0042%2823%2902299-X):
 
 > Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. iScience, 2023.
 
