@@ -10,7 +10,7 @@ This code accompanies the paper:
 
 ## Installation
 
-This code can be installed via [pip](https://pip.pypa.io/en/stable/) from pypi with 
+This code can be installed via [pip](https://pip.pypa.io/en/stable/) from pypi with
 
 ```
 pip install emodel-generalisation
