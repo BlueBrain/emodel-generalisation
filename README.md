@@ -6,16 +6,36 @@ Generalisation of neuronal electrical models on a morphological population with 
 
 This code accompanies the paper:
 
-[Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. iScience, 2023.](https://www.cell.com/iscience/fulltext/S2589-0042(23)02299-X)
+[Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. iScience, 2023.](https://www.cell.com/iscience/fulltext/S2589-0042%2823%2902299-X)
 
 ## Installation
 
-This code can be installed via [pip](https://pip.pypa.io/en/stable/) with
+This code can be installed via [pip](https://pip.pypa.io/en/stable/) from pypi with
+
+```
+pip install emodel-generalisation
+```
+
+or from github with
 
 ```
 git clone git@github.com:BlueBrain/emodel-generalisation.git
 pip install .
 ```
+
+## Documentation
+
+The documentation can be found here: https://emodel-generalisation.readthedocs.io/en/latest/
+
+## Code structure
+
+This code contains several modules, the most important are:
+* [model](emodel_generalisation/model) contains an adapted version of BlueBrain/BluePyEmodel core functionalities for evaluating electrical models, built on top of BlueBrain/BluePyOpt
+* [tasks](emodel_generalisation/tasks) contains the luigi workflows to run MCMC, adapt and generalise electrical model
+* [bluecellulab_evaluator](emodel_generalisation/bluecellulab_evaluator.py) contains functions to compute currents with BlueBrain/BlueCelluLab and hoc files of models
+* [mcmc](emodel_generalisation/mcmc.py) contains the code to run MCMC sampling of electrical models
+* [information](emodel_generalisation/information.py) contains some WIP code to compute information theory measures on sampled electrical models
+
 
 ## Examples
 
@@ -28,7 +48,7 @@ We provide several examples of the main functionalities of the ```emodel-general
 
 ## Citation
 
-When you use the ``emodel-generalisation`` code or method for your research, we ask you to [cite](https://www.cell.com/iscience/fulltext/S2589-0042(23)02299-X):
+When you use the ``emodel-generalisation`` code or method for your research, we ask you to [cite](https://www.cell.com/iscience/fulltext/S2589-0042%2823%2902299-X):
 
 > Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. iScience, 2023.
 
