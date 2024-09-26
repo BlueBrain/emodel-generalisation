@@ -32,9 +32,9 @@ The documentation can be found here: https://emodel-generalisation.readthedocs.i
 This code contains several modules, the most important are:
 * [model](emodel_generalisation/model) contains an adapted version of BlueBrain/BluePyEmodel core functionalities for evaluating electrical models, built on top of BlueBrain/BluePyOpt
 * [tasks](emodel_generalisation/tasks) contains the luigi workflows to run MCMC, adapt and generalise electrical model
-* [bluecellulab_evaluator](bluecellulab_evaluator.) contains functions to compute currents with BlueBrain/BlueCelluLab and hoc files of models
-* [mcmc](mcmc.py) contains the code to run MCMC sampling of electrical models
-* [information](information.py) contains some WIP code to compute information theory measures on sampled electrical models
+* [bluecellulab_evaluator](emodel_generalisation/bluecellulab_evaluator.py) contains functions to compute currents with BlueBrain/BlueCelluLab and hoc files of models
+* [mcmc](emodel_generalisation/mcmc.py) contains the code to run MCMC sampling of electrical models
+* [information](emodel_generalisation/information.py) contains some WIP code to compute information theory measures on sampled electrical models
 
 
 ## Examples
