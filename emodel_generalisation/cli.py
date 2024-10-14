@@ -572,10 +572,13 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
             recipe = access_point.recipes[emodel]
             emodel_mappings[recipe["region"]][recipe["etype"]][recipe["mtype"]] = emodel
 
+    regions = list(emodel_mappings.keys())
+
     def assign_emodel(row):
         """Get emodel name to use in pandas .apply."""
         try:
-            return "hoc:" + emodel_mappings[row["region"]][row["etype"]][row["mtype"]]
+            region = [r for r in regions if r in row["region"]][0]
+            return "hoc:" + emodel_mappings[region][row["etype"]][row["mtype"]]
         except KeyError:
             return "hoc:no_emodel"
 

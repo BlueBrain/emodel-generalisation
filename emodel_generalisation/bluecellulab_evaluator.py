@@ -190,7 +190,7 @@ def calculate_rmp_and_rin(cell, config):
 
     if features["spike_count"] > 0:
         logger.warning("SPIKES! %s, %s", rmp, rin)
-        return 0.0, -1.0
+        return 0.0, 0.0
     return rmp, rin
 
 
@@ -281,7 +281,6 @@ def evaluate_currents(
     new_columns = [["resting_potential", 0.0], ["input_resistance", 0.0]]
     if not only_rin:
         new_columns += [["holding_current", 0.0], ["threshold_current", 0.0]]
-
     return evaluate(
         morphs_combos_df,
         _isolated_current_evaluation,

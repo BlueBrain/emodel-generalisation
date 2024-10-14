@@ -201,12 +201,12 @@ def test_adapt(cli_runner, tmpdir):
     )
     npt.assert_allclose(
         df["@dynamics:input_resistance"].to_list(),
-        [-1.0, -1.0],  # we get spikes at rest
+        [0.0, 0.0],  # we get spikes at rest
         rtol=1e-5,
     )
     npt.assert_allclose(
         df["@dynamics:holding_current"].to_list(),
-        [-0.064316, -0.081205],
+        [-0.064313, -0.081205],
         rtol=1e-5,
     )
     npt.assert_allclose(
