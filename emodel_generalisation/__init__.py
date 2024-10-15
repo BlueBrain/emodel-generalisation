@@ -196,10 +196,6 @@ def load_mechanisms(mech_path=None):
     if mech_path is None:
         mech_path = os.environ.get("EMODEL_GENERALISATION_MOD_LIBRARY_PATH", None)
 
-    # needed to use neurodamus module
-    if mech_path is None:
-        mech_path = os.environ.get("BLUECELLULAB_MOD_LIBRARY_PATH", None)
-
     if mech_path is not None:
         try:
             if (Path(mech_path) / "x86_64").exists():
