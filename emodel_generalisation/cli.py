@@ -20,6 +20,7 @@ from morphio import Morphology
 from tqdm import tqdm
 from voxcell import CellCollection
 
+from bluecellulab.importer import load_mod_files
 from emodel_generalisation import load_mechanisms
 from emodel_generalisation.adaptation import adapt_soma_ais
 from emodel_generalisation.adaptation import build_all_resistance_models
@@ -344,6 +345,7 @@ def plot_evaluation(cells_df, access_point, main_path="analysis_plot", clip=5, f
 @click.option("--evaluate-all", is_flag=True)
 @click.option("--mech-path", default=None, type=str)
 @click.option("--no-reuse", is_flag=True)
+@load_mod_files
 def evaluate(
     input_path,
     population_name,
@@ -612,6 +614,7 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
 @click.option("--max-scale", default=1.2, type=float)
 @click.option("--mech-path", default=None, type=str)
 @click.option("--no-reuse", is_flag=True)
+@load_mod_files
 def adapt(
     input_node_path,
     population_name,
