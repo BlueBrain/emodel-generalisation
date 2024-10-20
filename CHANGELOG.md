@@ -1,8 +1,8 @@
 # Changelog
 
-## [0.2.13](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.13)
+## [0.2.14](https://github.com/BlueBrain/emodel-generalisation/compare/0.2.5..0.2.14)
 
-> 15 October 2024
+> 20 October 2024
 
 ### New Features
 
@@ -14,6 +14,7 @@
 
 ### Fixes
 
+- Use Bluecellulab load mod wrapper (Alexis Arnaudon - [#60](https://github.com/BlueBrain/emodel-generalisation/pull/60))
 - Do not load via bluecellulab (Alexis Arnaudon - [#58](https://github.com/BlueBrain/emodel-generalisation/pull/58))
 - Fix no spike case when expected (Alexis Arnaudon - [#57](https://github.com/BlueBrain/emodel-generalisation/pull/57))
 - Better handling of mechanism loading in cli (Alexis Arnaudon - [#50](https://github.com/BlueBrain/emodel-generalisation/pull/50))
@@ -25,6 +26,7 @@
 
 ### General Changes
 
+- 0.2.13 (Alexis Arnaudon - [#59](https://github.com/BlueBrain/emodel-generalisation/pull/59))
 - 0.2.12 (Alexis Arnaudon - [#56](https://github.com/BlueBrain/emodel-generalisation/pull/56))
 - Minor updates (Alexis Arnaudon - [#51](https://github.com/BlueBrain/emodel-generalisation/pull/51))
 - 0.2.11 (Alexis Arnaudon - [#53](https://github.com/BlueBrain/emodel-generalisation/pull/53))

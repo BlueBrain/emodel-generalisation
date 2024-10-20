@@ -19,4 +19,4 @@
 # or send a letter to Creative Commons, 171
 # Second Street, Suite 300, San Francisco, California, 94105, USA.
 
-VERSION = "0.2.13"  # pragma: no cover
+VERSION = "0.2.14"  # pragma: no cover
