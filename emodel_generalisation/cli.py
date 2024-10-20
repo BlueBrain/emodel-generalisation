@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
+from bluecellulab.importer import load_mod_files
 from bluepyparallel import init_parallel_factory
 from datareuse import Reuse
 from matplotlib.backends.backend_pdf import PdfPages
@@ -20,7 +21,6 @@ from morphio import Morphology
 from tqdm import tqdm
 from voxcell import CellCollection
 
-from bluecellulab.importer import load_mod_files
 from emodel_generalisation import load_mechanisms
 from emodel_generalisation.adaptation import adapt_soma_ais
 from emodel_generalisation.adaptation import build_all_resistance_models
