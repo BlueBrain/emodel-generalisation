@@ -121,6 +121,7 @@ def cli(verbose, no_progress):
 @click.option("--debug-csv-path", default=None, type=str)
 @click.option("--only-rin", is_flag=True)
 @click.option("--mech-path", default=None, type=str)
+@load_mod_files
 def compute_currents(
     input_path,
     population_name,
