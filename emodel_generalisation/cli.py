@@ -581,13 +581,11 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
     def assign_emodel(row):
         """Get emodel name to use in pandas .apply."""
         try:
-            try:
-                region = [r for r in regions if r in row["region"]][0]
-            except:
-                region = "BAC"  # this one exists
-            return "hoc:" + emodel_mappings[region][row["etype"]][row["mtype"]]
-        except KeyError:
-            return "hoc:no_emodel"
+            #region = [r for r in regions if r in row["region"]][0]
+            return "hoc:" + emodel_mappings[row['region']][row["etype"]][row["mtype"]]
+        except Exception as exc:
+            print(row, exc)
+            return "hoc:emodel_fec90b"  # to have something
 
     L.info("Assigning emodels...")
     cells_df["model_template"] = "hoc:no_emodel"
