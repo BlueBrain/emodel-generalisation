@@ -590,11 +590,11 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
             return "hoc:no_emodel"
 
     L.info("Assigning emodels...")
+    cells_df["model_template"] = "hoc:no_emodel"
     for entry, data in tqdm(
         cells_df.groupby(["region", "etype", "mtype"]), disable=os.environ.get("NO_PROGRESS", False)
     ):
-        print(data, entry)
-        cells_df.loc[data.index, "emodel_template"] = assign_emodel(
+        cells_df.loc[data.index, "model_template"] = assign_emodel(
             {"region": entry[0], "etype": entry[1], "mtype": entry[2]}
         )
 
