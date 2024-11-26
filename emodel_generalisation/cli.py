@@ -559,6 +559,7 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
     """Assign emodels to cells in a circuit."""
     access_point = _get_access_point(config_path, local_config=local_config_path)
     cells_df, _ = _load_circuit(input_node_path, population_name=population_name)
+    print(cells_df)
 
     emodel_mappings = defaultdict(lambda: defaultdict(dict))
     L.info("Creating emodel mappings...")
@@ -580,13 +581,24 @@ def assign(input_node_path, population_name, output_node_path, config_path, loca
     def assign_emodel(row):
         """Get emodel name to use in pandas .apply."""
         try:
-            region = [r for r in regions if r in row["region"]][0]
+            try:
+                region = [r for r in regions if r in row["region"]][0]
+            except:
+                region = "BAC"  # this one exists
             return "hoc:" + emodel_mappings[region][row["etype"]][row["mtype"]]
         except KeyError:
             return "hoc:no_emodel"
 
     L.info("Assigning emodels...")
-    cells_df["model_template"] = cells_df.apply(assign_emodel, axis=1)
+    for entry, data in tqdm(
+        cells_df.groupby(["region", "etype", "mtype"]), disable=os.environ.get("NO_PROGRESS", False)
+    ):
+        print(data, entry)
+        cells_df.loc[data.index, "emodel_template"] = assign_emodel(
+            {"region": entry[0], "etype": entry[1], "mtype": entry[2]}
+        )
+
+    # cells_df["model_template"] = cells_df.apply(assign_emodel, axis=1)
     n_fails = len(cells_df[cells_df["model_template"] == "hoc:no_emodel"])
     if n_fails > 0:
         L.warning("%s cells could not be assigned emodels.", n_fails)
