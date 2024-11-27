@@ -2,7 +2,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from emodel_generalisation.information import plot_corner
+from emodel_generalisation.mcmc import plot_corner
 from emodel_generalisation.mcmc import load_chains
 from emodel_generalisation.mcmc import plot_cost
 from emodel_generalisation.mcmc import plot_cost_convergence
