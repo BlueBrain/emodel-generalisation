@@ -1,3 +1,7 @@
+> [!WARNING]
+> The Blue Brain Project concluded in December 2024, so development has ceased under the BlueBrain GitHub organization.
+> Future development will take place at: https://github.com/openbraininstitute/emodel-generalisation
+
 [![DOI](https://zenodo.org/badge/662445885.svg)](https://zenodo.org/badge/latestdoi/662445885)
 
 # emodel-generalisation
