@@ -44,7 +44,7 @@ def test_get_recipes(access_point):
         "morphology": "simple.asc",
         "params": "config/parameters.json",
         "features": "config/features.json",
-        "morph_modifiers": [],
+        "morph_modifiers": "",
         "pipeline_settings": {
             "efel_settings": {
                 "strict_stiminterval": True,
@@ -65,7 +65,7 @@ def test_get_settings(access_point):
         "name_rmp_protocol": "IV_0",
         "name_Rin_protocol": "IV_-20",
         "test": 0,
-        "morph_modifiers": [],
+        "morph_modifiers": "",
     }
 
 
